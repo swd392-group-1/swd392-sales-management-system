@@ -16,7 +16,13 @@ List the main changes and affected artifacts.
 
 ## Verification
 
-Describe the checks performed and their results. State any checks that were not performed and why.
+- [ ] Requirements/design terminology reviewed where applicable.
+- [ ] Requirement/use-case traceability checked where applicable.
+- [ ] Tests or repository checks passed where applicable.
+- [ ] Documentation updated where applicable.
+- [ ] AI usage documented where applicable.
+
+Optional verification notes:
 
 ## Traceability
 
