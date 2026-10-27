@@ -1,0 +1,30 @@
+@{ ViewData["Title"] = "Kiểm tra kết nối"; }
+<section class="page-heading">
+    <p class="eyebrow">DÀNH CHO PHÁT TRIỂN LOCAL</p>
+    <h1>Kiểm tra thông báo realtime</h1>
+    <p class="intro">Mở trang này ở hai tab, gửi một nội dung và quan sát thông báo đến cả hai màn hình. Đây là bài thử hạ tầng, không ghi dữ liệu Book, Order hoặc stock.</p>
+</section>
+<div class="probe-grid">
+    <section class="panel" aria-labelledby="send-title">
+        <div class="connection-row"><span id="connection-status" role="status">Đang kết nối…</span><button id="connect" class="text-button" type="button" disabled>Kết nối lại</button></div>
+        <h2 id="send-title">Gửi một thông báo thử</h2>
+        <form id="notice-form">
+            @Html.AntiForgeryToken()
+            <label for="message">Nội dung thông báo</label>
+            <textarea id="message" name="message" maxlength="200" required rows="4" placeholder="Ví dụ: Nhóm SWD392 đã nhận thông báo."></textarea>
+            <p class="field-hint">Tối đa 200 ký tự cho bài thử kỹ thuật.</p>
+            <button id="submit-notice" class="button" type="submit" disabled>Gửi qua queue</button>
+            <p id="send-status" role="status" class="field-hint"></p>
+        </form>
+    </section>
+    <section class="panel" aria-labelledby="received-title">
+        <h2 id="received-title">Thông báo nhận tại tab này</h2>
+        <p id="empty-state" class="muted">Chưa nhận thông báo. Nội dung sẽ xuất hiện mà không cần refresh.</p>
+        <ol id="received-notices" class="notice-list" aria-live="polite"></ol>
+    </section>
+</div>
+<p class="technical-note">Chỉ hoạt động ở môi trường Development trên loopback. Queue nằm trong bộ nhớ; thông báo không được lưu hoặc bảo đảm khôi phục sau khi dừng ứng dụng.</p>
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js" asp-append-version="true"></script>
+    <script src="~/js/development-notices.js" asp-append-version="true"></script>
+}

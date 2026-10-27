@@ -1,0 +1,12 @@
+@model ErrorViewModel
+@{ ViewData["Title"] = "Không thể xử lý yêu cầu"; }
+<section class="hero">
+    <p class="eyebrow">BOOKSALES</p>
+    <h1>Không thể xử lý yêu cầu.</h1>
+    <p>Vui lòng thử lại. Nếu lỗi tiếp diễn, cung cấp mã yêu cầu cho người phụ trách.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p>Mã yêu cầu: <code>@Model.RequestId</code></p>
+    }
+    <a class="button" asp-controller="Home" asp-action="Index">Về tổng quan</a>
+</section>

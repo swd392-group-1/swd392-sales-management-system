@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Tổng quan";
+    var modules = new[]
+    {
+        ("01", "Danh mục và giá", "Thông tin sách, giá hiện tại và khuyến mãi.", "UC03 · UC10 · UC11"),
+        ("02", "Mua hàng và tồn kho", "Đơn mua, nhận hàng, Count, Adjustment và Audit.", "UC04–09 · UC13–14"),
+        ("03", "Bán hàng và trả sách", "Giao dịch tại quầy, QR và trả sách theo dòng bán.", "UC01 · UC02 · UC21"),
+        ("04", "Truy cập và audit", "Tài khoản, quyền nhân viên, log và cảnh báo.", "UC12 · UC16–20"),
+        ("05", "Báo cáo", "Xem và xuất báo cáo quản trị cửa hàng.", "UC15")
+    };
+}
+<section class="hero">
+    <p class="eyebrow">NHÀ SÁCH NỘI BỘ · KHUNG PHÁT TRIỂN</p>
+    <h1>Nền tảng chung cho<br />các luồng của nhóm.</h1>
+    <p class="intro">Project đã có cấu trúc MVC, ranh giới xử lý ứng dụng và hạ tầng thông báo nền. Các chức năng nghiệp vụ bên dưới đang chờ triển khai theo đặc tả được thống nhất.</p>
+    <a class="button" href="/development">Kiểm tra async và realtime <span aria-hidden="true">→</span></a>
+</section>
+<section aria-labelledby="modules-title">
+    <div class="section-heading"><h2 id="modules-title">Phạm vi các module</h2><span class="muted">Chưa có dữ liệu nghiệp vụ</span></div>
+    <div class="module-grid">
+    @foreach (var (number, title, description, cases) in modules)
+    {
+        <article class="module-card">
+            <span class="module-number">@number</span>
+            <h3>@title</h3><p>@description</p>
+            <div class="card-meta"><span>@cases</span><span>Chưa triển khai</span></div>
+        </article>
+    }
+    </div>
+</section>
