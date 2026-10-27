@@ -1,0 +1,28 @@
+@inject IWebHostEnvironment Environment
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · BookSales</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <a class="skip-link" href="#main">Đến nội dung chính</a>
+    <header class="site-header">
+        <nav class="shell navigation" aria-label="Điều hướng chính">
+            <a class="brand" asp-controller="Home" asp-action="Index"><span class="brand-mark">B</span> BookSales <span class="course">SWD392</span></a>
+            <div class="nav-links">
+                <a asp-controller="Home" asp-action="Index">Tổng quan</a>
+                @if (Environment.IsDevelopment())
+                {
+                    <a href="/development">Kiểm tra kết nối</a>
+                }
+            </div>
+        </nav>
+    </header>
+    <main id="main" class="shell main-content">@RenderBody()</main>
+    <footer class="shell site-footer">Book Sales Management System · Group 1 · Nền tảng phát triển .NET 8</footer>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
