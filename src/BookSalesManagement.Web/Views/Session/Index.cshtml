@@ -1,0 +1,76 @@
+@model SessionViewModel
+@{
+    ViewData["Title"] = "Chọn tài khoản demo";
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">Demo session</div>
+        <h1 class="page-title">Chọn tài khoản demo</h1>
+        <p class="page-lead">
+            Module kiểm tra quyền ở phía server theo tài khoản đang đăng nhập. Màn hình này chỉ là placeholder
+            cho module Login/permission của Hùng; không dùng cho môi trường thật.
+        </p>
+    </div>
+    <form method="post" asp-action="Reset">
+        <button type="submit" class="btn btn-outline-secondary px-3">Về tài khoản mặc định</button>
+    </form>
+</div>
+
+<div class="row g-3">
+    @foreach (var account in Model.Accounts)
+    {
+        var roleLabel = account.RoleCode switch
+        {
+            "INVENTORY_STAFF" => "Nhân viên kho",
+            "STORE_MANAGER" => "Quản lý cửa hàng",
+            "SYSTEM_ADMIN" => "Quản trị hệ thống",
+            "SALES_STAFF" => "Nhân viên bán hàng",
+            _ => account.RoleCode
+        };
+        var isCurrent = string.Equals(account.AccountId, Model.CurrentAccountId, StringComparison.Ordinal);
+        <div class="col-md-6 col-xl-4">
+            <div class="account-card @(isCurrent ? "current" : "")">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <div class="fw-bold mono">@account.AccountId</div>
+                        <div class="account-role">@account.EmployeeName</div>
+                    </div>
+                    @if (isCurrent)
+                    {
+                        <span class="badge-soft badge-done">Đang dùng</span>
+                    }
+                    else if (account.IsActive)
+                    {
+                        <span class="badge-soft badge-muted">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge-soft badge-warn">Bị khóa</span>
+                    }
+                </div>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge-soft badge-role">@roleLabel</span>
+                    <span class="badge-soft badge-muted mono">@account.Username</span>
+                </div>
+                <div class="small-muted mb-3 mono">@account.EmployeeId</div>
+                @if (isCurrent)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-secondary w-100" disabled>Tài khoản hiện tại</button>
+                }
+                else
+                {
+                    <form method="post" asp-action="Select">
+                        <input type="hidden" name="accountId" value="@account.AccountId" />
+                        <button type="submit" class="btn btn-sm btn-primary w-100">Dùng tài khoản này</button>
+                    </form>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="section-note mt-4">
+    Quyền được kiểm tra lại ở mọi request: tài khoản bị khóa hoặc thiếu permission sẽ không truy cập được
+    màn hình tương ứng, kể cả khi gõ trực tiếp URL.
+</div>

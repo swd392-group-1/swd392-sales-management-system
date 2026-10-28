@@ -1,0 +1,95 @@
+classDiagram
+    direction TB
+
+    class InventoryCountService {
+        <<application service>>
+        -IInventoryCountStore counts
+        -IStockStore stock
+        -IInventoryAdjustmentStore adjustments
+        -IInventoryMovementStore movements
+        -IUnitOfWork unitOfWork
+        +CreateAsync(lines) string
+        +AddObservationAsync(countId, bookId, countedQuantity)
+        +FinalizeAsync(countId, selections) FinalizeCountResult
+    }
+
+    class InventoryAuditService {
+        <<application service>>
+        -IInventoryAuditStore audits
+        -IStockStore stock
+        -IUnitOfWork unitOfWork
+        +CreateAsync(lines) string
+        +ApproveAsync(auditId)
+    }
+
+    class IInventoryCountStore {
+        <<interface>>
+        +FindAsync(countId)
+        +AddAsync(count)
+    }
+
+    class IStockStore {
+        <<interface>>
+        +EnsureStockRowsAsync(bookIds)
+        +GetQuantitiesAsync(bookIds)
+        +TrySetQuantityAsync(bookId, expected, newQty)
+    }
+
+    class IInventoryAdjustmentStore {
+        <<interface>>
+        +AddAsync(adjustment)
+        +LinkCountAsync(countId, adjustmentId)
+    }
+
+    class IInventoryMovementStore {
+        <<interface>>
+        +AddRangeAsync(movements)
+    }
+
+    class IInventoryAuditStore {
+        <<interface>>
+        +FindAsync(auditId)
+        +AddAsync(audit)
+    }
+
+    class IUnitOfWork {
+        <<interface>>
+        +ExecuteAsync(operation)
+        +BeginTransactionAsync(isolation)
+        +SaveChangesAsync()
+    }
+
+    class InventoryCount {
+        <<domain>>
+    }
+
+    class InventoryAdjustment {
+        <<domain>>
+    }
+
+    class InventoryMovement {
+        <<domain>>
+    }
+
+    class InventoryAudit {
+        <<domain>>
+    }
+
+    InventoryCountService ..> InventoryCount : điều phối
+    InventoryCountService ..> InventoryAdjustment : tạo khi có lệch
+    InventoryCountService ..> InventoryMovement : ghi bút toán
+    InventoryCountService ..> IInventoryCountStore
+    InventoryCountService ..> IStockStore
+    InventoryCountService ..> IInventoryAdjustmentStore
+    InventoryCountService ..> IInventoryMovementStore
+    InventoryCountService ..> IUnitOfWork
+
+    InventoryAuditService ..> InventoryAudit : duyệt
+    InventoryAuditService ..> IInventoryAuditStore
+    InventoryAuditService ..> IStockStore : chỉ đọc khi xem chi tiết
+    InventoryAuditService ..> IUnitOfWork
+
+    note for IStockStore "Infrastructure: EfStockStore\nCAS = UPDATE BookStock\nSET current_quantity = @new\nWHERE book_id = @id AND current_quantity = @expected"
+    note for IUnitOfWork "Infrastructure: EfUnitOfWork\nSerializable transaction +\nCreateExecutionStrategy() cho retry"
+    note for InventoryCountService "FinalizeAsync:\n1. count.Finalize(...)\n2. InventoryAdjustment.CreateForCount(lines lệch)\n3. CAS từng dòng vào BookStock\n4. Movement từ adjustment.Books"
+    note for InventoryAuditService "ApproveAsync KHÔNG gọi\nIStockStore / Adjustment / Movement."

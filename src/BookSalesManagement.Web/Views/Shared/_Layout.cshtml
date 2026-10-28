@@ -1,0 +1,106 @@
+@inject BookSalesManagement.Application.Abstractions.ICurrentUser CurrentUser
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var roleLabel = CurrentUser.RoleCode switch
+    {
+        "INVENTORY_STAFF" => "Nhân viên kho",
+        "STORE_MANAGER" => "Quản lý cửa hàng",
+        "SYSTEM_ADMIN" => "Quản trị hệ thống",
+        "SALES_STAFF" => "Nhân viên bán hàng",
+        _ => "Chưa xác định"
+    };
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SWD392 BookSales</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark">BS</span>
+                    <span>
+                        <span class="brand-title">BookSales</span>
+                        <span class="brand-subtitle">Module mua hàng &amp; tồn kho</span>
+                    </span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Mở menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto ms-lg-4 gap-lg-1">
+                        <li class="nav-item">
+                            <a class="nav-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">Tổng quan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(controller == "Counts" ? "active" : "")" asp-controller="Counts" asp-action="Index">Kiểm kê</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(controller == "Adjustments" ? "active" : "")" asp-controller="Adjustments" asp-action="Index">Điều chỉnh</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(controller == "Audits" ? "active" : "")" asp-controller="Audits" asp-action="Index">Audit</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(controller == "Purchase" ? "active" : "")" asp-controller="Purchase" asp-action="Index">Mua hàng</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-3 user-area">
+                        <div class="text-end">
+                            <div class="user-name">@CurrentUser.DisplayName</div>
+                            <div class="user-role">@roleLabel</div>
+                        </div>
+                        <a class="btn btn-sm btn-outline-light" asp-controller="Session" asp-action="Index">Đổi tài khoản</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="demo-strip">
+            <div class="container-fluid px-4 d-flex flex-wrap justify-content-between gap-2">
+                <span>
+                    <strong>Demo session:</strong> tài khoản được chọn bằng cookie để minh họa kiểm tra quyền phía server.
+                    Hùng sẽ thay bằng Login chung của nhóm.
+                </span>
+                <a asp-controller="Session" asp-action="Index">Chọn tài khoản demo</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-fluid px-4 py-4 flex-grow-1">
+        @if (TempData["Success"] is string successMessage)
+        {
+            <div class="alert alert-success alert-dismissible fade show app-alert" role="alert">
+                @successMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+            </div>
+        }
+        @if (TempData["Error"] is string errorMessage)
+        {
+            <div class="alert alert-danger alert-dismissible fade show app-alert" role="alert">
+                @errorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="app-footer">
+        <div class="container-fluid px-4 d-flex flex-wrap justify-content-between gap-2">
+            <span>SWD392 · Hệ thống quản lý bán sách nội bộ</span>
+            <span>Kiệt · Mua hàng và tồn kho · UC07 Record Inventory Count</span>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,71 @@
+sequenceDiagram
+    autonumber
+    actor Staff as Inventory Staff
+    participant C as CountsController
+    participant S as InventoryCountService
+    participant U as IUnitOfWork
+    participant CS as IInventoryCountStore
+    participant ST as IStockStore
+    participant AS as IInventoryAdjustmentStore
+    participant MS as IInventoryMovementStore
+    participant Count as InventoryCount
+    participant Adj as InventoryAdjustment
+
+    Note over Staff,Count: Giai đoạn 1 - Tạo phiếu và ghi nhận kết quả đếm
+    Staff->>C: POST /Counts/Create (các Book được chọn + số đếm)
+    C->>S: CreateAsync(lines)
+    S->>S: ValidateLines + kiểm tra Book tồn tại
+    S->>Count: new InventoryCount(...) + AddObservation(...)
+    S->>CS: AddAsync(count)
+    S->>U: SaveChangesAsync()
+    S-->>C: countId
+    C-->>Staff: Redirect /Counts/Details/{id}
+
+    Staff->>C: POST /Counts/AddObservation (đếm lại một sách)
+    C->>S: AddObservationAsync(countId, bookId, countedQuantity)
+    S->>CS: FindAsync(countId)
+    CS-->>S: count (chưa chốt)
+    S->>Count: AddObservation(...)
+    S->>U: SaveChangesAsync()
+
+    Note over Staff,Count: Giai đoạn 2 - Chốt phiếu trong một transaction
+    Staff->>C: POST /Counts/Finalize (Selections)
+    C->>S: FinalizeAsync(countId, selections)
+    S->>U: ExecuteAsync(FinalizeCoreAsync)
+    U->>S: FinalizeCoreAsync()
+    S->>U: BeginTransactionAsync(Serializable)
+    S->>CS: FindAsync(countId)
+    CS-->>S: count kèm Observations
+
+    alt count.IsFinalized == true
+        S-->>C: DomainException
+        C-->>Staff: "Phiếu đã chốt, không ghi chênh lệch lần hai"
+    else Phiếu đang mở
+        S->>ST: EnsureStockRowsAsync(bookIds)
+        S->>ST: GetQuantitiesAsync(bookIds)
+        ST-->>S: referenceQuantities
+        S->>Count: Finalize(selections, referenceQuantities)
+        Count-->>S: CountFinalization(lines, Difference)
+        S->>Adj: CreateForCount(...) - chỉ dòng Difference != 0
+
+        loop mỗi FinalizedCountLine
+            S->>ST: TrySetQuantityAsync(bookId, expected, counted)
+            ST-->>S: true / false (compare-and-swap)
+            alt CAS false
+                S-->>C: ConflictException
+                C-->>Staff: "Tồn đã đổi, tải lại và kiểm kê lại"
+            end
+        end
+
+        S->>U: SaveChangesAsync() - selections + BookStock
+        opt Có chênh lệch
+            S->>AS: AddAsync(adjustment)
+            S->>U: SaveChangesAsync()
+            S->>AS: LinkCountAsync(countId, adjustmentId)
+            S->>MS: AddRangeAsync(movements)
+            S->>U: SaveChangesAsync() - posting_key unique
+        end
+        S->>U: CommitAsync()
+        S-->>C: FinalizeCountResult
+        C-->>Staff: "Đã chốt phiếu + adjustment"
+    end

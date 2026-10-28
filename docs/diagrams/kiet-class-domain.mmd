@@ -1,0 +1,117 @@
+classDiagram
+    direction TB
+
+    class Book {
+        <<catalog entity>>
+        +string Id
+        +string Title
+    }
+
+    class BookStock {
+        <<stock source>>
+        +string BookId
+        +decimal CurrentQuantity
+    }
+
+    class InventoryCount {
+        <<aggregate root>>
+        +string Id
+        +DateTime CountedAtUtc
+        +string RecordedByEmployeeId
+        +bool IsFinalized
+        +List~InventoryCountObservation~ Observations
+        +List~InventoryCountSelection~ Selections
+        +AddObservation(bookId, countedQuantity, observedAtUtc)
+        +Finalize(selectionIds, referenceQty) CountFinalization
+    }
+
+    class InventoryCountObservation {
+        <<entity - lịch sử đếm>>
+        +long Id
+        +string BookId
+        +decimal CountedQuantity
+        +DateTime ObservedAtUtc
+    }
+
+    class InventoryCountSelection {
+        <<entity - kết quả chốt>>
+        +string BookId
+        +long SelectedObservationId
+        +decimal RecordedQuantity
+    }
+
+    class CountFinalization {
+        <<value object>>
+        +IReadOnlyList~FinalizedCountLine~ Lines
+        +bool HasDifference
+    }
+
+    class FinalizedCountLine {
+        <<value object>>
+        +string BookId
+        +long ObservationId
+        +decimal ReferenceQuantity
+        +decimal CountedQuantity
+        +decimal Difference
+    }
+
+    class InventoryAdjustment {
+        <<aggregate root>>
+        +string Id
+        +DateOnly AdjustmentDate
+        +string Reason
+        +CreateForCount(countId, adjustmentId, at, lines) InventoryAdjustment
+    }
+
+    class AdjustmentBook {
+        <<entity - chỉ dòng lệch>>
+        +string BookId
+        +decimal QuantityChange
+    }
+
+    class CountAdjustment {
+        <<link 1-1 count-adjustment>>
+        +string CountId
+        +string AdjustmentId
+    }
+
+    class InventoryMovement {
+        <<ledger entry>>
+        +long Id
+        +string PostingKey
+        +string BookId
+        +decimal QuantityDelta
+        +CreateForAdjustment(adjustmentId, book, at) InventoryMovement
+    }
+
+    class InventoryAudit {
+        <<aggregate root - ĐỘC LẬP>>
+        +string Id
+        +string Status
+        +bool IsApproved
+        +AddLine(bookId, countedQuantity)
+        +Approve()
+    }
+
+    class InventoryAuditLine {
+        <<entity>>
+        +long Id
+        +string BookId
+        +decimal CountedQuantity
+    }
+
+    InventoryCount "1" *-- "0..*" InventoryCountObservation : lưu lịch sử đếm lại
+    InventoryCount "1" *-- "0..*" InventoryCountSelection : chốt phiếu
+    InventoryCountSelection "0..*" ..> "1" InventoryCountObservation : selected_observation_id
+    InventoryCount ..> CountFinalization
+    CountFinalization "1" *-- "1..*" FinalizedCountLine
+    InventoryAdjustment "1" *-- "0..*" AdjustmentBook
+    CountAdjustment "1" -- "1" InventoryCount
+    CountAdjustment "1" -- "1" InventoryAdjustment
+    InventoryAudit "1" *-- "1..*" InventoryAuditLine
+    InventoryCount "0..*" --> "1" Book : BookId
+    InventoryAuditLine "0..*" --> "1" Book : BookId
+    InventoryMovement "0..*" --> "1" BookStock : cùng BookId
+
+    note for InventoryAudit "Approve() chỉ đổi Status = APPROVED.\nKhông có quan hệ tới InventoryAdjustment,\nInventoryMovement hay BookStock."
+    note for InventoryCountSelection "recorded_quantity = tồn ghi sổ\ntại thời điểm chốt (snapshot)."

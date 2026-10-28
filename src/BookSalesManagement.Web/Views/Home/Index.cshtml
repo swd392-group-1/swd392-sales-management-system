@@ -1,0 +1,285 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Tổng quan tồn kho";
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">UC07 · Record Inventory Count</div>
+        <h1 class="page-title">Tồn kho và kiểm kê</h1>
+        <p class="page-lead">
+            Tồn hiện tại được đối chiếu với sổ movement. Phiếu kiểm kê độc lập với audit:
+            chốt phiếu sẽ cập nhật tồn, còn duyệt audit chỉ xác nhận kết quả.
+        </p>
+    </div>
+    @if (Model.CanCount)
+    {
+        <a class="btn btn-primary px-3" asp-controller="Counts" asp-action="Create">Tạo phiếu kiểm kê</a>
+    }
+    else
+    {
+        <span class="badge-soft badge-muted">Tài khoản hiện tại không có quyền UC07</span>
+    }
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Đầu sách</div>
+            <div class="metric-value">@Model.Stock.Count</div>
+            <div class="metric-note">Sách đang có dòng tồn</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Tổng tồn</div>
+            <div class="metric-value">@Model.TotalUnits.ToString("N0")</div>
+            <div class="metric-note">Cộng current_quantity</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Sắp hết</div>
+            <div class="metric-value @(Model.LowStockCount > 0 ? "text-danger" : "")">@Model.LowStockCount</div>
+            <div class="metric-note">Sách có tồn &lt;= 2</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Lệch ledger</div>
+            <div class="metric-value @(Model.LedgerMismatchCount > 0 ? "text-danger" : "")">@Model.LedgerMismatchCount</div>
+            <div class="metric-note">BookStock khác tổng movement</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-7">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Tồn kho hiện tại</span>
+                <a class="small-muted" asp-controller="Adjustments" asp-action="Index">Xem adjustment</a>
+            </div>
+            <div class="table-wrap">
+                <table class="table table-app">
+                    <thead>
+                        <tr>
+                            <th>Sách</th>
+                            <th class="text-end">Tồn</th>
+                            <th class="text-end">Ledger</th>
+                            <th class="text-end">Lệch</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var row in Model.Stock)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@row.Title</div>
+                                <div class="mono text-secondary">@row.BookId</div>
+                            </td>
+                            <td class="text-end fw-bold">@row.CurrentQuantity.ToString("0.##")</td>
+                            <td class="text-end text-secondary">@row.LedgerQuantity.ToString("0.##")</td>
+                            <td class="text-end">
+                                @if (row.Difference == 0)
+                                {
+                                    <span class="diff-zero">0</span>
+                                }
+                                else
+                                {
+                                    <span class="@(row.Difference > 0 ? "diff-positive" : "diff-negative")">
+                                        @row.Difference.ToString("+0.##;-0.##;0")
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                @if (row.Difference != 0)
+                                {
+                                    <span class="badge-soft badge-warn">Lệch ledger</span>
+                                }
+                                else if (row.CurrentQuantity <= 2)
+                                {
+                                    <span class="badge-soft badge-open">Sắp hết</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-soft badge-done">Khớp</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="card h-100">
+            <div class="card-header">Movement gần đây</div>
+            <div class="table-wrap">
+                <table class="table table-app">
+                    <thead>
+                        <tr>
+                            <th>Thời điểm</th>
+                            <th>Sách</th>
+                            <th class="text-end">Delta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var movement in Model.Movements)
+                    {
+                        <tr>
+                            <td class="small-muted">@movement.OccurredAtUtc.ToLocalTime().ToString("dd/MM HH:mm")</td>
+                            <td>
+                                <div>@movement.Title</div>
+                                <div class="mono text-secondary" title="@movement.PostingKey">@movement.PostingKey</div>
+                            </td>
+                            <td class="text-end">
+                                <span class="@(movement.QuantityDelta > 0 ? "diff-positive" : "diff-negative")">
+                                    @movement.QuantityDelta.ToString("+0.##;-0.##;0")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.CanCount || Model.CanAudit)
+{
+    <div class="row g-4 mt-1">
+        @if (Model.CanCount)
+        {
+            <div class="col-xl-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Phiếu kiểm kê gần đây</span>
+                        <a class="small-muted" asp-controller="Counts" asp-action="Index">Tất cả</a>
+                    </div>
+                    @if (Model.Counts.Count == 0)
+                    {
+                        <div class="empty-state">Chưa có phiếu kiểm kê.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-app">
+                                <thead>
+                                    <tr>
+                                        <th>Phiếu</th>
+                                        <th>Sách</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var count in Model.Counts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Counts" asp-action="Details" asp-route-id="@count.Id" class="mono">@count.Id</a>
+                                            <div class="small-muted">@count.CountedAtUtc.ToLocalTime().ToString("dd/MM HH:mm")</div>
+                                        </td>
+                                        <td>@count.BookCount</td>
+                                        <td>
+                                            @if (!count.IsFinalized)
+                                            {
+                                                <span class="badge-soft badge-open">Đang đếm</span>
+                                            }
+                                            else if (count.AdjustmentId is null)
+                                            {
+                                                <span class="badge-soft badge-done">Đã chốt · không lệch</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge-soft badge-warn">Đã chốt · có adjustment</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (Model.CanAudit)
+        {
+            <div class="col-xl-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Audit gần đây</span>
+                        <a class="small-muted" asp-controller="Audits" asp-action="Index">Tất cả</a>
+                    </div>
+                    @if (Model.Audits.Count == 0)
+                    {
+                        <div class="empty-state">Chưa có đợt audit.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-app">
+                                <thead>
+                                    <tr>
+                                        <th>Đợt audit</th>
+                                        <th>Ngày</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var audit in Model.Audits)
+                                {
+                                    <tr>
+                                        <td><a asp-controller="Audits" asp-action="Details" asp-route-id="@audit.Id" class="mono">@audit.Id</a></td>
+                                        <td>@(audit.AuditDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                        <td>
+                                            @if (string.Equals(audit.Status, "APPROVED", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                <span class="badge-soft badge-done">Đã duyệt</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge-soft badge-open">Chờ duyệt</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="card mt-4">
+    <div class="card-header">Quy tắc nghiệp vụ đang được áp dụng</div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <ul class="rule-list">
+                    <li>Count độc lập với Audit: một phiếu count có thể có một hoặc nhiều sách và nhiều lần đếm lại.</li>
+                    <li>Chốt phiếu ghi <strong>InventoryCountSelection</strong>, cập nhật <strong>BookStock</strong> và chỉ tạo <strong>một InventoryAdjustment</strong> cho các sách lệch.</li>
+                    <li>Dòng khớp không đi vào adjustment và không tạo movement.</li>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+                <ul class="rule-list">
+                    <li>Mỗi <strong>posting_key</strong> của movement là duy nhất, kết hợp kiểm tra count đã chốt để không ghi chênh lệch hai lần.</li>
+                    <li>Duyệt audit chỉ đổi trạng thái; không cập nhật tồn và không tạo adjustment.</li>
+                    <li>Cập nhật tồn dùng compare-and-swap trên <span class="mono">current_quantity</span> để phát hiện thay đổi đồng thời.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="section-note mt-3">
+            Phần mua hàng (Provider, Purchase Order, Goods Receipt) được mô hình hóa và hiển thị read-only;
+            luồng code chính của module là UC07 Record Inventory Count.
+        </div>
+    </div>
+</div>

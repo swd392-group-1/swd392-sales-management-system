@@ -1,0 +1,159 @@
+@model PurchaseIndexViewModel
+@{
+    ViewData["Title"] = "Mua hàng";
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">UC04 – UC06 · Mua hàng</div>
+        <h1 class="page-title">Đơn mua và phiếu nhận</h1>
+        <p class="page-lead">
+            Dữ liệu Provider, Purchase Order và Goods Receipt được mô hình hóa trong module và hiển thị read-only.
+            Luồng code chính của phần Kiệt là UC07 Record Inventory Count.
+        </p>
+    </div>
+    <span class="badge-soft badge-muted align-self-end">Read-only</span>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Đơn mua hàng</span>
+        <span class="small-muted">@Model.Orders.Count đơn</span>
+    </div>
+    @if (Model.Orders.Count == 0)
+    {
+        <div class="empty-state">Chưa có đơn mua hàng.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-app">
+                <thead>
+                    <tr>
+                        <th>Đơn</th>
+                        <th>Ngày</th>
+                        <th>Nhà cung cấp</th>
+                        <th>Trạng thái</th>
+                        <th>Sách</th>
+                        <th class="text-end">Đặt</th>
+                        <th class="text-end">Đã nhận</th>
+                        <th class="text-end">Còn lại</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    var first = true;
+                    foreach (var line in order.Lines)
+                    {
+                        <tr>
+                            @if (first)
+                            {
+                                <td class="mono" rowspan="@order.Lines.Count">@order.Id</td>
+                                <td rowspan="@order.Lines.Count">@(order.OrderDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                <td rowspan="@order.Lines.Count">
+                                    @foreach (var provider in order.Providers)
+                                    {
+                                        <span class="badge-soft badge-role d-block mb-1">@provider</span>
+                                    }
+                                </td>
+                                <td rowspan="@order.Lines.Count">
+                                    <span class="badge-soft badge-muted">@order.Status</span>
+                                </td>
+                            }
+                            <td>
+                                <div>@line.BookTitle</div>
+                                <div class="mono text-secondary">@line.BookId</div>
+                            </td>
+                            <td class="text-end">@line.OrderedQuantity.ToString("0.##")</td>
+                            <td class="text-end">@line.ReceivedQuantity.ToString("0.##")</td>
+                            <td class="text-end">
+                                @{
+                                    var remaining = line.OrderedQuantity - line.ReceivedQuantity;
+                                }
+                                <span class="@(remaining > 0 ? "diff-negative" : "diff-zero")">@remaining.ToString("0.##")</span>
+                            </td>
+                        </tr>
+                        first = false;
+                    }
+                    if (order.Lines.Count == 0)
+                    {
+                        <tr>
+                            <td class="mono">@order.Id</td>
+                            <td>@(order.OrderDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                            <td>—</td>
+                            <td><span class="badge-soft badge-muted">@order.Status</span></td>
+                            <td colspan="4" class="small-muted">Đơn chưa có dòng sách.</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Phiếu nhận hàng</span>
+        <span class="small-muted">@Model.Receipts.Count phiếu</span>
+    </div>
+    @if (Model.Receipts.Count == 0)
+    {
+        <div class="empty-state">Chưa có phiếu nhận hàng.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-app">
+                <thead>
+                    <tr>
+                        <th>Phiếu nhận</th>
+                        <th>Ngày nhận</th>
+                        <th>Đơn mua</th>
+                        <th>Sách</th>
+                        <th class="text-end">Số lượng nhận</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var receipt in Model.Receipts)
+                {
+                    if (receipt.Lines.Count == 0)
+                    {
+                        <tr>
+                            <td class="mono">@receipt.Id</td>
+                            <td>@(receipt.ReceiptDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                            <td colspan="3" class="small-muted">Chưa có dòng hàng.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        for (var i = 0; i < receipt.Lines.Count; i++)
+                        {
+                            var line = receipt.Lines[i];
+                            <tr>
+                                @if (i == 0)
+                                {
+                                    <td class="mono" rowspan="@receipt.Lines.Count">@receipt.Id</td>
+                                    <td rowspan="@receipt.Lines.Count">@(receipt.ReceiptDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                }
+                                <td class="mono">@line.PurchaseOrderId</td>
+                                <td>
+                                    <div>@line.BookTitle</div>
+                                    <div class="mono text-secondary">@line.BookId</div>
+                                </td>
+                                <td class="text-end">@line.ReceivedQuantity.ToString("0.##")</td>
+                            </tr>
+                        }
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="section-note mt-3">
+    Các màn hình mua hàng chỉ đọc nhằm chứng minh mô hình dữ liệu UC04–UC06 đã được ánh xạ đầy đủ;
+    không nằm trong phạm vi code chính của phần được phân công.
+</div>

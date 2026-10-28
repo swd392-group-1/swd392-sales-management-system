@@ -1,0 +1,115 @@
+@model BookSelectionForm
+@{
+    ViewData["Title"] = "Tạo đợt audit";
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">UC09 · Ghi nhận kết quả audit</div>
+        <h1 class="page-title">Tạo đợt audit tồn kho</h1>
+        <p class="page-lead">
+            Chọn sách và nhập số lượng kiểm tra thực tế. Kết quả audit được lưu làm bằng chứng đối chiếu;
+            việc duyệt sau đó chỉ xác nhận kết quả, không làm thay đổi tồn kho.
+        </p>
+    </div>
+    <a class="btn btn-outline-secondary px-3" asp-action="Index">Quay lại danh sách</a>
+</div>
+
+<form method="post" asp-action="Create" id="auditCreateForm">
+    <div asp-validation-summary="All" class="alert alert-danger app-alert" role="alert"></div>
+
+    <div class="card">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span>Sách cần audit</span>
+            <div class="d-flex align-items-center gap-3">
+                <span class="small-muted">Đã chọn: <strong id="selectedCount">0</strong> sách</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAll">Chọn tất cả</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="clearAll">Bỏ chọn</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-app">
+                <thead>
+                    <tr>
+                        <th style="width: 3rem;"></th>
+                        <th>Sách</th>
+                        <th class="text-end">Tồn hiện tại</th>
+                        <th class="text-end">Số lượng kiểm tra</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (var i = 0; i < Model.Books.Count; i++)
+                {
+                    var book = Model.Books[i];
+                    <tr>
+                        <td>
+                            <input type="hidden" asp-for="Books[i].BookId" />
+                            <input type="checkbox" asp-for="Books[i].Selected" class="form-check-input row-select" />
+                        </td>
+                        <td>
+                            <label class="w-100 mb-0" for="Books_@(i)__Selected">
+                                <span class="fw-semibold">@book.Title</span>
+                                <span class="mono text-secondary d-block">@book.BookId</span>
+                            </label>
+                        </td>
+                        <td class="text-end book-row-current">@book.CurrentQuantity.ToString("0.##")</td>
+                        <td class="text-end">
+                            <input name="Books[@i].CountedQuantity" type="number" step="1" min="0"
+                                   value="@book.CountedQuantity?.ToString("0.##")"
+                                   class="form-control form-control-sm quantity-input d-inline-block text-end row-quantity" />
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
+        <span class="small-muted">
+            Lưu ý: audit không tạo movement và không điều chỉnh <span class="mono">BookStock</span>.
+        </span>
+        <button type="submit" class="btn btn-primary px-4">Lưu kết quả audit</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        (function () {
+            const form = document.getElementById('auditCreateForm');
+            const selects = Array.from(form.querySelectorAll('.row-select'));
+            const counter = document.getElementById('selectedCount');
+
+            function syncRow(checkbox) {
+                const row = checkbox.closest('tr');
+                const quantity = row.querySelector('.row-quantity');
+                quantity.disabled = !checkbox.checked;
+                row.classList.toggle('table-active', checkbox.checked);
+            }
+
+            function syncAll() {
+                selects.forEach(syncRow);
+                counter.textContent = selects.filter(item => item.checked).length;
+            }
+
+            selects.forEach(checkbox => checkbox.addEventListener('change', syncAll));
+            document.getElementById('selectAll').addEventListener('click', () => {
+                selects.forEach(checkbox => { checkbox.checked = true; });
+                syncAll();
+            });
+            document.getElementById('clearAll').addEventListener('click', () => {
+                selects.forEach(checkbox => { checkbox.checked = false; });
+                syncAll();
+            });
+
+            form.addEventListener('submit', event => {
+                if (selects.filter(item => item.checked).length === 0) {
+                    event.preventDefault();
+                    alert('Chọn ít nhất một sách để audit.');
+                }
+            });
+
+            syncAll();
+        })();
+    </script>
+}

@@ -1,0 +1,85 @@
+@model IReadOnlyList<AdjustmentSummary>
+@{
+    ViewData["Title"] = "Điều chỉnh tồn kho";
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">UC07 · Kết quả chênh lệch kiểm kê</div>
+        <h1 class="page-title">Adjustment tồn kho</h1>
+        <p class="page-lead">
+            Mỗi phiếu kiểm kê có chênh lệch tạo tối đa một InventoryAdjustment. Chỉ các sách lệch mới xuất hiện
+            trong adjustment và sinh movement tương ứng.
+        </p>
+    </div>
+    <a class="btn btn-outline-secondary px-3" asp-controller="Counts" asp-action="Index">Danh sách phiếu kiểm kê</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="card">
+        <div class="empty-state">Chưa có adjustment nào được tạo từ kiểm kê.</div>
+    </div>
+}
+else
+{
+    <div class="section-note mb-3">
+        Đang hiển thị @Model.Count adjustment. Adjustment là bản ghi bất biến: sửa sai bằng phiếu kiểm kê mới,
+        không sửa lại adjustment cũ.
+    </div>
+
+    @foreach (var adjustment in Model)
+    {
+        <div class="card mb-3 adjustment-card" id="@adjustment.Id">
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <span class="fw-bold mono">@adjustment.Id</span>
+                    @if (adjustment.CountId is not null)
+                    {
+                        <span class="small-muted ms-2">từ phiếu</span>
+                        <a class="mono" asp-controller="Counts" asp-action="Details" asp-route-id="@adjustment.CountId">@adjustment.CountId</a>
+                    }
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge-soft badge-muted">@(adjustment.AdjustmentDate?.ToString("dd/MM/yyyy") ?? "—")</span>
+                    <span class="badge-soft badge-warn">@adjustment.Lines.Count sách lệch</span>
+                </div>
+            </div>
+            <div class="card-body pb-2">
+                <div class="small-muted mb-2">Lý do: @(string.IsNullOrWhiteSpace(adjustment.Reason) ? "—" : adjustment.Reason)</div>
+                <div class="table-responsive">
+                    <table class="table table-app">
+                        <thead>
+                            <tr>
+                                <th>Sách</th>
+                                <th class="text-end">Thay đổi tồn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var line in adjustment.Lines)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">@line.Title</div>
+                                    <div class="mono text-secondary">@line.BookId</div>
+                                </td>
+                                <td class="text-end">
+                                    <span class="@(line.QuantityChange > 0 ? "diff-positive" : "diff-negative")">
+                                        @line.QuantityChange.ToString("+0.##;-0.##;0")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body border-top d-flex justify-content-between align-items-center">
+                <span class="small-muted">Tổng chênh lệch</span>
+                <span class="fw-bold @(adjustment.Lines.Sum(line => line.QuantityChange) >= 0 ? "diff-positive" : "diff-negative")">
+                    @adjustment.Lines.Sum(line => line.QuantityChange).ToString("+0.##;-0.##;0")
+                </span>
+            </div>
+        </div>
+    }
+}

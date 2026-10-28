@@ -1,0 +1,408 @@
+@using System.Globalization
+@model CountDetailsViewModel
+@{
+    ViewData["Title"] = $"Phiếu kiểm kê {Model.Count.Id}";
+    var count = Model.Count;
+    var invariant = CultureInfo.InvariantCulture;
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">UC07 · Record Inventory Count</div>
+        <h1 class="page-title mono">@count.Id</h1>
+        <p class="page-lead">
+            Phiếu ghi nhận kết quả đếm của @count.Lines.Count sách. Mỗi lần đếm lại được lưu thành một observation;
+            khi chốt phiếu chỉ kết quả được chọn mới được dùng để tính chênh lệch.
+        </p>
+    </div>
+    <div class="d-flex flex-column align-items-end gap-2">
+        @if (!count.IsFinalized)
+        {
+            <span class="badge-soft badge-open">Đang đếm</span>
+        }
+        else if (count.AdjustmentId is null)
+        {
+            <span class="badge-soft badge-done">Đã chốt · không lệch</span>
+        }
+        else
+        {
+            <span class="badge-soft badge-warn">Đã chốt · có adjustment</span>
+        }
+        <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Danh sách phiếu</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Thời điểm tạo</div>
+            <div class="metric-value fs-5">@count.CountedAtUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+            <div class="metric-note">Ghi nhận theo giờ máy chủ (UTC+7)</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Người đếm</div>
+            <div class="metric-value fs-5">@count.EmployeeName</div>
+            <div class="metric-note mono">@count.EmployeeId</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Sách / lần đếm</div>
+            <div class="metric-value">@count.Lines.Count<span class="fs-6 text-secondary"> / @count.Lines.Sum(line => line.Observations.Count)</span></div>
+            <div class="metric-note">Số dòng sách và observation đã ghi</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Adjustment</div>
+            @if (count.AdjustmentId is null)
+            {
+                <div class="metric-value fs-5">—</div>
+                <div class="metric-note">@(count.IsFinalized ? "Không có dòng lệch" : "Chưa chốt phiếu")</div>
+            }
+            else
+            {
+                <div class="metric-value fs-6 mono">
+                    <a asp-controller="Adjustments" asp-action="Index" asp-fragment="@count.AdjustmentId">@count.AdjustmentId</a>
+                </div>
+                <div class="metric-note">Adjustment duy nhất của phiếu</div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (!count.IsFinalized)
+{
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <span>Chọn kết quả đếm để chốt phiếu</span>
+                    <span class="small-muted">Bước 2/2</span>
+                </div>
+                <div class="card-body">
+                    <div class="section-note mb-3">
+                        Chọn <strong>một</strong> kết quả đếm cho từng sách. Sau khi chốt, tồn kho được cập nhật theo
+                        số lượng đếm và chỉ các dòng lệch mới đi vào <strong>một</strong> InventoryAdjustment.
+                    </div>
+
+                    <form method="post" asp-action="Finalize" id="finalizeForm" data-total-books="@count.Lines.Count">
+                        <input type="hidden" name="CountId" value="@count.Id" />
+
+                        @foreach (var line in count.Lines)
+                        {
+                            <div class="observation-card">
+                                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                                    <div>
+                                        <h6 class="mb-0">@line.BookTitle</h6>
+                                        <span class="mono text-secondary">@line.BookId</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="small-muted d-block">Tồn ghi sổ hiện tại</span>
+                                        <span class="fw-bold fs-5">@line.CurrentQuantity.ToString("0.##")</span>
+                                    </div>
+                                </div>
+
+                                @if (line.Observations.Count == 0)
+                                {
+                                    <div class="alert alert-warning app-alert py-2 px-3 mb-0 small">
+                                        Sách này chưa có kết quả đếm. Dùng ô “Ghi thêm kết quả đếm” bên phải trước khi chốt.
+                                    </div>
+                                }
+                                else
+                                {
+                                    foreach (var observation in line.Observations)
+                                    {
+                                        <div class="form-check d-flex align-items-center gap-2 py-1">
+                                            <input class="form-check-input finalize-radio mt-0" type="radio"
+                                                   name="Selections[@line.BookId]" value="@observation.Id"
+                                                   id="obs-@observation.Id"
+                                                   data-counted="@observation.CountedQuantity.ToString(invariant)"
+                                                   data-recorded="@line.CurrentQuantity.ToString(invariant)"
+                                                   checked="@(line.SelectedObservationId == observation.Id ? "checked" : null)" />
+                                            <label class="form-check-label flex-grow-1" for="obs-@observation.Id">
+                                                Lần đếm <span class="mono">#@observation.Id</span>
+                                                <span class="small-muted">· @observation.ObservedAtUtc.ToLocalTime().ToString("dd/MM HH:mm")</span>
+                                                <span class="fw-bold ms-2">@observation.CountedQuantity.ToString("0.##")</span>
+                                            </label>
+                                            <span class="diff-preview diff-zero">—</span>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-top pt-3">
+                            <div>
+                                <div class="fw-semibold" id="finalizeHint">Đang kiểm tra lựa chọn…</div>
+                                <div class="small-muted" id="finalizeStats"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4" id="finalizeSubmit">Chốt phiếu kiểm kê</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (count.Lines.Any(line => line.Observations.Count > 1))
+            {
+                <div class="section-note mt-3">
+                    Một số sách có nhiều lần đếm. Kết quả không được chọn vẫn nằm trong lịch sử nhưng không ảnh hưởng tồn kho.
+                </div>
+            }
+        </div>
+
+        <div class="col-xl-4">
+            <div class="card">
+                <div class="card-header">Ghi thêm kết quả đếm</div>
+                <div class="card-body">
+                    <p class="small-muted">
+                        Dùng khi nhân viên kho đếm lại một sách. Mỗi lần ghi là một dòng lịch sử mới, không sửa kết quả cũ.
+                    </p>
+                    @if (Model.CountBooks.Count == 0)
+                    {
+                        <div class="alert alert-warning app-alert py-2 px-3 mb-0 small">Phiếu chưa có sách nào.</div>
+                    }
+                    else
+                    {
+                        <form method="post" asp-action="AddObservation">
+                            <input type="hidden" name="CountId" value="@count.Id" />
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold" for="observationBook">Sách</label>
+                                <select class="form-select" id="observationBook" name="BookId" required>
+                                    @foreach (var book in Model.CountBooks)
+                                    {
+                                        <option value="@book.Id">@book.Title</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold" for="observationQuantity">Số lượng đếm</label>
+                                <input class="form-control" id="observationQuantity" name="CountedQuantity"
+                                       type="number" min="0" step="1" required />
+                            </div>
+                            <button type="submit" class="btn btn-outline-primary w-100">Ghi nhận kết quả đếm</button>
+                        </form>
+                    }
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">Điều kiện chốt phiếu</div>
+                <div class="card-body">
+                    <ul class="rule-list mb-0">
+                        <li>Mỗi sách có đúng một kết quả đếm được chọn.</li>
+                        <li>Không nhập số âm; số đếm là số nguyên thực tế tại kho.</li>
+                        <li>Phiếu chỉ chốt được một lần, không ghi lặp chênh lệch.</li>
+                        <li>Dòng lệch = số đếm − tồn ghi sổ tại thời điểm chốt.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span>Kết quả đã chốt</span>
+            <span class="small-muted">Snapshot số đếm − tồn ghi sổ tại thời điểm chốt</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-app">
+                <thead>
+                    <tr>
+                        <th>Sách</th>
+                        <th class="text-end">Tồn ghi sổ (recorded)</th>
+                        <th class="text-end">Số đếm (counted)</th>
+                        <th class="text-end">Chênh lệch</th>
+                        <th class="text-end">Tồn hiện tại</th>
+                        <th>Kết quả</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var line in count.Lines)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">@line.BookTitle</div>
+                            <div class="mono text-secondary">@line.BookId</div>
+                        </td>
+                        <td class="text-end">@(line.RecordedQuantity?.ToString("0.##") ?? "—")</td>
+                        <td class="text-end fw-bold">@(line.CountedQuantity?.ToString("0.##") ?? "—")</td>
+                        <td class="text-end">
+                            @if (line.Difference is null or 0)
+                            {
+                                <span class="diff-zero">0</span>
+                            }
+                            else
+                            {
+                                <span class="@(line.Difference > 0 ? "diff-positive" : "diff-negative")">
+                                    @line.Difference.Value.ToString("+0.##;-0.##;0")
+                                </span>
+                            }
+                        </td>
+                        <td class="text-end text-secondary">@line.CurrentQuantity.ToString("0.##")</td>
+                        <td>
+                            @if (line.Difference is null or 0)
+                            {
+                                <span class="badge-soft badge-done">Khớp · không adjustment</span>
+                            }
+                            else
+                            {
+                                <span class="badge-soft badge-warn">Lệch · đã điều chỉnh</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-body border-top">
+            @if (count.AdjustmentId is null)
+            {
+                <div class="section-note">
+                    Mọi dòng đều khớp tồn nên phiếu <strong>không tạo</strong> InventoryAdjustment và không tạo movement.
+                    Tồn kho vẫn được xác nhận lại theo kết quả đếm.
+                </div>
+            }
+            else
+            {
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div>
+                        <div class="fw-semibold">Adjustment duy nhất của phiếu</div>
+                        <a class="mono" asp-controller="Adjustments" asp-action="Index" asp-fragment="@count.AdjustmentId">@count.AdjustmentId</a>
+                    </div>
+                    <span class="badge-soft badge-warn">Chỉ các dòng lệch được ghi vào adjustment</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">Lịch sử đếm</div>
+        <div class="table-responsive">
+            <table class="table table-app">
+                <thead>
+                    <tr>
+                        <th>Sách</th>
+                        <th class="text-end">Lần đếm</th>
+                        <th>Thời điểm</th>
+                        <th class="text-end">Số lượng</th>
+                        <th>Được dùng khi chốt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var line in count.Lines)
+                {
+                    foreach (var observation in line.Observations)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-semibold">@line.BookTitle</span>
+                                <span class="mono text-secondary d-block">@line.BookId</span>
+                            </td>
+                            <td class="text-end mono">#@observation.Id</td>
+                            <td>@observation.ObservedAtUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-end">@observation.CountedQuantity.ToString("0.##")</td>
+                            <td>
+                                @if (line.SelectedObservationId == observation.Id)
+                                {
+                                    <span class="badge-soft badge-done">Đã chọn</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-soft badge-muted">Lưu lịch sử</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            const form = document.getElementById('finalizeForm');
+            if (!form) {
+                return;
+            }
+
+            const radios = Array.from(form.querySelectorAll('.finalize-radio'));
+            const submit = document.getElementById('finalizeSubmit');
+            const hint = document.getElementById('finalizeHint');
+            const stats = document.getElementById('finalizeStats');
+            const totalBooks = Number(form.dataset.totalBooks);
+
+            const groups = new Map();
+            radios.forEach(radio => {
+                if (!groups.has(radio.name)) {
+                    groups.set(radio.name, []);
+                }
+                groups.get(radio.name).push(radio);
+            });
+
+            function formatDiff(value) {
+                if (value === 0) {
+                    return '0';
+                }
+                return (value > 0 ? '+' : '') + value.toLocaleString('vi-VN');
+            }
+
+            function update() {
+                let selectedGroups = 0;
+                let differing = 0;
+                let totalDiff = 0;
+
+                groups.forEach(list => {
+                    const checked = list.find(radio => radio.checked);
+                    list.forEach(radio => {
+                        const badge = radio.closest('.form-check').querySelector('.diff-preview');
+                        if (!badge) {
+                            return;
+                        }
+                        const diff = Number(radio.dataset.counted) - Number(radio.dataset.recorded);
+                        badge.textContent = formatDiff(diff);
+                        badge.className = 'diff-preview ' + (diff === 0 ? 'diff-zero' : diff > 0 ? 'diff-positive' : 'diff-negative');
+                    });
+
+                    if (checked) {
+                        selectedGroups += 1;
+                        const diff = Number(checked.dataset.counted) - Number(checked.dataset.recorded);
+                        if (diff !== 0) {
+                            differing += 1;
+                            totalDiff += diff;
+                        }
+                    }
+                });
+
+                const missing = totalBooks - selectedGroups;
+                submit.disabled = missing > 0;
+                hint.textContent = missing > 0
+                    ? 'Còn ' + missing + ' sách chưa chọn kết quả đếm.'
+                    : 'Đã chọn đủ kết quả cho ' + totalBooks + ' sách.';
+                stats.textContent = 'Số sách lệch: ' + differing + ' · Tổng chênh lệch: ' + formatDiff(totalDiff);
+            }
+
+            radios.forEach(radio => radio.addEventListener('change', update));
+
+            form.addEventListener('submit', event => {
+                if (submit.disabled) {
+                    event.preventDefault();
+                    return;
+                }
+                const confirmed = confirm('Chốt phiếu sẽ cập nhật tồn kho theo số đếm và tạo tối đa một adjustment. Phiếu không thể chốt lại. Tiếp tục?');
+                if (!confirmed) {
+                    event.preventDefault();
+                }
+            });
+
+            update();
+        })();
+    </script>
+}

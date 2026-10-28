@@ -1,0 +1,116 @@
+@model BookSelectionForm
+@{
+    ViewData["Title"] = "Tạo phiếu kiểm kê";
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">UC07 · Bước 1/2</div>
+        <h1 class="page-title">Tạo phiếu kiểm kê</h1>
+        <p class="page-lead">
+            Chọn một hoặc nhiều sách và nhập số lượng đếm thực tế. Số tồn hiện tại chỉ để tham khảo,
+            không được dùng làm kết quả đếm. Có thể đếm lại và bổ sung kết quả trước khi chốt.
+        </p>
+    </div>
+    <a class="btn btn-outline-secondary px-3" asp-action="Index">Quay lại danh sách</a>
+</div>
+
+<form method="post" asp-action="Create" id="countCreateForm">
+    <div asp-validation-summary="All" class="alert alert-danger app-alert" role="alert"></div>
+
+    <div class="card">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span>Chọn sách cần kiểm kê</span>
+            <div class="d-flex align-items-center gap-3">
+                <span class="small-muted">Đã chọn: <strong id="selectedCount">0</strong> sách</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAll">Chọn tất cả</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="clearAll">Bỏ chọn</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-app">
+                <thead>
+                    <tr>
+                        <th style="width: 3rem;"></th>
+                        <th>Sách</th>
+                        <th class="text-end">Tồn hiện tại</th>
+                        <th class="text-end">Số lượng đếm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (var i = 0; i < Model.Books.Count; i++)
+                {
+                    var book = Model.Books[i];
+                    <tr>
+                        <td>
+                            <input type="hidden" asp-for="Books[i].BookId" />
+                            <input type="checkbox" asp-for="Books[i].Selected" class="form-check-input row-select" />
+                        </td>
+                        <td>
+                            <label class="w-100 mb-0" for="Books_@(i)__Selected">
+                                <span class="fw-semibold">@book.Title</span>
+                                <span class="mono text-secondary d-block">@book.BookId</span>
+                            </label>
+                        </td>
+                        <td class="text-end book-row-current">@book.CurrentQuantity.ToString("0.##")</td>
+                        <td class="text-end">
+                            <input name="Books[@i].CountedQuantity" type="number" step="1" min="0"
+                                   value="@book.CountedQuantity?.ToString("0.##")"
+                                   class="form-control form-control-sm quantity-input d-inline-block text-end row-quantity" />
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
+        <span class="small-muted">
+            Phiếu được tạo ở trạng thái <strong>Đang đếm</strong>; chưa có tồn kho hay adjustment nào bị thay đổi.
+        </span>
+        <button type="submit" class="btn btn-primary px-4">Tạo phiếu và nhập kết quả đếm</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        (function () {
+            const form = document.getElementById('countCreateForm');
+            const selects = Array.from(form.querySelectorAll('.row-select'));
+            const counter = document.getElementById('selectedCount');
+
+            function syncRow(checkbox) {
+                const row = checkbox.closest('tr');
+                const quantity = row.querySelector('.row-quantity');
+                quantity.disabled = !checkbox.checked;
+                row.classList.toggle('table-active', checkbox.checked);
+            }
+
+            function syncAll() {
+                selects.forEach(syncRow);
+                counter.textContent = selects.filter(item => item.checked).length;
+            }
+
+            selects.forEach(checkbox => checkbox.addEventListener('change', syncAll));
+            document.getElementById('selectAll').addEventListener('click', () => {
+                selects.forEach(checkbox => { checkbox.checked = true; });
+                syncAll();
+            });
+            document.getElementById('clearAll').addEventListener('click', () => {
+                selects.forEach(checkbox => { checkbox.checked = false; });
+                syncAll();
+            });
+
+            form.addEventListener('submit', event => {
+                const selected = selects.filter(item => item.checked);
+                if (selected.length === 0) {
+                    event.preventDefault();
+                    alert('Chọn ít nhất một sách để kiểm kê.');
+                }
+            });
+
+            syncAll();
+        })();
+    </script>
+}

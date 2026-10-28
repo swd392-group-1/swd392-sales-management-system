@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    actor Manager as Store Manager
+    participant C as AuditsController
+    participant S as InventoryAuditService
+    participant AS as IInventoryAuditStore
+    participant U as IUnitOfWork
+    participant A as InventoryAudit
+
+    Manager->>C: POST /Audits/Approve (auditId)
+    C->>S: ApproveAsync(auditId)
+    S->>AS: FindAsync(auditId)
+    AS-->>S: InventoryAudit
+    S->>A: Approve()
+    Note right of A: Chỉ kiểm tra Lines.Count > 0<br/>và đổi Status = APPROVED
+    A-->>S: hoàn tất
+    S->>U: SaveChangesAsync()
+    S-->>C: hoàn tất
+    C-->>Manager: "Đã duyệt audit"
+
+    Note over S,U: KHÔNG gọi IStockStore<br/>KHÔNG tạo InventoryAdjustment<br/>KHÔNG tạo InventoryMovement

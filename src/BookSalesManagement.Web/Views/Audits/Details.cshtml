@@ -1,0 +1,145 @@
+@model AuditDetailsViewModel
+@{
+    ViewData["Title"] = $"Audit {Model.Audit.Id}";
+    var audit = Model.Audit;
+    var isApproved = audit.IsApproved || string.Equals(audit.Status, "APPROVED", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">UC09 / UC14 · Inventory Audit</div>
+        <h1 class="page-title mono">@audit.Id</h1>
+        <p class="page-lead">
+            Kết quả audit phục vụ đối chiếu và cần được duyệt. Duyệt chỉ chuyển trạng thái sang APPROVED,
+            không cập nhật <span class="mono">BookStock</span> và không tạo adjustment/movement.
+        </p>
+    </div>
+    <div class="d-flex flex-column align-items-end gap-2">
+        @if (isApproved)
+        {
+            <span class="badge-soft badge-done">Đã duyệt</span>
+        }
+        else
+        {
+            <span class="badge-soft badge-open">Chờ duyệt</span>
+        }
+        <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Danh sách audit</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Ngày audit</div>
+            <div class="metric-value fs-5">@(audit.AuditDate?.ToString("dd/MM/yyyy") ?? "—")</div>
+            <div class="metric-note">Ngày ghi nhận đợt audit</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Số dòng</div>
+            <div class="metric-value">@audit.Lines.Count</div>
+            <div class="metric-note">Sách nằm trong đợt audit</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Trạng thái</div>
+            <div class="metric-value fs-5 mono">@audit.Status</div>
+            <div class="metric-note">DRAFT → APPROVED</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="metric-card">
+            <div class="metric-label">Ảnh hưởng tồn kho</div>
+            <div class="metric-value fs-5">Không</div>
+            <div class="metric-note">Audit không sinh movement</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <span>Kết quả kiểm tra</span>
+        <span class="small-muted">Tồn hiện tại chỉ để tham khảo</span>
+    </div>
+    @if (audit.Lines.Count == 0)
+    {
+        <div class="empty-state">Đợt audit chưa có dòng nào.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-app">
+                <thead>
+                    <tr>
+                        <th>Sách</th>
+                        <th class="text-end">Số lượng audit</th>
+                        <th class="text-end">Tồn hiện tại</th>
+                        <th class="text-end">Chênh lệch tham khảo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var line in audit.Lines)
+                {
+                    var delta = line.CountedQuantity - line.CurrentQuantity;
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">@line.BookTitle</div>
+                            <div class="mono text-secondary">@line.BookId</div>
+                        </td>
+                        <td class="text-end fw-bold">@line.CountedQuantity.ToString("0.##")</td>
+                        <td class="text-end text-secondary">@line.CurrentQuantity.ToString("0.##")</td>
+                        <td class="text-end">
+                            @if (delta == 0)
+                            {
+                                <span class="diff-zero">0</span>
+                            }
+                            else
+                            {
+                                <span class="@(delta > 0 ? "diff-positive" : "diff-negative")">@delta.ToString("+0.##;-0.##;0")</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+    <div class="card-body border-top">
+        <div class="section-note">
+            Chênh lệch trong audit chỉ mang tính tham khảo. Muốn điều chỉnh tồn kho, nhân viên kho phải lập
+            <a asp-controller="Counts" asp-action="Create">phiếu kiểm kê UC07</a> và chốt phiếu.
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">Duyệt audit</div>
+    <div class="card-body">
+        @if (isApproved)
+        {
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge-soft badge-done">APPROVED</span>
+                <span class="small-muted">Kết quả đã được xác nhận. Không có thay đổi tồn kho nào được thực hiện.</span>
+            </div>
+        }
+        else if (Model.CanApprove)
+        {
+            <p class="small-muted mb-3">
+                Duyệt xác nhận kết quả audit là hợp lệ. Thao tác này chỉ đổi trạng thái, không tác động tồn kho.
+            </p>
+            <form method="post" asp-action="Approve" asp-route-id="@audit.Id"
+                  onsubmit="return confirm('Duyệt audit chỉ xác nhận kết quả, không đổi tồn kho. Tiếp tục?');">
+                <button type="submit" class="btn btn-dark px-4">Duyệt audit</button>
+            </form>
+        }
+        else
+        {
+            <div class="section-note mb-0">
+                Tài khoản hiện tại không có quyền <span class="mono">UC14</span> nên không thể duyệt.
+                Đổi sang tài khoản quản lý cửa hàng để thực hiện bước này.
+            </div>
+        }
+    </div>
+</div>

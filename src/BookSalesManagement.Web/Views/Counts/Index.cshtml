@@ -1,0 +1,96 @@
+@model IReadOnlyList<InventoryCountSummary>
+@{
+    ViewData["Title"] = "Phiếu kiểm kê";
+}
+
+<div class="page-head">
+    <div>
+        <div class="page-kicker">UC07 · Record Inventory Count</div>
+        <h1 class="page-title">Phiếu kiểm kê</h1>
+        <p class="page-lead">
+            Mỗi phiếu ghi nhận kết quả đếm của một hoặc nhiều sách, lưu lịch sử các lần đếm lại
+            và chỉ chốt một lần. Chốt phiếu sẽ cập nhật tồn kho.
+        </p>
+    </div>
+    <a class="btn btn-primary px-3" asp-action="Create">Tạo phiếu kiểm kê</a>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Danh sách phiếu</span>
+        <span class="small-muted">@Model.Count phiếu</span>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            Chưa có phiếu kiểm kê nào.
+            <div class="mt-2">
+                <a class="btn btn-sm btn-primary" asp-action="Create">Tạo phiếu đầu tiên</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-app">
+                <thead>
+                    <tr>
+                        <th>Phiếu</th>
+                        <th>Thời điểm đếm</th>
+                        <th>Người đếm</th>
+                        <th class="text-end">Sách</th>
+                        <th class="text-end">Lần đếm</th>
+                        <th>Trạng thái</th>
+                        <th>Adjustment</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var count in Model)
+                {
+                    <tr>
+                        <td class="mono">@count.Id</td>
+                        <td>@count.CountedAtUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@count.EmployeeName</td>
+                        <td class="text-end">@count.BookCount</td>
+                        <td class="text-end">@count.ObservationCount</td>
+                        <td>
+                            @if (!count.IsFinalized)
+                            {
+                                <span class="badge-soft badge-open">Đang đếm</span>
+                            }
+                            else if (count.AdjustmentId is null)
+                            {
+                                <span class="badge-soft badge-done">Đã chốt · không lệch</span>
+                            }
+                            else
+                            {
+                                <span class="badge-soft badge-warn">Đã chốt · có adjustment</span>
+                            }
+                        </td>
+                        <td>
+                            @if (count.AdjustmentId is null)
+                            {
+                                <span class="small-muted">—</span>
+                            }
+                            else
+                            {
+                                <a class="mono" asp-controller="Adjustments" asp-action="Index" asp-fragment="@count.AdjustmentId">@count.AdjustmentId</a>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@count.Id">Mở</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="section-note mt-3">
+    <strong>Quy ước trạng thái:</strong> <em>Đang đếm</em> = chưa có dòng selection nào;
+    <em>Đã chốt · không lệch</em> = đã chốt nhưng mọi dòng khớp tồn;
+    <em>Đã chốt · có adjustment</em> = đã chốt và có ít nhất một dòng lệch.
+</div>
