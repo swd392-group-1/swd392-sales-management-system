@@ -1,4 +1,6 @@
 using BookSales.Application.Notifications;
+using BookSales.Application.Services;
+using BookSales.Domain.Interfaces;
 using BookSales.Infrastructure.Notifications;
 using BookSales.Infrastructure.Persistence;
 using BookSales.Web.Realtime;
@@ -14,6 +16,12 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<INoticeQueue>(_ => new ChannelNoticeQueue());
 builder.Services.AddScoped<DevelopmentNoticeService>();
 builder.Services.AddSingleton<INoticePublisher, SignalRNoticePublisher>();
+builder.Services.AddScoped<PricingService>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<PricingService>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<PricingService>();
+builder.Services.AddSingleton<IBackgroundTaskQueue, MockBackgroundTaskQueue>();
 
 if (builder.Environment.IsDevelopment())
 {
