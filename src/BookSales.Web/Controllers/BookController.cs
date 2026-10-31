@@ -1,4 +1,5 @@
-﻿using BookSales.Application.Services;
+﻿using BookSales.Application.DTOs;
+using BookSales.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookSales.Web.Controllers
@@ -15,12 +16,35 @@ namespace BookSales.Web.Controllers
         }
 
         [HttpPost("{bookId}/price")]
-        public async Task<IActionResult> UpdatePrice(string bookId, [FromBody] UpdatePriceRequest request)
+        public async Task<IActionResult> UpdatePrice(
+            string bookId,
+            [FromBody] UpdatePriceRequest request)
         {
-            var success = await _pricingService.UpdateCurrentPriceAsync(bookId, request.NewPrice);
+            try
+            {
+                var success = await _pricingService
+                    .UpdateCurrentPriceAsync(bookId, request.NewPrice);
 
-            if (success) return Ok(new { Message = "Price updated successfully." });
-            return BadRequest(new { Message = "Failed to update price. Book not found." });
+                if (!success)
+                {
+                    return NotFound(new
+                    {
+                        Message = "Book not found."
+                    });
+                }
+
+                return Ok(new
+                {
+                    Message = "Price updated successfully."
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
         }
     }
 }

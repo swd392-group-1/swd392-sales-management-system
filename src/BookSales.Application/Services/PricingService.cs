@@ -1,4 +1,4 @@
-﻿
+﻿using BookSales.Application.Notifications;
 using BookSales.Domain.Interfaces;
 
 namespace BookSales.Application.Services
@@ -20,28 +20,25 @@ namespace BookSales.Application.Services
             string bookId,
             decimal newPrice)
         {
+            //Lấy thông tin sách từ DB
             var book = await _bookRepository.GetByIdAsync(bookId);
-
             if (book == null)
                 return false;
 
+            //Xác thực và đổi giá 
             book.ChangeCurrentPrice(newPrice);
 
-            var isCommitted =
-                await _bookRepository.SaveAndCommitAsync();
+            //Lưu xuống Database và Commit
+            await _bookRepository.SaveAndCommitAsync();
 
-            if (isCommitted)
+            //Đưa sự kiện đổi giá vào hàng đợi
+            var priceChangedEvent = new BookPriceChangedEvent
             {
-                var priceChangedEvent = new Notifications.BookPriceChangedEvent
-                {
-                    BookId = book.BookId,
-                    CurrentPrice = book.CurrentPrice
-                };
-
-                await _taskQueue.EnqueueAsync(priceChangedEvent);
-            }
-
-            return isCommitted;
+                BookId = book.BookId,
+                CurrentPrice = book.CurrentPrice
+            };
+            await _taskQueue.EnqueueAsync(priceChangedEvent);
+            return true;
         }
     }
 }

@@ -1,27 +1,27 @@
 ﻿using BookSales.Domain.Entities;
 using BookSales.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookSales.Infrastructure.Persistence
 {
     public class BookRepository : IBookRepository
     {
-        public async Task<Book?> GetByIdAsync(string bookId)
+        private readonly BookSalesDbContext _context;
+
+        public BookRepository(BookSalesDbContext context)
         {
-            if (bookId != "DEMO-20261027-B01") return null;
-
-            var book = new Book
-            {
-                BookId = bookId,
-                Title = "Thiết kế hướng đối tượng [DEMO]"
-            };
-            book.ChangeCurrentPrice(130000);
-
-            return await Task.FromResult(book);
+            _context = context;
         }
 
-        public async Task<bool> SaveAndCommitAsync()
+        public async Task<Book?> GetByIdAsync(string bookId)
         {
-            return await Task.FromResult(true);
+            return await _context.Books
+                .SingleOrDefaultAsync(b => b.BookId == bookId);
+        }
+
+        public async Task SaveAndCommitAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

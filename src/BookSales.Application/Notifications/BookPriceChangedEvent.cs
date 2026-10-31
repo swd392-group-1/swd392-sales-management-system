@@ -1,4 +1,5 @@
-﻿namespace BookSales.Application.Notifications
+﻿
+namespace BookSales.Application.Notifications
 {
     public class BookPriceChangedEvent
     {
