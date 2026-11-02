@@ -4,9 +4,8 @@
     ViewData["Title"] = "X\u1EED l\u00FD b\u00E1n h\u00E0ng";
     var vietnameseCulture = CultureInfo.GetCultureInfo("vi-VN");
 }
-<section class="page-heading">
+<section class="page-heading sale-page-heading">
     <h1>T&#x1EA1;o &#x111;&#x1A1;n b&#xE1;n s&#xE1;ch</h1>
-    <p class="intro">Ch&#x1ECD;n s&#xE1;ch v&#xE0; s&#x1ED1; l&#x1B0;&#x1EE3;ng c&#x1EA7;n b&#xE1;n. Gi&#xE1; &#x111;&#x1B0;&#x1EE3;c l&#x1EA5;y t&#x1EEB; d&#x1EEF; li&#x1EC7;u hi&#x1EC7;n t&#x1EA1;i tr&#xEA;n m&#xE1;y ch&#x1EE7;.</p>
 </section>
 
 @if (!string.IsNullOrWhiteSpace(Model.Error))
@@ -22,7 +21,6 @@
         <label for="book-search">T&#xEC;m ki&#x1EBF;m s&#xE1;ch</label>
         <input type="text" id="book-search" class="sale-search-input" placeholder="Nh&#x1EAD;p t&#xEA;n s&#xE1;ch ho&#x1EB7;c m&#xE3; s&#xE1;ch c&#x1EA7;n t&#xEC;m..." autocomplete="off" />
     </div>
-    <div class="section-heading"><h2>Danh s&#xE1;ch s&#xE1;ch</h2></div>
     <div id="book-list-empty" class="muted" hidden>Kh&#xF4;ng t&#xEC;m th&#x1EA5;y s&#xE1;ch ph&#xF9; h&#x1EE3;p.</div>
     @if (Model.Lines.Count == 0)
     {

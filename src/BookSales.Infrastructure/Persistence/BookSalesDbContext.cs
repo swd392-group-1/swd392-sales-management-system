@@ -15,6 +15,8 @@ public sealed class BookSalesDbContext : DbContext
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<OrderPayment> OrderPayments => Set<OrderPayment>();
     public DbSet<InventoryMovement> InventoryMovements => Set<InventoryMovement>();
+    public DbSet<BookReturn> BookReturns => Set<BookReturn>();
+    public DbSet<BookReturnLine> BookReturnLines => Set<BookReturnLine>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

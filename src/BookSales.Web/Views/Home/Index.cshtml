@@ -20,11 +20,36 @@
     <div class="module-grid">
     @foreach (var (number, title, description, cases) in modules)
     {
-        <article class="module-card">
-            <span class="module-number">@number</span>
-            <h3>@title</h3><p>@description</p>
-            <div class="card-meta"><span>@cases</span><span>Chưa triển khai</span></div>
-        </article>
+        @if (number == "03")
+        {
+            <article class="module-card module-card-sales">
+                <span class="module-number">@number</span>
+                <div class="module-function-list">
+                    <a class="module-function-row" asp-controller="Sales" asp-action="Create">
+                        <span class="module-function-copy">
+                            <strong>Bán sách</strong>
+                            <span>Tạo đơn hàng và thanh toán tiền mặt hoặc QR.</span>
+                        </span>
+                        <span class="module-function-arrow" aria-hidden="true">→</span>
+                    </a>
+                    <a class="module-function-row" asp-controller="Returns" asp-action="Search">
+                        <span class="module-function-copy">
+                            <strong>Trả sách</strong>
+                            <span>Tìm đơn hàng và tạo phiếu trả sách.</span>
+                        </span>
+                        <span class="module-function-arrow" aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </article>
+        }
+        else
+        {
+            <article class="module-card">
+                <span class="module-number">@number</span>
+                <h3>@title</h3><p>@description</p>
+                <div class="card-meta"><span>@cases</span><span>Chưa triển khai</span></div>
+            </article>
+        }
     }
     </div>
 </section>

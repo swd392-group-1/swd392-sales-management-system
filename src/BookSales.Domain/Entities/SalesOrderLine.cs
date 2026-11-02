@@ -10,4 +10,5 @@ public sealed class SalesOrderLine
 
     public SalesOrder SalesOrder { get; set; } = null!;
     public Book Book { get; set; } = null!;
+    public ICollection<BookReturnLine> ReturnLines { get; set; } = new List<BookReturnLine>();
 }

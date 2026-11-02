@@ -1,0 +1,201 @@
+@using System.Globalization
+@model BookReturnCreateViewModel
+
+@{
+    ViewData["Title"] = "Tạo phiếu trả sách";
+    var order = Model.Order;
+}
+
+<div class="return-create-page">
+    <section class="page-heading">
+        <h1>Tạo phiếu trả sách</h1>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Error))
+    {
+        <p class="return-error" role="alert">@Model.Error</p>
+    }
+    <div asp-validation-summary="All" class="return-error"></div>
+
+    @if (order is not null)
+    {
+        var paymentMethodLabel = order.PaymentMethod switch
+        {
+            "Cash" => "Tiền mặt",
+            "QR" => "QR",
+            _ => "Không rõ"
+        };
+        var paymentStatusLabel = order.PaymentStatus switch
+        {
+            "Completed" => "Đã thanh toán",
+            "Pending" => "Đang chờ thanh toán",
+            "Failed" => "Thanh toán thất bại",
+            _ => "Không rõ"
+        };
+
+        <section class="panel return-panel return-create-panel">
+            <div class="return-order-summary">
+                <strong>Đơn hàng @order.OrderId</strong>
+                <span>Ngày bán: @(order.OrderDate?.ToString("dd/MM/yyyy") ?? "Không có")</span>
+                <span>Thanh toán: @paymentMethodLabel · @paymentStatusLabel</span>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(order.IneligibilityMessage))
+            {
+                <p class="return-notice">@order.IneligibilityMessage</p>
+            }
+
+            <form asp-route="Returns_CreatePost" method="post" id="return-form" class="return-form">
+                <input asp-for="ReturnId" type="hidden" />
+                <input asp-for="OriginalOrderId" type="hidden" />
+
+                <div class="sale-table-wrap">
+                    <table class="sale-table return-table">
+                        <thead>
+                            <tr>
+                                <th>Tên sách</th>
+                                <th class="sale-number-column">Đã mua</th>
+                                <th class="sale-number-column">Đã trả</th>
+                                <th class="sale-number-column">Còn được trả</th>
+                                <th>Số lượng muốn trả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var index = 0; index < Model.Lines.Count; index++)
+                            {
+                                var inputLine = Model.Lines[index];
+                                var line = order.Lines.SingleOrDefault(item => item.OriginalOrderLineId == inputLine.OriginalOrderLineId);
+                                if (line is null)
+                                {
+                                    continue;
+                                }
+                                var canSelect = order.IsPaid && order.IsWithinReturnWindow && line.RemainingQuantity > 0m && line.OriginalUnitPrice is > 0m;
+                                var unitPrice = line.OriginalUnitPrice?.ToString("0.0000", CultureInfo.InvariantCulture) ?? string.Empty;
+
+                                <tr class="return-row" data-unit-price="@unitPrice">
+                                    <td data-label="Tên sách" class="sale-title">
+                                        <input asp-for="Lines[index].OriginalOrderLineId" type="hidden" />
+                                        @(line.Title ?? "Không có tên")
+                                    </td>
+                                    <td data-label="Đã mua" class="sale-number">@line.PurchasedQuantity.ToString("0.##########", CultureInfo.InvariantCulture)</td>
+                                    <td data-label="Đã trả" class="sale-number">@line.PreviouslyReturnedQuantity.ToString("0.##########", CultureInfo.InvariantCulture)</td>
+                                    <td data-label="Còn được trả" class="sale-number">@line.RemainingQuantity.ToString("0.##########", CultureInfo.InvariantCulture)</td>
+                                    <td data-label="Số lượng muốn trả">
+                                        <input asp-for="Lines[index].ReturnQuantity" type="number" min="0" max="@line.RemainingQuantity.ToString(CultureInfo.InvariantCulture)" step="any" class="sale-quantity return-quantity" disabled="@(!canSelect)" />
+                                        @if (order.IsPaid && order.IsWithinReturnWindow)
+                                        {
+                                            if (line.RemainingQuantity <= 0m)
+                                            {
+                                                <span class="return-line-status">Dòng sách này đã được trả đủ.</span>
+                                            }
+                                            else if (line.OriginalUnitPrice is not > 0m)
+                                            {
+                                                <span class="return-line-status">Không thể trả: đơn giá gốc không hợp lệ.</span>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="sale-total return-total">
+                    <h2>Tiền hoàn dự kiến</h2>
+                    <strong id="return-total-amount" class="sale-total-amount">0 đ</strong>
+                </div>
+
+                <label class="return-final-confirmation">
+                    <input asp-for="IsBookNewConfirmed" type="checkbox" />
+                    Tôi xác nhận các sách được chọn trả đáp ứng điều kiện nhận trả.
+                </label>
+                <label class="return-final-confirmation">
+                    <input asp-for="IsCashRefundConfirmed" type="checkbox" />
+                    Xác nhận hoàn tiền cho khách hàng
+                </label>
+                <p id="return-form-error" class="return-error" role="alert" hidden></p>
+
+                <div class="return-form-actions">
+                    <button type="submit" class="button sale-submit" disabled="@(!order.CanReturn)">Xác nhận trả sách</button>
+                    <a asp-controller="Returns" asp-action="Search" asp-route-orderId="@order.OrderId">Quay lại</a>
+                </div>
+            </form>
+        </section>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const form = document.getElementById('return-form');
+            if (!form) return;
+
+            const integerFormat = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
+            const quantityScale = 10n ** 10n;
+            const refundScaleDivisor = quantityScale;
+            const quantityInputs = [...form.querySelectorAll('.return-quantity')];
+            const error = document.getElementById('return-form-error');
+
+            const parseScaled = (value, fractionDigits) => {
+                const normalized = value.trim();
+                if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)) return null;
+                const [whole, fraction = ''] = normalized.startsWith('.')
+                    ? ['0', normalized.slice(1)]
+                    : normalized.split('.');
+                if (fraction.length > fractionDigits) return null;
+                return BigInt(whole) * (10n ** BigInt(fractionDigits)) + BigInt(fraction.padEnd(fractionDigits, '0'));
+            };
+
+            const formatRefund = scaledAmount => {
+                const whole = integerFormat.format(scaledAmount / 10000n);
+                const fraction = (scaledAmount % 10000n).toString().padStart(4, '0').replace(/0+$/, '');
+                return `${whole}${fraction ? `,${fraction}` : ''} đ`;
+            };
+
+            const updateRefund = () => {
+                let total = 0n;
+                for (const input of quantityInputs) {
+                    const row = input.closest('.return-row');
+                    const quantity = parseScaled(input.value, 10);
+                    const price = parseScaled(row.dataset.unitPrice, 4);
+                    const maximum = parseScaled(input.max, 10);
+                    const lineTotal = quantity !== null && quantity > 0n && maximum !== null && quantity <= maximum && price !== null && price > 0n
+                        ? (quantity * price + refundScaleDivisor / 2n) / refundScaleDivisor
+                        : 0n;
+                    total += lineTotal;
+                }
+                document.getElementById('return-total-amount').textContent = formatRefund(total);
+            };
+
+            form.addEventListener('input', updateRefund);
+            form.addEventListener('change', updateRefund);
+            form.addEventListener('submit', event => {
+                const selected = quantityInputs.filter(input => {
+                    const quantity = parseScaled(input.value, 10);
+                    return quantity !== null && quantity > 0n;
+                });
+                const bookConditionNotConfirmed = !form.querySelector('input[name="IsBookNewConfirmed"][type="checkbox"]').checked;
+                const cashNotConfirmed = !form.querySelector('input[name="IsCashRefundConfirmed"][type="checkbox"]').checked;
+                const invalidQuantity = quantityInputs.some(input => {
+                    if (input.value === '') return false;
+                    const quantity = parseScaled(input.value, 10);
+                    const maximum = parseScaled(input.max, 10);
+                    return quantity === null || maximum === null || quantity > maximum;
+                });
+
+                if (selected.length === 0 || bookConditionNotConfirmed || cashNotConfirmed || invalidQuantity) {
+                    event.preventDefault();
+                    error.hidden = false;
+                    error.textContent = invalidQuantity
+                        ? 'Số lượng trả vượt giới hạn hoặc có quá 10 chữ số thập phân.'
+                        : selected.length === 0
+                        ? 'Nhập số lượng lớn hơn 0 cho ít nhất một dòng sách.'
+                        : bookConditionNotConfirmed
+                            ? 'Xác nhận các sách được chọn trả đáp ứng điều kiện nhận trả.'
+                            : cashNotConfirmed
+                                ? 'Xác nhận đã hoàn tiền mặt cho khách.'
+                                : 'Kiểm tra lại số lượng trả.';
+                }
+            });
+            updateRefund();
+        })();
+    </script>
+}

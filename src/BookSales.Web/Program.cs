@@ -1,7 +1,9 @@
 using BookSales.Application.Notifications;
+using BookSales.Application.Returns;
 using BookSales.Application.Sales;
 using BookSales.Infrastructure.Notifications;
 using BookSales.Infrastructure.Persistence;
+using BookSales.Infrastructure.Persistence.Returns;
 using BookSales.Infrastructure.Persistence.Sales;
 using BookSales.Web.Realtime;
 using BookSales.Web.Services;
@@ -19,6 +21,8 @@ builder.Services.AddSingleton<INoticeQueue>(_ => new ChannelNoticeQueue());
 builder.Services.AddScoped<DevelopmentNoticeService>();
 builder.Services.AddScoped<ISaleProcessingService, SaleProcessingService>();
 builder.Services.AddScoped<ISaleRepository, EfSaleRepository>();
+builder.Services.AddScoped<IBookReturnService, BookReturnService>();
+builder.Services.AddScoped<IBookReturnRepository, EfBookReturnRepository>();
 builder.Services.AddSingleton<INoticePublisher, SignalRNoticePublisher>();
 
 if (builder.Environment.IsDevelopment())
