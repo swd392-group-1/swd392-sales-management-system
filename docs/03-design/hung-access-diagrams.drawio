@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mxfile host="app.diagrams.net" modified="2026-11-03T01:00:00.000Z" agent="ChatGPT" version="24.7.17" type="device">
+  <diagram name="Class Diagram" id="class-diagram">
+    <mxGraphModel dx="1500" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="ctrl" value="AccessController&lt;br&gt;+ Permissions GET/POST&lt;br&gt;+ Demo GET&lt;br&gt;+ Logs GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="30" width="250" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="guard" value="AccessGuard : IAccessGuard&lt;br&gt;+ AuthorizeAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="30" width="270" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="check" value="SqlPermissionChecker&lt;br&gt;: IPermissionChecker&lt;br&gt;+ HasPermissionAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="700" y="30" width="290" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="db" value="BookSalesDbContext&lt;br&gt;Employee / Account / Permission&lt;br&gt;EmployeePermission / UserAccessLog" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#37814E;fontColor=#225B32;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="260" width="330" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="writer" value="SqlAccessLogWriter&lt;br&gt;: IAccessLogWriter&lt;br&gt;+ WriteAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="700" y="165" width="290" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="service" value="StaffPermissionService&lt;br&gt;+ ChangeAsync(change)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="340" width="270" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="policy" value="SqlStaffPermissionChangePolicy&lt;br&gt;: IStaffPermissionChangePolicy&lt;br&gt;+ IsAllowedAsync(change)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="700" y="340" width="290" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="store" value="SqlStaffPermissionStore&lt;br&gt;: IStaffPermissionStore&lt;br&gt;+ ApplyAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="700" y="490" width="290" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth" value="AuthController&lt;br&gt;+ Login / Logout" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="530" width="250" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="login" value="SqlAccountLoginService&lt;br&gt;: IAccountLoginService&lt;br&gt;+ VerifyAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="540" width="270" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="hash" value="UnconfiguredPasswordHashVerifier&lt;br&gt;: IPasswordHashVerifier&lt;br&gt;+ Verify(...) =&gt; false" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="690" width="320" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="mw" value="AccessAuditMiddleware&lt;br&gt;+ InvokeAsync(context,writer)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="180" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" value="check GET" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="ctrl" target="guard">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="UC12 POST" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="ctrl" target="service">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="permission" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="guard" target="check">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="audit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="guard" target="writer">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="anonymous" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="mw" target="writer">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="query" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="check" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="insert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="writer" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" value="authorize" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="service" target="policy">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" value="apply" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="service" target="store">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" value="query" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="policy" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" value="save" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="store" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" value="verify" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="auth" target="login">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" value="read account" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="login" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13" value="verify hash" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="login" target="hash">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="UC12 Sequence" id="uc12-sequence">
+    <mxGraphModel dx="1500" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="780" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="actor" value="Admin / Manager&lt;br&gt;POST /access/permissions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5E3;strokeColor=#C58F36;fontColor=#6B4C11;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="60" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ctrl" value="AccessController&lt;br&gt;Cookie/anti-forgery&lt;br&gt;Check UC12 permission" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="285" y="60" width="230" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="policy" value="StaffPermissionService&lt;br&gt;SqlPolicy check&lt;br&gt;actor, target, scope" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="550" y="60" width="230" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="store" value="SqlStaffPermissionStore&lt;br&gt;Insert/Remove&lt;br&gt;EmployeePermission" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="815" y="60" width="230" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="db" value="SQL Server&lt;br&gt;Transaction: permission&lt;br&gt;+ UserAccessLog" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#37814E;fontColor=#225B32;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="60" width="300" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="deny" value="DENY&lt;br&gt;Write AccessLog(false)&lt;br&gt;Forbid / show rejected" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5E3;strokeColor=#C58F36;fontColor=#6B4C11;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="295" y="315" width="235" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="allow" value="ALLOW&lt;br&gt;Commit transaction&lt;br&gt;Redirect with result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#37814E;fontColor=#225B32;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="530" width="250" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="next" value="Next request&lt;br&gt;Permission Checker reads&lt;br&gt;fresh DB state" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="540" width="280" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" value="submit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="actor" target="ctrl">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="UC12 denied" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="ctrl" target="deny">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="UC12 valid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="ctrl" target="policy">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="scope denied" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="policy" target="deny">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="scope approved" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="policy" target="store">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="save" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="store" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="commit audit+change" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="db" target="allow">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" value="next HTTP request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="allow" target="next">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" value="re-query permission" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="next" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

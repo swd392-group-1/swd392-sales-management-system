@@ -1,0 +1,15 @@
+@model List<BookSales.Web.Controllers.AccessLogRow>
+@{
+    ViewData["Title"] = "Nhật ký truy cập";
+}
+<h1>Nhật ký truy cập</h1>
+<table>
+  <thead><tr><th>UTC</th><th>Tài khoản</th><th>Đường dẫn</th><th>Kết quả</th><th>IP</th></tr></thead>
+  <tbody>
+  @foreach (var row in Model)
+  {
+    <tr><td>@row.OccurredAtUtc</td><td>@row.Username</td><td>@row.Path</td>
+      <td>@(row.Allowed ? "Cho phép" : "Từ chối")</td><td>@row.ClientIp</td></tr>
+  }
+  </tbody>
+</table>
