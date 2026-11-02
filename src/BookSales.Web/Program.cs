@@ -1,7 +1,10 @@
 using BookSales.Application.Notifications;
+using BookSales.Application.Sales;
 using BookSales.Infrastructure.Notifications;
 using BookSales.Infrastructure.Persistence;
+using BookSales.Infrastructure.Persistence.Sales;
 using BookSales.Web.Realtime;
+using BookSales.Web.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,10 +12,13 @@ builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, relo
 builder.Configuration.AddEnvironmentVariables().AddCommandLine(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<QrCodeService>();
 builder.Services.AddAntiforgery(options => options.HeaderName = "RequestVerificationToken");
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<INoticeQueue>(_ => new ChannelNoticeQueue());
 builder.Services.AddScoped<DevelopmentNoticeService>();
+builder.Services.AddScoped<ISaleProcessingService, SaleProcessingService>();
+builder.Services.AddScoped<ISaleRepository, EfSaleRepository>();
 builder.Services.AddSingleton<INoticePublisher, SignalRNoticePublisher>();
 
 if (builder.Environment.IsDevelopment())
@@ -21,10 +27,13 @@ if (builder.Environment.IsDevelopment())
 }
 
 var connectionString = builder.Configuration.GetConnectionString("BookSales");
-if (!string.IsNullOrWhiteSpace(connectionString))
+builder.Services.AddDbContext<BookSalesDbContext>(options =>
 {
-    builder.Services.AddDbContext<BookSalesDbContext>(options => options.UseSqlServer(connectionString));
-}
+    if (!string.IsNullOrWhiteSpace(connectionString))
+    {
+        options.UseSqlServer(connectionString);
+    }
+});
 
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
@@ -57,6 +66,15 @@ app.MapGet("/health", () => Results.Ok(new
     status = "running",
     databaseConfigured = !string.IsNullOrWhiteSpace(connectionString)
 }));
+app.MapGet("/health/db", async (BookSalesDbContext db) =>
+{
+    var connected = await db.Database.CanConnectAsync();
+
+    return Results.Ok(new
+    {
+        databaseConnected = connected
+    });
+});
 if (app.Environment.IsDevelopment())
 {
     app.MapHub<DevelopmentNoticeHub>("/hubs/development");

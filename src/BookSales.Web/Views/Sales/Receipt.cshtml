@@ -1,0 +1,47 @@
+@model ProcessSaleViewModel
+@{
+    ViewData["Title"] = "Hoàn tất bán hàng";
+    var result = Model.Result!;
+    var vietnameseCulture = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+<section class="page-heading">
+    
+    <h1>Đơn hàng đã hoàn tất</h1>
+    <p class="intro">Mã đơn: <strong>@result.OrderId</strong></p>
+</section>
+<section class="panel">
+    <div class="table-responsive receipt-table-wrap">
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th class="receipt-book-code">Mã sách</th>
+                    <th class="receipt-book-title">Tên sách</th>
+                    <th class="receipt-quantity">Số lượng</th>
+                    <th class="receipt-money">Đơn giá</th>
+                    <th class="receipt-money">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var line in result.Lines)
+            {
+                <tr>
+                    <td class="receipt-book-code">@line.BookId</td>
+                    <td class="receipt-book-title">@line.Title</td>
+                        <td class="receipt-quantity">@line.Quantity.ToString("N0")</td>
+                    <td class="receipt-money">@(line.UnitPrice.ToString("N0", vietnameseCulture)) ₫</td>
+                    <td class="receipt-money">@(line.LineTotal.ToString("N0", vietnameseCulture)) ₫</td>
+                </tr>
+            }
+            </tbody>
+            <tfoot>
+                <tr><th colspan="4" class="receipt-total-label">Tổng đơn hàng</th><th class="receipt-money">@(result.TotalAmount?.ToString("N0", vietnameseCulture)) ₫</th></tr>
+            </tfoot>
+        </table>
+    </div>
+    <p>Thanh toán: @result.PaymentMethod · @result.PaymentStatus</p>
+    @if (result.Status == BookSales.Application.Sales.ProcessSaleStatus.AlreadyProcessed)
+    {
+        <p class="field-hint">Đơn này đã được xử lý trước đó; tồn kho không bị trừ lần nữa.</p>
+    }
+    <a class="button" asp-controller="Sales" asp-action="Create">Tạo đơn bán mới</a>
+</section>

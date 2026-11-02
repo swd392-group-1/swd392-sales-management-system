@@ -1,0 +1,161 @@
+﻿@model BookSales.Web.Models.ProcessSaleViewModel
+
+@{
+    ViewData["Title"] = "Đơn hàng đang chờ thanh toán";
+
+    var result = Model?.Result;
+    var qrCodeBase64 = ViewBag.QrCodeBase64 as string;
+}
+
+@if (result is not null)
+{
+    <div class="container">
+        <div class="page-header">
+            <h1>Đơn hàng đang chờ thanh toán</h1>
+
+            <p>
+                Mã đơn:
+                <strong>@result.OrderId</strong>
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <p>
+                    Trạng thái:
+                    <strong>@result.PaymentStatus</strong>
+                </p>
+
+                <h3>Mã QR thanh toán</h3>
+
+                @if (!string.IsNullOrWhiteSpace(qrCodeBase64))
+                {
+                    <div class="qr-container">
+                        <img src="data:image/png;base64,@qrCodeBase64"
+                             alt="Mã QR thanh toán"
+                             class="qr-image" />
+                    </div>
+                }
+                else
+                {
+                    <p>Không thể hiển thị mã QR.</p>
+                }
+
+                <p class="total-amount">
+                    Tổng tiền:
+                    <strong>
+                        @(result.TotalAmount?.ToString("N0") ?? "0") đ
+                    </strong>
+                </p>
+
+                <div class="payment-actions">
+
+                    <form asp-controller="Sales"
+                          asp-action="ConfirmQr"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="orderId"
+                               value="@result.OrderId" />
+
+                        <button type="submit" class="button">
+                            Xác nhận thanh toán
+                        </button>
+                    </form>
+
+                    <a asp-controller="Sales"
+                       asp-action="Create"
+                       class="button new-sale-button">
+                        Tạo đơn bán mới
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container">
+        <p>Không tìm thấy thông tin đơn hàng.</p>
+
+        <a asp-controller="Sales"
+           asp-action="Create"
+           class="button">
+            Tạo đơn bán mới
+        </a>
+    </div>
+}
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 16px;
+    }
+
+    .page-header {
+        margin-bottom: 40px;
+    }
+
+        .page-header h1 {
+            margin-bottom: 24px;
+        }
+
+    .card {
+        border: 1px solid #d5dce0;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    .card-body {
+        padding: 28px;
+    }
+
+    .qr-container {
+        margin: 24px 0 40px;
+    }
+
+    .qr-image {
+        width: 220px;
+        height: 220px;
+        object-fit: contain;
+    }
+
+    .total-amount {
+        margin-top: 24px;
+        margin-bottom: 20px;
+    }
+
+    .payment-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+        .payment-actions form {
+            margin: 0;
+        }
+
+    .button {
+        display: inline-block;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #176b60;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+        .button:hover {
+            background-color: #12564d;
+            color: white;
+        }
+</style>
