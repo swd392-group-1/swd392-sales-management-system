@@ -1,8 +1,8 @@
-using BookSalesManagement.Application.Common;
-using BookSalesManagement.Application.Dtos;
-using BookSalesManagement.Application.Services;
-using BookSalesManagement.Domain.Common;
-using BookSalesManagement.Domain.Inventory;
+using BookSalesManagement.Web.Services.Common;
+using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Services;
+using BookSalesManagement.Web.Models.Common;
+using BookSalesManagement.Web.Models.Inventory;
 using BookSalesManagement.Tests.Fakes;
 
 namespace BookSalesManagement.Tests.Application;

@@ -1,5 +1,5 @@
-using BookSalesManagement.Application.Abstractions;
-using BookSalesManagement.Application.Common;
+using BookSalesManagement.Web.Services.Abstractions;
+using BookSalesManagement.Web.Services.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

@@ -1,8 +1,8 @@
-using BookSalesManagement.Application.Abstractions;
-using BookSalesManagement.Application.Common;
-using BookSalesManagement.Application.Dtos;
-using BookSalesManagement.Application.Services;
-using BookSalesManagement.Web.ViewModels;
+using BookSalesManagement.Web.Services.Abstractions;
+using BookSalesManagement.Web.Services.Common;
+using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Services;
+using BookSalesManagement.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookSalesManagement.Web.Controllers;

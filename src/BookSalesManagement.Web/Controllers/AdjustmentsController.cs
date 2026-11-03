@@ -1,4 +1,4 @@
-using BookSalesManagement.Application.Abstractions;
+using BookSalesManagement.Web.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookSalesManagement.Web.Controllers;

@@ -1,5 +1,5 @@
-using BookSalesManagement.Application.Abstractions;
-using BookSalesManagement.Web.ViewModels;
+using BookSalesManagement.Web.Services.Abstractions;
+using BookSalesManagement.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookSalesManagement.Web.Controllers;

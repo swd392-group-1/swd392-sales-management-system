@@ -46,24 +46,36 @@ Kết quả hiện tại: **24/24 test pass**.
 
 ## 2. Kiến trúc và ranh giới lưu dữ liệu
 
+Toàn bộ ứng dụng nằm trong **một project ASP.NET Core MVC** — `src/BookSalesManagement.Web/` — bên trong chia folder theo đúng vai trò MVC:
+
 ```
-BookSalesManagement.Web            MVC controller + Razor view
-        │  gọi service qua DI
-BookSalesManagement.Application    InventoryCountService, InventoryAuditService,
-        │                          DTO, interface IUnitOfWork/IStockStore/...
-        │  gọi hành vi nghiệp vụ
-BookSalesManagement.Domain         InventoryCount, InventoryAdjustment,
-        │                          InventoryAudit, InventoryMovement, BookStock
-        │  được map bởi
-BookSalesManagement.Infrastructure EF Core DbContext, store/repository, query service
+src/BookSalesManagement.Web/
+├── Controllers/        nhận HTTP, validate form, gọi service, redirect  (C)
+├── Views/              Razor .cshtml                                    (V)
+├── Models/
+│   ├── Inventory/      InventoryCount, InventoryAdjustment,
+│   │                   InventoryAudit, InventoryMovement, BookStock
+│   ├── Catalog/ Identity/ Purchasing/
+│   ├── Dtos/           dữ liệu service trả về cho view
+│   └── ViewModels.cs   model riêng của từng trang                     (M)
+├── Services/
+│   ├── InventoryCountService.cs, InventoryAuditService.cs
+│   ├── Abstractions/   IStockStore, IUnitOfWork, IClock, ICurrentUser...
+│   └── Common/         PermissionCodes, exception, SystemClock
+├── Data/               EF Core: DbContext, cấu hình bảng,
+│                       store/repository, query service
+└── Program.cs + ServiceRegistration.cs     đăng ký DI
 ```
+
+Luồng phụ thuộc một chiều: `Controllers → Services → Models`, và `Services` chỉ gọi abstraction; `Data` là nơi duy nhất chạm database.
 
 Điểm quan trọng khi bảo vệ:
 
-- **Domain không biết EF Core, SQL hay ASP.NET.** `InventoryCount` tự bảo vệ bất biến (không chốt hai lần, không nhận số âm, mỗi sách chỉ có một selection khi chốt).
-- **Application chỉ phụ thuộc abstraction.** `InventoryCountService` làm việc với `IInventoryCountStore`, `IStockStore`, `IInventoryMovementStore`, `IUnitOfWork` — không tham chiếu `DbContext`.
-- **Infrastructure là nơi duy nhất biết database.** Các store trong `src/BookSalesManagement.Infrastructure/Persistence/` map aggregate sang bảng thật và dịch lỗi SQL thành `ConflictException`.
+- **Model không biết EF Core, SQL hay ASP.NET.** `InventoryCount` tự bảo vệ bất biến (không chốt hai lần, không nhận số âm, mỗi sách chỉ có một selection khi chốt).
+- **Service chỉ phụ thuộc abstraction.** `InventoryCountService` làm việc với `IInventoryCountStore`, `IStockStore`, `IInventoryMovementStore`, `IUnitOfWork` — không tham chiếu `DbContext`.
+- **Data là nơi duy nhất biết database.** Các store trong `src/BookSalesManagement.Web/Data/` map aggregate sang bảng thật và dịch lỗi SQL thành `ConflictException`.
 - **Controller chỉ điều phối HTTP**: validate form, gọi service, đặt `TempData` thông báo, redirect. Không chứa quy tắc chênh lệch.
+- Folder tách theo vai trò nên vẫn đọc được ranh giới lớp dù chỉ có một project.
 
 ### 2.1. Bảng ↔ class
 
@@ -86,11 +98,11 @@ BookSalesManagement.Infrastructure EF Core DbContext, store/repository, query se
 
 Bản đã xuất để chèn báo cáo (nguồn Mermaid nằm trong `docs/diagrams/*.mmd`):
 
-**Hình 3.1 — Domain model (Count vs Audit):**
+**Hình 3.1 — Model nghiệp vụ (Count vs Audit):**
 
 ![Class diagram - Domain model](docs/diagrams/kiet-class-domain.png)
 
-**Hình 3.2 — Application service và abstraction lưu dữ liệu:**
+**Hình 3.2 — Service và abstraction lưu dữ liệu:**
 
 ![Class diagram - Service và persistence](docs/diagrams/kiet-class-services.png)
 
@@ -335,7 +347,7 @@ sequenceDiagram
 | Một Adjustment chứa mọi dòng lệch | `InventoryAdjustment.CreateForCount` lọc `Difference != 0` và gom vào một aggregate | `/Adjustments` |
 | Không ghi cùng chênh lệch hai lần | `IsFinalized` guard + PK `InventoryCountSelection` + unique `CountAdjustment.adjustment_id` + unique `InventoryMovement.posting_key` | Test `Finalize_SecondTime_IsRejectedWithoutPostingAgain` |
 | Audit approve không đổi tồn | `InventoryAudit.Approve()` chỉ đổi Status; service không có store tồn/adjustment | Test `Approve_OnlyConfirmsResultsAndLeavesStockUntouched` |
-| Không nhận số lượng âm | Domain + service + controller đều validate | Test `Create_WithNegativeQuantity_IsRejected` |
+| Không nhận số lượng âm | Model + service + controller đều validate | Test `Create_WithNegativeQuantity_IsRejected` |
 
 ### Lỗi quan trọng: chốt phiếu hai lần
 
@@ -414,7 +426,7 @@ Kết quả mong đợi: đúng 1 adjustment với 2 dòng lệch, đúng 2 move
 
 `tests/BookSalesManagement.Tests` gồm 24 test:
 
-- **Domain**
+- **Model (domain)**
   - Chốt phiếu lần hai bị từ chối.
   - Không thêm observation sau khi chốt.
   - Số lượng âm bị từ chối.
@@ -422,7 +434,7 @@ Kết quả mong đợi: đúng 1 adjustment với 2 dòng lệch, đúng 2 move
   - Một adjustment chỉ chứa dòng lệch; không lệch → không tạo adjustment.
   - `posting_key` không lặp tiền tố `ADJ-`.
   - Audit approve chỉ đổi status; approve lần hai/không có dòng bị từ chối.
-- **Application (fake store in-memory)**
+- **Service (fake store in-memory)**
   - Finalize tạo đúng 1 adjustment, đúng các dòng lệch, cập nhật đủ tồn.
   - Không lệch → không adjustment, không movement.
   - Finalize lần hai không ghi lặp.

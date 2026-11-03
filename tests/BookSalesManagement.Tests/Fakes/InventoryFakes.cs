@@ -1,8 +1,8 @@
 using System.Data;
-using BookSalesManagement.Application.Abstractions;
-using BookSalesManagement.Application.Common;
-using BookSalesManagement.Application.Dtos;
-using BookSalesManagement.Domain.Inventory;
+using BookSalesManagement.Web.Services.Abstractions;
+using BookSalesManagement.Web.Services.Common;
+using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Models.Inventory;
 
 namespace BookSalesManagement.Tests.Fakes;
 

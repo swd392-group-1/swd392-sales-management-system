@@ -1,4 +1,4 @@
-using BookSalesManagement.Domain.Inventory;
+using BookSalesManagement.Web.Models.Inventory;
 
 namespace BookSalesManagement.Tests.Domain;
 

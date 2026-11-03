@@ -89,7 +89,7 @@ classDiagram
     InventoryAuditService ..> IStockStore : chỉ đọc khi xem chi tiết
     InventoryAuditService ..> IUnitOfWork
 
-    note for IStockStore "Infrastructure: EfStockStore\nCAS = UPDATE BookStock\nSET current_quantity = @new\nWHERE book_id = @id AND current_quantity = @expected"
-    note for IUnitOfWork "Infrastructure: EfUnitOfWork\nSerializable transaction +\nCreateExecutionStrategy() cho retry"
+    note for IStockStore "Data: EfStockStore\nCAS = UPDATE BookStock\nSET current_quantity = @new\nWHERE book_id = @id AND current_quantity = @expected"
+    note for IUnitOfWork "Data: EfUnitOfWork\nSerializable transaction +\nCreateExecutionStrategy() cho retry"
     note for InventoryCountService "FinalizeAsync:\n1. count.Finalize(...)\n2. InventoryAdjustment.CreateForCount(lines lệch)\n3. CAS từng dòng vào BookStock\n4. Movement từ adjustment.Books"
     note for InventoryAuditService "ApproveAsync KHÔNG gọi\nIStockStore / Adjustment / Movement."

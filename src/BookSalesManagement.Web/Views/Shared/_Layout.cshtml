@@ -1,4 +1,4 @@
-@inject BookSalesManagement.Application.Abstractions.ICurrentUser CurrentUser
+@inject BookSalesManagement.Web.Services.Abstractions.ICurrentUser CurrentUser
 @{
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
     var roleLabel = CurrentUser.RoleCode switch

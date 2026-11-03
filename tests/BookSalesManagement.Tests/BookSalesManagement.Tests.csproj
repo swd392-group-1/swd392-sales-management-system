@@ -21,8 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BookSalesManagement.Domain\BookSalesManagement.Domain.csproj" />
-    <ProjectReference Include="..\..\src\BookSalesManagement.Application\BookSalesManagement.Application.csproj" />
+    <ProjectReference Include="..\..\src\BookSalesManagement.Web\BookSalesManagement.Web.csproj" />
   </ItemGroup>
 
 </Project>

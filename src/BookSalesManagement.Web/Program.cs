@@ -1,6 +1,6 @@
-using BookSalesManagement.Application.Abstractions;
-using BookSalesManagement.Infrastructure;
+using BookSalesManagement.Web;
 using BookSalesManagement.Web.Infrastructure;
+using BookSalesManagement.Web.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +14,7 @@ builder.Services.AddHttpContextAccessor();
 var connectionString = builder.Configuration.GetConnectionString("BookSales")
     ?? throw new InvalidOperationException("Thiếu connection string 'BookSales'.");
 
-builder.Services.AddInfrastructure(connectionString);
+builder.Services.AddBookSalesServices(connectionString);
 builder.Services.AddScoped<ICurrentUser, DemoCurrentUser>();
 
 var app = builder.Build();

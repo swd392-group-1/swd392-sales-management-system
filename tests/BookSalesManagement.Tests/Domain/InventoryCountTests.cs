@@ -1,5 +1,5 @@
-using BookSalesManagement.Domain.Common;
-using BookSalesManagement.Domain.Inventory;
+using BookSalesManagement.Web.Models.Common;
+using BookSalesManagement.Web.Models.Inventory;
 
 namespace BookSalesManagement.Tests.Domain;
 
