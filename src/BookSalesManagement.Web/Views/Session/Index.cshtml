@@ -5,12 +5,7 @@
 
 <div class="page-head">
     <div>
-        <div class="page-kicker">Demo session</div>
         <h1 class="page-title">Chọn tài khoản demo</h1>
-        <p class="page-lead">
-            Module kiểm tra quyền ở phía server theo tài khoản đang đăng nhập. Màn hình này chỉ là placeholder
-            cho module Login/permission của Hùng; không dùng cho môi trường thật.
-        </p>
     </div>
     <form method="post" asp-action="Reset">
         <button type="submit" class="btn btn-outline-secondary px-3">Về tài khoản mặc định</button>
@@ -68,9 +63,4 @@
             </div>
         </div>
     }
-</div>
-
-<div class="section-note mt-4">
-    Quyền được kiểm tra lại ở mọi request: tài khoản bị khóa hoặc thiếu permission sẽ không truy cập được
-    màn hình tương ứng, kể cả khi gõ trực tiếp URL.
 </div>

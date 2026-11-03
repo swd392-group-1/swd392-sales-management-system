@@ -15,22 +15,19 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SWD392 BookSales</title>
+    <title>@ViewData["Title"] - BookSales</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
+    <header class="topbar">
+        <nav class="navbar navbar-expand-lg app-navbar">
             <div class="container-fluid px-4">
                 <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
                     <span class="brand-mark">BS</span>
-                    <span>
-                        <span class="brand-title">BookSales</span>
-                        <span class="brand-subtitle">Module mua hàng &amp; tồn kho</span>
-                    </span>
+                    <span class="brand-title">BookSales</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                         aria-controls="mainNav" aria-expanded="false" aria-label="Mở menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -57,14 +54,14 @@
                             <div class="user-name">@CurrentUser.DisplayName</div>
                             <div class="user-role">@roleLabel</div>
                         </div>
-                        <a class="btn btn-sm btn-outline-light" asp-controller="Session" asp-action="Index">Đổi tài khoản</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-controller="Session" asp-action="Index">Đổi tài khoản</a>
                     </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <main class="container-fluid px-4 py-4 flex-grow-1">
+    <main class="app-main px-4">
         @if (TempData["Success"] is string successMessage)
         {
             <div class="alert alert-success alert-dismissible fade show app-alert" role="alert">
@@ -83,9 +80,8 @@
     </main>
 
     <footer class="app-footer">
-        <div class="container-fluid px-4 d-flex flex-wrap justify-content-between gap-2">
-            <span>SWD392 · Hệ thống quản lý bán sách nội bộ</span>
-            <span>Kiệt · Mua hàng và tồn kho · UC07 Record Inventory Count</span>
+        <div class="container-fluid px-4 text-center">
+            SWD392 · Quản lý bán sách
         </div>
     </footer>
 

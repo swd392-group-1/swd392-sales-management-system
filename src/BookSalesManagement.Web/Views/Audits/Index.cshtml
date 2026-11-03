@@ -1,16 +1,12 @@
 @model IReadOnlyList<InventoryAuditSummary>
 @{
     ViewData["Title"] = "Audit tồn kho";
+    var pending = Model.Count(a => !string.Equals(a.Status, "APPROVED", StringComparison.OrdinalIgnoreCase));
 }
 
 <div class="page-head">
     <div>
-        <div class="page-kicker">UC09 / UC14 · Inventory Audit</div>
         <h1 class="page-title">Đợt audit tồn kho</h1>
-        <p class="page-lead">
-            Audit lưu kết quả đếm để đối chiếu và cần người có quyền duyệt xác nhận.
-            Duyệt audit <strong>không</strong> cập nhật tồn kho và <strong>không</strong> tạo adjustment — đó là việc của phiếu kiểm kê UC07.
-        </p>
     </div>
     <div class="d-flex gap-2">
         <a class="btn btn-outline-secondary px-3" asp-controller="Counts" asp-action="Index">Phiếu kiểm kê</a>
@@ -18,15 +14,10 @@
     </div>
 </div>
 
-<div class="section-note mb-3">
-    Nút “Tạo đợt audit” yêu cầu quyền <span class="mono">UC09</span>; nút duyệt trong trang chi tiết yêu cầu
-    <span class="mono">UC14</span>. Tài khoản không đủ quyền sẽ bị chặn ở server và nhận trang 403.
-</div>
-
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <span>Danh sách đợt audit</span>
-        <span class="small-muted">@Model.Count đợt</span>
+        <span class="small-muted">@Model.Count đợt · @pending chờ duyệt</span>
     </div>
     @if (Model.Count == 0)
     {

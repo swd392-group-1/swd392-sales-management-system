@@ -4,14 +4,7 @@
 }
 
 <div class="page-head">
-    <div>
-        <div class="page-kicker">UC07 · Record Inventory Count</div>
-        <h1 class="page-title">Phiếu kiểm kê</h1>
-        <p class="page-lead">
-            Mỗi phiếu ghi nhận kết quả đếm của một hoặc nhiều sách, lưu lịch sử các lần đếm lại
-            và chỉ chốt một lần. Chốt phiếu sẽ cập nhật tồn kho.
-        </p>
-    </div>
+    <h1 class="page-title">Phiếu kiểm kê</h1>
     <a class="btn btn-primary px-3" asp-action="Create">Tạo phiếu kiểm kê</a>
 </div>
 
@@ -41,7 +34,7 @@
                         <th class="text-end">Sách</th>
                         <th class="text-end">Lần đếm</th>
                         <th>Trạng thái</th>
-                        <th>Adjustment</th>
+                        <th>Điều chỉnh</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -61,11 +54,11 @@
                             }
                             else if (count.AdjustmentId is null)
                             {
-                                <span class="badge-soft badge-done">Đã chốt · không lệch</span>
+                                <span class="badge-soft badge-done">Đã chốt · khớp</span>
                             }
                             else
                             {
-                                <span class="badge-soft badge-warn">Đã chốt · có adjustment</span>
+                                <span class="badge-soft badge-warn">Đã chốt · có lệch</span>
                             }
                         </td>
                         <td>
@@ -87,10 +80,4 @@
             </table>
         </div>
     }
-</div>
-
-<div class="section-note mt-3">
-    <strong>Quy ước trạng thái:</strong> <em>Đang đếm</em> = chưa có dòng selection nào;
-    <em>Đã chốt · không lệch</em> = đã chốt nhưng mọi dòng khớp tồn;
-    <em>Đã chốt · có adjustment</em> = đã chốt và có ít nhất một dòng lệch.
 </div>

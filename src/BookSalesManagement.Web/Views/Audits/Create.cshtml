@@ -5,14 +5,9 @@
 
 <div class="page-head">
     <div>
-        <div class="page-kicker">UC09 · Ghi nhận kết quả audit</div>
         <h1 class="page-title">Tạo đợt audit tồn kho</h1>
-        <p class="page-lead">
-            Chọn sách và nhập số lượng kiểm tra thực tế. Kết quả audit được lưu làm bằng chứng đối chiếu;
-            việc duyệt sau đó chỉ xác nhận kết quả, không làm thay đổi tồn kho.
-        </p>
     </div>
-    <a class="btn btn-outline-secondary px-3" asp-action="Index">Quay lại danh sách</a>
+    <a class="btn btn-outline-secondary px-3" asp-action="Index">Quay lại</a>
 </div>
 
 <form method="post" asp-action="Create" id="auditCreateForm">
@@ -65,10 +60,7 @@
         </div>
     </div>
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
-        <span class="small-muted">
-            Lưu ý: audit không tạo movement và không điều chỉnh <span class="mono">BookStock</span>.
-        </span>
+    <div class="d-flex justify-content-end mt-3">
         <button type="submit" class="btn btn-primary px-4">Lưu kết quả audit</button>
     </div>
 </form>

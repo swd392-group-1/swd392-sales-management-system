@@ -7,17 +7,14 @@
 }
 
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-7">
         <div class="card">
-            <div class="card-body p-4 p-lg-5">
-                <div class="badge-soft badge-warn mb-3">HTTP 403 · Forbidden</div>
-                <h1 class="page-title mb-2">Tài khoản không có quyền truy cập</h1>
-                <p class="page-lead mb-4">
-                    Yêu cầu đã bị chặn ở server theo quyền của tài khoản đang đăng nhập.
-                    Đây là kiểm tra phía server, không phụ thuộc vào việc ẩn nút trên giao diện.
-                </p>
+            <div class="card-body p-4 p-lg-5 text-center">
+                <div class="badge-soft badge-warn mb-3">HTTP 403</div>
+                <h1 class="page-title mb-2">Không có quyền truy cập</h1>
+                <p class="page-lead mb-4">Tài khoản đang đăng nhập không được phép mở màn hình này.</p>
 
-                <div class="row g-3 mb-4">
+                <div class="row g-3 mb-4 text-start">
                     <div class="col-md-6">
                         <div class="metric-card">
                             <div class="metric-label">Quyền yêu cầu</div>
@@ -34,8 +31,8 @@
                     </div>
                 </div>
 
-                <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-primary px-3" asp-controller="Session" asp-action="Index">Đổi tài khoản demo</a>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a class="btn btn-primary px-3" asp-controller="Session" asp-action="Index">Đổi tài khoản</a>
                     <a class="btn btn-outline-secondary px-3" asp-controller="Home" asp-action="Index">Về tổng quan</a>
                 </div>
             </div>

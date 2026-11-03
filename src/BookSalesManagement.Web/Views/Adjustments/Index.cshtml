@@ -5,12 +5,7 @@
 
 <div class="page-head">
     <div>
-        <div class="page-kicker">UC07 · Kết quả chênh lệch kiểm kê</div>
         <h1 class="page-title">Adjustment tồn kho</h1>
-        <p class="page-lead">
-            Mỗi phiếu kiểm kê có chênh lệch tạo tối đa một InventoryAdjustment. Chỉ các sách lệch mới xuất hiện
-            trong adjustment và sinh movement tương ứng.
-        </p>
     </div>
     <a class="btn btn-outline-secondary px-3" asp-controller="Counts" asp-action="Index">Danh sách phiếu kiểm kê</a>
 </div>
@@ -23,9 +18,8 @@
 }
 else
 {
-    <div class="section-note mb-3">
-        Đang hiển thị @Model.Count adjustment. Adjustment là bản ghi bất biến: sửa sai bằng phiếu kiểm kê mới,
-        không sửa lại adjustment cũ.
+    <div class="d-flex justify-content-end mb-3">
+        <span class="small-muted">@Model.Count adjustment</span>
     </div>
 
     @foreach (var adjustment in Model)
