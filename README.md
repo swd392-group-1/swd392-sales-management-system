@@ -56,7 +56,7 @@ src/BookSalesManagement.Web/
 │   ├── Inventory/      InventoryCount, InventoryAdjustment,
 │   │                   InventoryAudit, InventoryMovement, BookStock
 │   ├── Catalog/ Identity/ Purchasing/
-│   ├── Dtos/           dữ liệu service trả về cho view
+│   ├── Results/        kết quả service trả về cho view (DTO)
 │   └── ViewModels.cs   model riêng của từng trang                     (M)
 ├── Services/
 │   ├── InventoryCountService.cs, InventoryAuditService.cs

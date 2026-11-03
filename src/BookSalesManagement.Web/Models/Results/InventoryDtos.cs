@@ -1,4 +1,4 @@
-namespace BookSalesManagement.Web.Models.Dtos;
+namespace BookSalesManagement.Web.Models.Results;
 
 public sealed record NewCountLine(string BookId, decimal CountedQuantity);
 

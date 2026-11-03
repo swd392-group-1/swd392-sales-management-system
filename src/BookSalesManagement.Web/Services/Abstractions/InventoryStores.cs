@@ -1,4 +1,4 @@
-using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Models.Results;
 using BookSalesManagement.Web.Models.Inventory;
 
 namespace BookSalesManagement.Web.Services.Abstractions;

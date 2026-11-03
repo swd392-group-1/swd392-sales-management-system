@@ -1,6 +1,6 @@
 using BookSalesManagement.Web.Services.Abstractions;
 using BookSalesManagement.Web.Services.Common;
-using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Models.Results;
 using BookSalesManagement.Web.Services;
 using BookSalesManagement.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;

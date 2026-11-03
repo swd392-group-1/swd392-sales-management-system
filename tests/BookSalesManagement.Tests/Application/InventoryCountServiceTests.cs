@@ -1,5 +1,5 @@
 using BookSalesManagement.Web.Services.Common;
-using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Models.Results;
 using BookSalesManagement.Web.Services;
 using BookSalesManagement.Web.Models.Common;
 using BookSalesManagement.Web.Models.Inventory;

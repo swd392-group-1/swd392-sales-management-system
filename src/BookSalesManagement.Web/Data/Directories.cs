@@ -1,5 +1,5 @@
 using BookSalesManagement.Web.Services.Abstractions;
-using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Models.Results;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookSalesManagement.Web.Data;

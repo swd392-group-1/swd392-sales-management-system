@@ -1,4 +1,4 @@
-using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Models.Results;
 
 namespace BookSalesManagement.Web.Models.ViewModels;
 

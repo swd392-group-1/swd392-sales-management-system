@@ -1,5 +1,5 @@
 using System.Data;
-using BookSalesManagement.Web.Models.Dtos;
+using BookSalesManagement.Web.Models.Results;
 
 namespace BookSalesManagement.Web.Services.Abstractions;
 
