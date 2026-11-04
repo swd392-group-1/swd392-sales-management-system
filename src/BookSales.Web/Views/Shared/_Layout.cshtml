@@ -7,7 +7,7 @@
     <title>@ViewData["Title"] · BookSales</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
+<body class="@(ViewData["ReceiptPage"] is true ? "receipt-page" : string.Empty)">
     <a class="skip-link" href="#main">Đến nội dung chính</a>
     <header class="site-header">
         <nav class="shell navigation" aria-label="Điều hướng chính">
@@ -22,7 +22,10 @@
         </nav>
     </header>
     <main id="main" class="shell main-content">@RenderBody()</main>
-    <footer class="shell site-footer">Book Sales Management System · Group 1 · Nền tảng phát triển .NET 8</footer>
+    @if (ViewData["HideFooter"] is not true)
+    {
+        <footer class="shell site-footer">Book Sales Management System · Group 1 · Nền tảng phát triển .NET 8</footer>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

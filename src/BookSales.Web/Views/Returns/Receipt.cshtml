@@ -1,0 +1,59 @@
+@using System.Globalization
+@model BookReturnResult
+
+@{
+    ViewData["Title"] = "Phiếu trả sách";
+}
+
+<article class="panel return-panel receipt-document">
+    <header class="receipt-heading">
+        <p class="eyebrow">HỆ THỐNG QUẢN LÝ BÁN SÁCH</p>
+        <h1>PHIẾU TRẢ SÁCH</h1>
+        <p>Hoàn tiền mặt cho khách hàng</p>
+    </header>
+
+    <dl class="return-order-meta receipt-meta">
+        <div><dt>Mã phiếu trả</dt><dd>@Model.ReturnId</dd></div>
+        <div><dt>Đơn hàng gốc</dt><dd>@Model.OriginalOrderId</dd></div>
+        <div><dt>Ngày trả (giờ UTC)</dt><dd>@(Model.ReturnedAtUtc?.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture) ?? "Không có")</dd></div>
+        <div><dt>Phương thức hoàn tiền</dt><dd><strong>Tiền mặt</strong></dd></div>
+    </dl>
+
+    <div class="receipt-table-wrap">
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th>Mã sách</th>
+                    <th>Tên sách</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá gốc</th>
+                    <th>Tiền hoàn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var line in Model.Lines)
+                {
+                    <tr>
+                        <td class="receipt-book-code">@line.BookId</td>
+                        <td class="receipt-book-title">@(line.Title ?? "Không có tên")</td>
+                        <td class="receipt-quantity">@line.ReturnedQuantity.ToString("0.##########", CultureInfo.InvariantCulture)</td>
+                        <td class="receipt-money">@line.UnitPrice.ToString("N4", CultureInfo.GetCultureInfo("vi-VN")) đ</td>
+                        <td class="receipt-money">@line.RefundAmount.ToString("N4", CultureInfo.GetCultureInfo("vi-VN")) đ</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="receipt-total-label">Tổng hoàn tiền mặt</th>
+                    <th class="receipt-money">@Model.RefundAmount.ToString("N4", CultureInfo.GetCultureInfo("vi-VN")) đ</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <p class="receipt-cash-note">Khách hàng đã nhận hoàn tiền bằng tiền mặt. Phương thức thanh toán của đơn hàng gốc không làm thay đổi phương thức hoàn tiền.</p>
+</article>
+
+<div class="return-form-actions receipt-actions">
+    <a asp-controller="Home" asp-action="Index">Quay lại trang chủ</a>
+</div>

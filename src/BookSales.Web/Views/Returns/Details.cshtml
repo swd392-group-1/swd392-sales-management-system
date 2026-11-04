@@ -1,0 +1,63 @@
+@using System.Globalization
+@model BookReturnResult
+
+@{
+    ViewData["Title"] = "Chi tiết phiếu trả";
+    var originalPaymentMethod = Model.OriginalPaymentMethod switch
+    {
+        "Cash" => "Tiền mặt",
+        "QR" => "QR",
+        _ => "Không rõ"
+    };
+}
+
+<section class="page-heading">
+    <p class="eyebrow">UC21 · TRẢ SÁCH</p>
+    <h1>Chi tiết phiếu trả</h1>
+    <p class="intro">Phiếu đã được lưu thành công. Hãy in phiếu và đưa sách về kho hoặc kệ bán hàng; thao tác vật lý không làm thay đổi tồn kho lần nữa.</p>
+</section>
+
+<section class="panel return-panel">
+    <dl class="return-order-meta">
+        <div><dt>Mã phiếu trả</dt><dd>@Model.ReturnId</dd></div>
+        <div><dt>Đơn hàng gốc</dt><dd>@Model.OriginalOrderId</dd></div>
+        <div><dt>Ngày trả (giờ UTC)</dt><dd>@(Model.ReturnedAtUtc?.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture) ?? "Không có")</dd></div>
+        <div><dt>Thanh toán gốc</dt><dd>@originalPaymentMethod</dd></div>
+        <div><dt>Phương thức hoàn tiền</dt><dd><strong>Tiền mặt</strong></dd></div>
+    </dl>
+
+    <div class="sale-table-wrap">
+        <table class="sale-table return-table">
+            <thead>
+                <tr>
+                    <th>Mã sách</th>
+                    <th>Tên sách</th>
+                    <th class="sale-number-column">Số lượng trả</th>
+                    <th class="sale-number-column">Đơn giá gốc</th>
+                    <th class="sale-number-column">Tiền hoàn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var line in Model.Lines)
+                {
+                    <tr>
+                        <td data-label="Mã sách" class="sale-book-id">@line.BookId</td>
+                        <td data-label="Tên sách" class="sale-title">@(line.Title ?? "Không có tên")</td>
+                        <td data-label="Số lượng trả" class="sale-number">@line.ReturnedQuantity.ToString("0.##########", CultureInfo.InvariantCulture)</td>
+                        <td data-label="Đơn giá gốc" class="sale-number">@line.UnitPrice.ToString("N4", CultureInfo.GetCultureInfo("vi-VN")) đ</td>
+                        <td data-label="Tiền hoàn" class="sale-number">@line.RefundAmount.ToString("N4", CultureInfo.GetCultureInfo("vi-VN")) đ</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="sale-total return-total">
+        <h2>Tổng hoàn tiền mặt</h2>
+        <strong class="sale-total-amount">@Model.RefundAmount.ToString("N4", CultureInfo.GetCultureInfo("vi-VN")) đ</strong>
+    </div>
+    <div class="return-form-actions">
+        <a class="button" asp-controller="Returns" asp-action="Receipt" asp-route-returnId="@Model.ReturnId">In phiếu trả hàng</a>
+        <a asp-controller="Returns" asp-action="History" asp-route-orderId="@Model.OriginalOrderId">Lịch sử đơn hàng</a>
+    </div>
+</section>

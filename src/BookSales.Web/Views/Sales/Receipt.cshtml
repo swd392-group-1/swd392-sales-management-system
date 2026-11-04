@@ -1,0 +1,90 @@
+@model ProcessSaleViewModel
+@{
+    ViewData["Title"] = "Hoàn tất bán hàng";
+    var result = Model.Result!;
+    var vietnameseCulture = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+<section class="page-heading">
+    <h1>Đơn hàng đã hoàn tất</h1>
+    <div class="sale-completion-order-card" aria-label="Mã đơn hàng">
+        <span class="sale-completion-order-label">MÃ ĐƠN HÀNG</span>
+        <div class="sale-completion-order-value">
+            <strong id="sale-completion-order-id">@result.OrderId</strong>
+            <button id="sale-completion-copy-button" type="button" class="button sale-completion-copy-button">Sao chép mã</button>
+        </div>
+        <p id="sale-completion-copy-status" class="sale-completion-copy-status" role="status" aria-live="polite"></p>
+    </div>
+</section>
+<section class="panel">
+    <div class="table-responsive receipt-table-wrap">
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th class="receipt-book-code">Mã sách</th>
+                    <th class="receipt-book-title">Tên sách</th>
+                    <th class="receipt-quantity">Số lượng</th>
+                    <th class="receipt-money">Đơn giá</th>
+                    <th class="receipt-money">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var line in result.Lines)
+            {
+                <tr>
+                    <td class="receipt-book-code">@line.BookId</td>
+                    <td class="receipt-book-title">@line.Title</td>
+                        <td class="receipt-quantity">@line.Quantity.ToString("N0")</td>
+                    <td class="receipt-money">@(line.UnitPrice.ToString("N0", vietnameseCulture)) ₫</td>
+                    <td class="receipt-money">@(line.LineTotal.ToString("N0", vietnameseCulture)) ₫</td>
+                </tr>
+            }
+            </tbody>
+            <tfoot>
+                <tr><th colspan="4" class="receipt-total-label">Tổng đơn hàng</th><th class="receipt-money">@(result.TotalAmount?.ToString("N0", vietnameseCulture)) ₫</th></tr>
+            </tfoot>
+        </table>
+    </div>
+    <p>Thanh toán: @result.PaymentMethod · @result.PaymentStatus</p>
+    @if (result.Status == BookSales.Application.Sales.ProcessSaleStatus.AlreadyProcessed)
+    {
+        <p class="field-hint">Đơn này đã được xử lý trước đó; tồn kho không bị trừ lần nữa.</p>
+    }
+    <a class="button" asp-controller="Sales" asp-action="Create">Tạo đơn bán mới</a>
+</section>
+
+@section Scripts {
+    <script>
+        (() => {
+            const orderIdElement = document.getElementById('sale-completion-order-id');
+            const copyButton = document.getElementById('sale-completion-copy-button');
+            const copyStatus = document.getElementById('sale-completion-copy-status');
+
+            const fallbackCopy = value => {
+                const textArea = document.createElement('textarea');
+                textArea.value = value;
+                textArea.setAttribute('readonly', '');
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                const copied = document.execCommand('copy');
+                textArea.remove();
+                return copied;
+            };
+
+            copyButton.addEventListener('click', async () => {
+                const orderId = orderIdElement.textContent;
+                try {
+                    if (navigator.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(orderId);
+                    } else if (!fallbackCopy(orderId)) {
+                        throw new Error('Clipboard copy failed.');
+                    }
+                    copyStatus.textContent = 'Đã sao chép mã đơn hàng';
+                } catch {
+                    copyStatus.textContent = 'Không thể sao chép mã đơn hàng.';
+                }
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,58 @@
+@using System.Globalization
+@model BookReturnHistoryViewModel
+
+@{
+    ViewData["Title"] = "Lịch sử trả sách";
+    ViewData["HideFooter"] = true;
+}
+
+<section class="page-heading">
+    <h1>Lịch sử trả sách</h1>
+</section>
+
+<nav class="return-module-nav" aria-label="Điều hướng khu vực trả sách">
+    <a class="return-module-nav-link" asp-controller="Returns" asp-action="Search" asp-route-orderId="@Model.OrderId">Tìm đơn hàng</a>
+    <a class="return-module-nav-link" asp-controller="Returns" asp-action="History" asp-route-orderId="@Model.OrderId" aria-current="page">Lịch sử trả sách</a>
+</nav>
+
+<section class="panel return-panel">
+    <form method="get" asp-controller="Returns" asp-action="History" class="return-search-form">
+        <label for="orderId">Lọc theo mã đơn hàng (không bắt buộc)</label>
+        <div class="return-search-controls">
+            <input id="orderId" name="orderId" value="@Model.OrderId" maxlength="200" autocomplete="off" />
+            <button type="submit" class="button">Lọc</button>
+        </div>
+    </form>
+
+    @if (Model.Returns.Count == 0)
+    {
+        <p class="return-notice">Không tìm thấy phiếu trả nào.</p>
+    }
+    else
+    {
+        <div class="sale-table-wrap">
+            <table class="sale-table return-table">
+                <thead>
+                    <tr>
+                        <th>Mã phiếu trả</th>
+                        <th>Mã đơn gốc</th>
+                        <th>Thời điểm trả (giờ UTC)</th>
+                        <th class="sale-number-column">Tiền hoàn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Returns)
+                    {
+                        <tr>
+                            <td data-label="Mã phiếu trả"><a asp-controller="Returns" asp-action="Details" asp-route-returnId="@item.ReturnId">@item.ReturnId</a></td>
+                            <td data-label="Mã đơn gốc">@item.OriginalOrderId</td>
+                            <td data-label="Thời điểm trả (giờ UTC)">@item.ReturnedAtUtc.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture) UTC</td>
+                            <td data-label="Tiền hoàn" class="sale-number">@item.RefundAmount.ToString("N4", CultureInfo.GetCultureInfo("vi-VN")) đ</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
