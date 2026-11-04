@@ -26,7 +26,7 @@ namespace BookSales.Application.Services
             if (book == null)
                 return false;
 
-            //Xác thực và đổi giá 
+            //Xác thực và đổi giá
             book.ChangeCurrentPrice(newPrice);
 
             //Lưu xuống Database và Commit
