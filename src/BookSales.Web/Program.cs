@@ -1,3 +1,6 @@
+using BookSales.Application.Reports;
+using BookSales.Application.Services;
+using BookSales.Domain.Interfaces;
 using BookSales.Application.Notifications;
 using BookSales.Application.Returns;
 using BookSales.Application.Sales;
@@ -17,6 +20,12 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<QrCodeService>();
 builder.Services.AddAntiforgery(options => options.HeaderName = "RequestVerificationToken");
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddScoped<IInventoryReportQuery, EfInventoryReportQuery>();
+builder.Services.AddScoped<InventoryReportService>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<PricingService>();
+builder.Services.AddSingleton<PriceChangeQueue>();
+builder.Services.AddSingleton<IBackgroundTaskQueue>(sp => sp.GetRequiredService<PriceChangeQueue>());
 builder.Services.AddSingleton<INoticeQueue>(_ => new ChannelNoticeQueue());
 builder.Services.AddScoped<DevelopmentNoticeService>();
 builder.Services.AddScoped<ISaleProcessingService, SaleProcessingService>();
@@ -28,6 +37,7 @@ builder.Services.AddSingleton<INoticePublisher, SignalRNoticePublisher>();
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddHostedService<NoticeDispatchWorker>();
+    builder.Services.AddHostedService<PriceDispatchWorker>();
 }
 
 var connectionString = builder.Configuration.GetConnectionString("BookSales");
@@ -61,6 +71,15 @@ app.Use(async (context, next) =>
     }
     await next(context);
 });
+// Business modules remain local Development demos until the access module is integrated.
+app.Use(async (context, next) =>
+{
+    var paths = new[] { "/reports", "/pricing", "/api/book", "/sales", "/returns", "/hubs/prices" };
+    if (paths.Any(p => context.Request.Path.StartsWithSegments(p)) &&
+        (!app.Environment.IsDevelopment() || context.Connection.RemoteIpAddress is not { } ip || !System.Net.IPAddress.IsLoopback(ip)))
+    { context.Response.StatusCode = 404; return; }
+    await next(context);
+});
 app.UseRouting();
 app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new
@@ -82,7 +101,9 @@ app.MapGet("/health/db", async (BookSalesDbContext db) =>
 if (app.Environment.IsDevelopment())
 {
     app.MapHub<DevelopmentNoticeHub>("/hubs/development");
+    app.MapHub<PriceHub>("/hubs/prices");
 }
+app.MapControllers();
 app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 app.Run();
 

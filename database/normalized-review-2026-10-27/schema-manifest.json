@@ -1,0 +1,1740 @@
+{
+  "database": "SWD392_BookSales_3NF_REVIEW_20261027",
+  "status": "PROPOSAL — not yet approved; conditional 3NF candidate",
+  "tables": [
+    {
+      "name": "Employee",
+      "columns": [
+        {
+          "name": "employee_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "name",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "role_code",
+          "sql_type": "nvarchar(32)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "employee_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [
+        "[role_code] IN (N'SYSTEM_ADMIN',N'STORE_MANAGER',N'INVENTORY_STAFF',N'SALES_STAFF')"
+      ],
+      "note": "One primary role confirmed. Placement on Employee is the normalization proposal; reconcile the PO note about EmployeePermission.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "Account",
+      "columns": [
+        {
+          "name": "account_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "employee_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "username",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "status",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "password_hash",
+          "sql_type": "nvarchar(512)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "account_id"
+      ],
+      "unique": [
+        [
+          "employee_id"
+        ],
+        [
+          "username"
+        ]
+      ],
+      "foreign": [
+        {
+          "columns": [
+            "employee_id"
+          ],
+          "table": "Employee",
+          "references": [
+            "employee_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "One personal account per employee. FK+UNIQUE ensures at-most-one, not total Employee participation. password_hash stores only an application-generated password hash; NULL means credentials are not provisioned and Login must reject the account. No plaintext/default password. Login implementation remains with the module owner.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "Permission",
+      "columns": [
+        {
+          "name": "permission_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "permission_name",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "permission_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "Permission ID is the proposed stable capability identifier. No seed grant matrix is invented.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "EmployeePermission",
+      "columns": [
+        {
+          "name": "employee_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "permission_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "employee_id",
+        "permission_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "employee_id"
+          ],
+          "table": "Employee",
+          "references": [
+            "employee_id"
+          ]
+        },
+        {
+          "columns": [
+            "permission_id"
+          ],
+          "table": "Permission",
+          "references": [
+            "permission_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Only individual grants; primary role and names are not repeated here.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "UserAccessLog",
+      "columns": [
+        {
+          "name": "access_log_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "account_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "occurred_at_utc",
+          "sql_type": "datetime2(7)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "request_path",
+          "sql_type": "nvarchar(2048)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "was_authorized",
+          "sql_type": "bit",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "client_ip",
+          "sql_type": "nvarchar(45)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "access_log_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "account_id"
+          ],
+          "table": "Account",
+          "references": [
+            "account_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "PO requires page/denied-access/IP logs. Identity/time columns are proposed; unauthenticated requests may have no account. Retention/redaction open.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "ExternalServiceLog",
+      "columns": [
+        {
+          "name": "service_log_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "occurred_at_utc",
+          "sql_type": "datetime2(7)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "service_name",
+          "sql_type": "nvarchar(100)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "operation_name",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "succeeded",
+          "sql_type": "bit",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "service_log_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "PO requires external-service usage logs; minimal fields are proposed. No credentials or message payloads.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "Customer",
+      "columns": [
+        {
+          "name": "customer_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "name",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "customer_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "CustomerContact",
+      "columns": [
+        {
+          "name": "contact_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "customer_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "contact_kind",
+          "sql_type": "nvarchar(50)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "contact_value",
+          "sql_type": "nvarchar(1000)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "contact_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "customer_id"
+          ],
+          "table": "Customer",
+          "references": [
+            "customer_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Proposed atomic contact entries replace ambiguous contact_information. One value per row; type vocabulary/validation remain open. No copied Customer name.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "Provider",
+      "columns": [
+        {
+          "name": "provider_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "name",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "provider_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "ProviderContact",
+      "columns": [
+        {
+          "name": "contact_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "provider_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "contact_kind",
+          "sql_type": "nvarchar(50)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "contact_value",
+          "sql_type": "nvarchar(1000)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "contact_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "provider_id"
+          ],
+          "table": "Provider",
+          "references": [
+            "provider_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Proposed atomic contact entries. Original export has zero business rows at the inspected time; no unreviewed string-splitting migration.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "Book",
+      "columns": [
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "title",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "current_price",
+          "sql_type": "decimal(19,4)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "book_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "Source catalog attributes retained. Transaction price capture timing and price-change policies remain open.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "Promotion",
+      "columns": [
+        {
+          "name": "promotion_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "name",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "discount_kind",
+          "sql_type": "nvarchar(50)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "discount_value",
+          "sql_type": "decimal(19,4)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "start_date",
+          "sql_type": "date",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "end_date",
+          "sql_type": "date",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "promotion_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "PROPOSED typed discount value plus an explicit unit/kind replaces opaque source text. No allowed kind list, percentage bounds or stacking formula is assumed.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "PromotionBook",
+      "columns": [
+        {
+          "name": "promotion_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "promotion_id",
+        "book_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "promotion_id"
+          ],
+          "table": "Promotion",
+          "references": [
+            "promotion_id"
+          ]
+        },
+        {
+          "columns": [
+            "book_id"
+          ],
+          "table": "Book",
+          "references": [
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Source pair relationship retained for review; exact cardinality/overlap rules remain open.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "SalesOrder",
+      "columns": [
+        {
+          "name": "order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "order_date",
+          "sql_type": "date",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "total_order_amount",
+          "sql_type": "decimal(19,4)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "customer_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "order_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "customer_id"
+          ],
+          "table": "Customer",
+          "references": [
+            "customer_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Source total retained as recorded transaction total; discount allocation/cost/profit rules are not invented.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "SalesOrderLine",
+      "columns": [
+        {
+          "name": "order_line_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "quantity",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "unit_price",
+          "sql_type": "decimal(19,4)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "order_line_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "order_id"
+          ],
+          "table": "SalesOrder",
+          "references": [
+            "order_id"
+          ]
+        },
+        {
+          "columns": [
+            "book_id"
+          ],
+          "table": "Book",
+          "references": [
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [
+        "[quantity] > 0"
+      ],
+      "note": "Replaces OrderBook pair PK. Repeated Book lines supported; line identity is a technical proposal. Unit price is source transaction data, not a new snapshot-timing rule.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "Payment",
+      "columns": [
+        {
+          "name": "payment_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "payment_method",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "payment_status",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "payment_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "Source fields retained. Settlement amount, attempts, allocation, QR callbacks and idempotency rules remain open.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "OrderPayment",
+      "columns": [
+        {
+          "name": "order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "payment_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "order_id",
+        "payment_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "order_id"
+          ],
+          "table": "SalesOrder",
+          "references": [
+            "order_id"
+          ]
+        },
+        {
+          "columns": [
+            "payment_id"
+          ],
+          "table": "Payment",
+          "references": [
+            "payment_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "PROVISIONAL source link, not confirmation that payments may cover multiple orders. Revisit when payment cardinality is decided.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "BookReturn",
+      "columns": [
+        {
+          "name": "return_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "original_order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "returned_at_utc",
+          "sql_type": "datetime2(7)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "return_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "original_order_id"
+          ],
+          "table": "SalesOrder",
+          "references": [
+            "order_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Confirmed: one original order per return, multiple returns per order. Cash-only refund is a policy, not a repeated constant method column.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "BookReturnLine",
+      "columns": [
+        {
+          "name": "return_line_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "return_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "original_order_line_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "returned_quantity",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "refund_amount",
+          "sql_type": "decimal(19,4)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "return_line_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "return_id"
+          ],
+          "table": "BookReturn",
+          "references": [
+            "return_id"
+          ]
+        },
+        {
+          "columns": [
+            "original_order_line_id"
+          ],
+          "table": "SalesOrderLine",
+          "references": [
+            "order_line_id"
+          ]
+        }
+      ],
+      "checks": [
+        "[returned_quantity] > 0",
+        "[refund_amount] >= 0"
+      ],
+      "note": "Do not repeat original_order_id/book_id/unit_price: the referenced sales line determines them. Trigger enforces same original order; cumulative quantity uses transactional validation. Eligibility/refund allocation remain open.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "PurchaseOrder",
+      "columns": [
+        {
+          "name": "purchase_order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "order_date",
+          "sql_type": "date",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "status",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "purchase_order_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "PurchaseOrderLine",
+      "columns": [
+        {
+          "name": "purchase_order_line_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "purchase_order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "ordered_quantity",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "purchase_order_line_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "purchase_order_id"
+          ],
+          "table": "PurchaseOrder",
+          "references": [
+            "purchase_order_id"
+          ]
+        },
+        {
+          "columns": [
+            "book_id"
+          ],
+          "table": "Book",
+          "references": [
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [
+        "[ordered_quantity] > 0"
+      ],
+      "note": "Replaces PurchaseOrderBook pair key; repeated Book lines allowed. No inferred purchase cost or line price.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "PurchaseOrderProvider",
+      "columns": [
+        {
+          "name": "purchase_order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "provider_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "purchase_order_id",
+        "provider_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "purchase_order_id"
+          ],
+          "table": "PurchaseOrder",
+          "references": [
+            "purchase_order_id"
+          ]
+        },
+        {
+          "columns": [
+            "provider_id"
+          ],
+          "table": "Provider",
+          "references": [
+            "provider_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "PROVISIONAL source link; one-versus-multiple providers per PO remains open. Not a newly confirmed M:N business rule.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "GoodsReceipt",
+      "columns": [
+        {
+          "name": "receipt_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "receipt_date",
+          "sql_type": "date",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "receipt_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "Confirmed multi-PO receipt: no purchase_order_id on header; PO membership derives from receipt lines.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "GoodsReceiptLine",
+      "columns": [
+        {
+          "name": "receipt_line_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "receipt_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "purchase_order_line_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "received_quantity",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "receipt_line_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "receipt_id"
+          ],
+          "table": "GoodsReceipt",
+          "references": [
+            "receipt_id"
+          ]
+        },
+        {
+          "columns": [
+            "purchase_order_line_id"
+          ],
+          "table": "PurchaseOrderLine",
+          "references": [
+            "purchase_order_line_id"
+          ]
+        }
+      ],
+      "checks": [
+        "[received_quantity] > 0"
+      ],
+      "note": "References exact PO line. Do not repeat PO ID or Book ID: they depend on purchase_order_line_id. Multiple POs per receipt and multiple receipts per PO supported.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "Shipment",
+      "columns": [
+        {
+          "name": "shipment_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "tracking_number",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "shipment_status",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "shipment_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "Technical shipment ID avoids assuming tracking numbers are globally unique. Carrier namespace/reuse rules remain open; no tracking-number UNIQUE is asserted.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "ProviderShipment",
+      "columns": [
+        {
+          "name": "provider_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "shipment_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "provider_id",
+        "shipment_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "provider_id"
+          ],
+          "table": "Provider",
+          "references": [
+            "provider_id"
+          ]
+        },
+        {
+          "columns": [
+            "shipment_id"
+          ],
+          "table": "Shipment",
+          "references": [
+            "shipment_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "PROVISIONAL source pair relation.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "PurchaseOrderShipment",
+      "columns": [
+        {
+          "name": "purchase_order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "shipment_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "purchase_order_id",
+        "shipment_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "purchase_order_id"
+          ],
+          "table": "PurchaseOrder",
+          "references": [
+            "purchase_order_id"
+          ]
+        },
+        {
+          "columns": [
+            "shipment_id"
+          ],
+          "table": "Shipment",
+          "references": [
+            "shipment_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "PROVISIONAL source pair relation.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "PurchaseOrderApproval",
+      "columns": [
+        {
+          "name": "employee_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "purchase_order_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "employee_id",
+        "purchase_order_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "employee_id"
+          ],
+          "table": "Employee",
+          "references": [
+            "employee_id"
+          ]
+        },
+        {
+          "columns": [
+            "purchase_order_id"
+          ],
+          "table": "PurchaseOrder",
+          "references": [
+            "purchase_order_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Source pair retained. Role authorization and repeated approval/history semantics are not implemented by this link.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "InventoryAudit",
+      "columns": [
+        {
+          "name": "audit_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "audit_date",
+          "sql_type": "date",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "status",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "audit_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "Audit/approval does not update stock or automatically create Adjustment; no trigger does so.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "InventoryAuditLine",
+      "columns": [
+        {
+          "name": "audit_line_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "audit_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "counted_quantity",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "audit_line_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "audit_id"
+          ],
+          "table": "InventoryAudit",
+          "references": [
+            "audit_id"
+          ]
+        },
+        {
+          "columns": [
+            "book_id"
+          ],
+          "table": "Book",
+          "references": [
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [
+        "[counted_quantity] >= 0"
+      ],
+      "note": "Proposed observation identity; Audit observation/recount grain remains under review, distinct from independent Count.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "InventoryCount",
+      "columns": [
+        {
+          "name": "count_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "counted_at_utc",
+          "sql_type": "datetime2(7)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "recorded_by_employee_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "count_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "recorded_by_employee_id"
+          ],
+          "table": "Employee",
+          "references": [
+            "employee_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Independent Count, not an Audit or its approval.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "InventoryCountObservation",
+      "columns": [
+        {
+          "name": "observation_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "count_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "counted_quantity",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "observed_at_utc",
+          "sql_type": "datetime2(7)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "observation_id"
+      ],
+      "unique": [
+        [
+          "observation_id",
+          "count_id",
+          "book_id"
+        ]
+      ],
+      "foreign": [
+        {
+          "columns": [
+            "count_id"
+          ],
+          "table": "InventoryCount",
+          "references": [
+            "count_id"
+          ]
+        },
+        {
+          "columns": [
+            "book_id"
+          ],
+          "table": "Book",
+          "references": [
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [
+        "[counted_quantity] >= 0"
+      ],
+      "note": "Confirmed repeated Book rows mean recounts. Each observation is retained, never summed as independent stock. Extra triple UNIQUE exists only as a composite FK target, not a minimal candidate key.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "InventoryCountSelection",
+      "columns": [
+        {
+          "name": "count_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "selected_observation_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "recorded_quantity",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "count_id",
+        "book_id"
+      ],
+      "unique": [
+        [
+          "selected_observation_id"
+        ]
+      ],
+      "foreign": [
+        {
+          "columns": [
+            "selected_observation_id",
+            "count_id",
+            "book_id"
+          ],
+          "table": "InventoryCountObservation",
+          "references": [
+            "observation_id",
+            "count_id",
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "One chosen final observation per Count/Book; it need not be MAX(time). Composite FK proves selected observation matches that Count and Book. recorded_quantity is the historical comparison baseline, not current BookStock.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "InventoryAdjustment",
+      "columns": [
+        {
+          "name": "adjustment_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "adjustment_date",
+          "sql_type": "date",
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "name": "reason",
+          "sql_type": "nvarchar(max)",
+          "nullable": true,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "adjustment_id"
+      ],
+      "unique": [],
+      "foreign": [],
+      "checks": [],
+      "note": "quantity_change moved off header to per-Book line. Manual adjustment semantics remain open.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "AdjustmentBook",
+      "columns": [
+        {
+          "name": "adjustment_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "quantity_change",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "adjustment_id",
+        "book_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "adjustment_id"
+          ],
+          "table": "InventoryAdjustment",
+          "references": [
+            "adjustment_id"
+          ]
+        },
+        {
+          "columns": [
+            "book_id"
+          ],
+          "table": "Book",
+          "references": [
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "One delta per Book per Adjustment, proposed grain supported by one Adjustment containing differing Books of Count.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "CountAdjustment",
+      "columns": [
+        {
+          "name": "count_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "adjustment_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "count_id"
+      ],
+      "unique": [
+        [
+          "adjustment_id"
+        ]
+      ],
+      "foreign": [
+        {
+          "columns": [
+            "count_id"
+          ],
+          "table": "InventoryCount",
+          "references": [
+            "count_id"
+          ]
+        },
+        {
+          "columns": [
+            "adjustment_id"
+          ],
+          "table": "InventoryAdjustment",
+          "references": [
+            "adjustment_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "At most one resulting Adjustment per Count and one source Count per automatic Adjustment. No link is needed if Count has no differences.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "BookStock",
+      "columns": [
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "current_quantity",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "book_id"
+      ],
+      "unique": [],
+      "foreign": [
+        {
+          "columns": [
+            "book_id"
+          ],
+          "table": "Book",
+          "references": [
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Confirmed stored current stock. No nonnegative-stock or opening balance is assumed. No automated posting workflow is created by this table.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    },
+    {
+      "name": "InventoryMovement",
+      "columns": [
+        {
+          "name": "movement_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "identity": true
+        },
+        {
+          "name": "posting_key",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "book_id",
+          "sql_type": "nvarchar(200)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "quantity_delta",
+          "sql_type": "decimal(38,10)",
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "name": "occurred_at_utc",
+          "sql_type": "datetime2(7)",
+          "nullable": false,
+          "identity": false
+        }
+      ],
+      "pk": [
+        "movement_id"
+      ],
+      "unique": [
+        [
+          "posting_key"
+        ]
+      ],
+      "foreign": [
+        {
+          "columns": [
+            "book_id"
+          ],
+          "table": "Book",
+          "references": [
+            "book_id"
+          ]
+        }
+      ],
+      "checks": [],
+      "note": "Proposed immutable movement history; opaque stable posting_key supports idempotency. It is not a polymorphic FK or a guarantee of source-document consistency. Posting+BookStock must be atomic in future application code.",
+      "source": "PROPOSAL — not yet approved",
+      "extra_fds": []
+    }
+  ],
+  "expected": {
+    "tables": 38,
+    "columns": 126,
+    "primary_keys": 38,
+    "unique_constraints": 6,
+    "foreign_keys": 40,
+    "checks": 8
+  }
+}

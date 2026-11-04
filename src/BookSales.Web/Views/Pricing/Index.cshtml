@@ -1,0 +1,6 @@
+@{ ViewData["Title"] = "Đổi giá sách"; }
+<h1>Đổi giá sách</h1>
+<form method="post">@Html.AntiForgeryToken()
+<label>Mã sách <input name="bookId" required maxlength="200" /></label>
+<label>Giá mới <input name="newPrice" type="number" min="0" step="0.0001" required /></label>
+<button type="submit">Lưu giá</button></form><p role="status">@ViewBag.Message</p>

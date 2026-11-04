@@ -1,0 +1,36 @@
+@startuml
+skinparam monochrome true
+actor "Store Manager" as M
+boundary "Report page" as UI
+control ReportsController as C
+control InventoryReportService as S
+participant "IInventoryReportQuery\nEfInventoryReportQuery" as Q
+database "SQL Server\nBook + BookStock" as DB
+M -> UI : Enter search / in-stock filter
+UI -> C : GET /reports/inventory
+C -> S : GenerateAsync(filter, ct)
+S -> S : Normalize and validate search
+S -> Q : ReadAsync(filter, ct)
+Q -> DB : One ordered, read-only SQL query
+DB --> Q : Book rows + nullable stock
+Q --> S : rows
+S --> C : InventoryReport(timestamp, rows)
+C --> UI : Render table / quantity / unknown count
+opt Export current filtered data
+ M -> UI : Export CSV
+ UI -> C : GET /reports/inventory/export
+ C -> S : GenerateAsync(same filter, ct)
+ S -> Q : ReadAsync(filter, ct)
+ Q -> DB : Read current data
+ DB --> Q : rows
+ Q --> S : rows
+ S --> C : report
+ C -> C : InventoryCsv.Export(report)
+ C --> UI : UTF-8 CSV download
+end
+note over M,UI
+Implemented as a local Development demo.
+Manager authorization is an integration dependency;
+this diagram does not claim Login is implemented here.
+end note
+@enduml

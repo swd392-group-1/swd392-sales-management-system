@@ -1,0 +1,212 @@
+{
+  "source_file": "SWD392_BookStore.sql (workspace parent, not copied into repository)",
+  "source_sha256": "1563337b07618b6e12c94b9cb2f57b0f5b95ac7a8facd17a294ed9c888cd738a",
+  "mapping": [
+    {
+      "source_table": "Account",
+      "candidate_tables": [
+        "Account"
+      ],
+      "change": "Add personal-owner FK, uniqueness and nullable password_hash for safely provisioning existing demo accounts; no plaintext credentials or default passwords."
+    },
+    {
+      "source_table": "AdjustmentBook",
+      "candidate_tables": [
+        "AdjustmentBook"
+      ],
+      "change": "Move per-Book quantity_change here; original header quantity cannot be allocated automatically."
+    },
+    {
+      "source_table": "Book",
+      "candidate_tables": [
+        "Book"
+      ],
+      "change": "Retain source catalog attributes."
+    },
+    {
+      "source_table": "Customer",
+      "candidate_tables": [
+        "Customer",
+        "CustomerContact"
+      ],
+      "change": "Proposed atomic contact rows; no automatic splitting of opaque source text."
+    },
+    {
+      "source_table": "Employee",
+      "candidate_tables": [
+        "Employee"
+      ],
+      "change": "Add confirmed primary-role value; placement remains a PO-review item."
+    },
+    {
+      "source_table": "EmployeeAccount",
+      "candidate_tables": [
+        "Account"
+      ],
+      "change": "Remove junction under proposed personal 1:1 ownership; no source data migrated."
+    },
+    {
+      "source_table": "EmployeePermission",
+      "candidate_tables": [
+        "EmployeePermission"
+      ],
+      "change": "Keep grant pair; never repeat primary role or names."
+    },
+    {
+      "source_table": "GoodsReceipt",
+      "candidate_tables": [
+        "GoodsReceipt",
+        "GoodsReceiptLine"
+      ],
+      "change": "Remove single-PO header FK/UNIQUE; derive PO set from exact referenced PO lines."
+    },
+    {
+      "source_table": "GoodsReceiptBook",
+      "candidate_tables": [
+        "GoodsReceiptLine"
+      ],
+      "change": "Introduce occurrence ID and exact PO-line FK; Book ID is derived."
+    },
+    {
+      "source_table": "InventoryAdjustment",
+      "candidate_tables": [
+        "InventoryAdjustment",
+        "AdjustmentBook"
+      ],
+      "change": "Header properties separated from per-Book differences."
+    },
+    {
+      "source_table": "InventoryAudit",
+      "candidate_tables": [
+        "InventoryAudit"
+      ],
+      "change": "Retain independent Audit data; no stock posting on approval."
+    },
+    {
+      "source_table": "InventoryAuditBook",
+      "candidate_tables": [
+        "InventoryAuditLine"
+      ],
+      "change": "Proposed observation key; Audit grain remains review scope."
+    },
+    {
+      "source_table": "OrderBook",
+      "candidate_tables": [
+        "SalesOrderLine"
+      ],
+      "change": "Occurrence identity supports repeated Books and original-line Return references."
+    },
+    {
+      "source_table": "OrderPayment",
+      "candidate_tables": [
+        "OrderPayment"
+      ],
+      "change": "Keep provisional link pending payment cardinality."
+    },
+    {
+      "source_table": "Payment",
+      "candidate_tables": [
+        "Payment"
+      ],
+      "change": "Retain source attributes; settlement model remains incomplete."
+    },
+    {
+      "source_table": "Permission",
+      "candidate_tables": [
+        "Permission"
+      ],
+      "change": "Retain ID/name without repeating name in grants."
+    },
+    {
+      "source_table": "Promotion",
+      "candidate_tables": [
+        "Promotion"
+      ],
+      "change": "Proposed typed value/kind; formula, units and legacy conversion remain open."
+    },
+    {
+      "source_table": "PromotionBook",
+      "candidate_tables": [
+        "PromotionBook"
+      ],
+      "change": "Keep provisional source link."
+    },
+    {
+      "source_table": "Provider",
+      "candidate_tables": [
+        "Provider",
+        "ProviderContact"
+      ],
+      "change": "Proposed atomic contact rows."
+    },
+    {
+      "source_table": "ProviderShipment",
+      "candidate_tables": [
+        "ProviderShipment"
+      ],
+      "change": "Use technical Shipment ID, not assumed globally unique tracking number."
+    },
+    {
+      "source_table": "PurchaseOrder",
+      "candidate_tables": [
+        "PurchaseOrder"
+      ],
+      "change": "Retain source header attributes."
+    },
+    {
+      "source_table": "PurchaseOrderApproval",
+      "candidate_tables": [
+        "PurchaseOrderApproval"
+      ],
+      "change": "Retain source approval association and Employee identity."
+    },
+    {
+      "source_table": "PurchaseOrderBook",
+      "candidate_tables": [
+        "PurchaseOrderLine"
+      ],
+      "change": "Occurrence ID supports repeated Books and receipt allocation."
+    },
+    {
+      "source_table": "PurchaseOrderProvider",
+      "candidate_tables": [
+        "PurchaseOrderProvider"
+      ],
+      "change": "Keep provisional source link; provider cardinality unresolved."
+    },
+    {
+      "source_table": "PurchaseOrderShipment",
+      "candidate_tables": [
+        "PurchaseOrderShipment"
+      ],
+      "change": "Use technical Shipment ID."
+    },
+    {
+      "source_table": "SalesOrder",
+      "candidate_tables": [
+        "SalesOrder"
+      ],
+      "change": "Retain original header and nullable customer relation."
+    },
+    {
+      "source_table": "Shipment",
+      "candidate_tables": [
+        "Shipment"
+      ],
+      "change": "Introduce technical ID; tracking-number namespace remains unresolved."
+    }
+  ],
+  "new_requirement_support": [
+    "UserAccessLog",
+    "ExternalServiceLog",
+    "BookReturn",
+    "BookReturnLine",
+    "InventoryCount",
+    "InventoryCountObservation",
+    "InventoryCountSelection",
+    "CountAdjustment",
+    "BookStock",
+    "InventoryMovement"
+  ],
+  "qualification": "All 27 source tables mapped; not an automatic data migration or proof that unresolved source cardinalities are approved."
+}

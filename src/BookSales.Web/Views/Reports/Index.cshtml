@@ -1,0 +1,14 @@
+@model BookSales.Application.Reports.InventoryReport
+@{ ViewData["Title"] = "Báo cáo tồn kho"; }
+<h1>Báo cáo tồn kho</h1>
+<form method="get"><label>Tìm mã hoặc tên sách <input name="search" maxlength="200" value="@ViewBag.Search" /></label>
+<label><input type="checkbox" name="inStockOnly" value="true" checked="@(ViewBag.InStockOnly == true)" /> Chỉ sách còn tồn</label>
+<button type="submit">Xem báo cáo</button></form>
+<p>@Model.Rows.Count sách; tổng số lượng đã biết: @Model.TotalQuantity.ToString("0.##########"). Thiếu bản ghi tồn: @Model.MissingStockCount.</p>
+<p>Thời điểm tạo: @Model.GeneratedAtUtc.ToString("u"). Giá hiện tại chỉ để tham khảo, không phải giá vốn.</p>
+<a asp-action="Export" asp-route-search="@ViewBag.Search" asp-route-inStockOnly="@ViewBag.InStockOnly">Xuất CSV theo bộ lọc</a>
+<table><thead><tr><th>Mã sách</th><th>Tên sách</th><th>Giá hiện tại</th><th>Số lượng</th></tr></thead><tbody>
+@foreach (var row in Model.Rows) {
+<tr><td>@row.BookId</td><td>@row.Title</td><td>@row.CurrentPrice?.ToString("N0")</td><td>@(row.Quantity?.ToString("0.##########") ?? "Chưa có dữ liệu")</td></tr>
+}
+</tbody></table>

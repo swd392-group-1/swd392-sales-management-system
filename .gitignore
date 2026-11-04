@@ -1,9 +1,57 @@
+# .NET build output
 **/bin/
 **/obj/
+
+# IDE and user-specific state
 .vs/
 .idea/
-TestResults/
 *.user
 *.suo
-src/BookSales.Web/appsettings.Local.json
+*.rsuser
+*.sln.docstates
+_ReSharper*/
+
+# Python tooling used by database generators
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Generated output and local evidence
 .artifacts/
+/artifacts/
+/publish/
+/coverage/
+/logs/
+
+# Test and coverage reports
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage.cobertura.xml
+coverage.opencover.xml
+
+# Machine-specific configuration
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# SQL Server data files and backups
+*.mdf
+*.ndf
+*.ldf
+*.bak
+*.trn
+
+# Temporary and operating-system files
+*.tmp
+*.temp
+*.log
+~$*
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini

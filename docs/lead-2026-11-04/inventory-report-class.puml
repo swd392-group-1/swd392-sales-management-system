@@ -1,0 +1,39 @@
+@startuml
+!pragma layout smetana
+skinparam monochrome true
+class ReportsController {
+ +Index(search, inStockOnly, ct)
+ +Export(search, inStockOnly, ct)
+}
+class InventoryReportService {
+ +GenerateAsync(filter, ct): InventoryReport
+}
+interface IInventoryReportQuery {
+ +ReadAsync(filter, ct): rows
+}
+class EfInventoryReportQuery
+class BookSalesDbContext
+class InventoryReport {
+ +GeneratedAtUtc: DateTimeOffset {readOnly}
+ +Rows: IReadOnlyList {readOnly}
+ +TotalQuantity: decimal {readOnly}
+ +MissingStockCount: int {readOnly}
+}
+class InventoryReportRow <<record>>
+class InventoryReportFilter <<record>>
+class InventoryCsv <<static>> {
+ +Export(report): byte[]
+}
+ReportsController --> InventoryReportService
+ReportsController ..> InventoryCsv
+InventoryReportService --> IInventoryReportQuery
+EfInventoryReportQuery ..|> IInventoryReportQuery
+EfInventoryReportQuery --> BookSalesDbContext
+InventoryReportService ..> InventoryReport
+InventoryReportService ..> InventoryReportFilter
+InventoryReport *-- "0..*" InventoryReportRow
+note bottom of InventoryReport
+ Query result only; not a persisted Report entity.
+ Missing BookStock is unknown, not zero.
+end note
+@enduml

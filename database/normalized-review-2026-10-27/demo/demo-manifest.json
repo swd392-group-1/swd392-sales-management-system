@@ -1,0 +1,2194 @@
+{
+  "dataset": "SWD392 demo 2026-10-27 v1",
+  "prefix": "DEMO-20261027-",
+  "target_database": "SWD392_BookSales_3NF_REVIEW_20261027",
+  "marker": "SWD392_Demo_20261027_v1",
+  "payload_sha256": "caa111a435f7f2121d758df77eaa8159a10e85f5122b7cc2bc33469d2716b96f",
+  "expected_counts": {
+    "Account": 6,
+    "AdjustmentBook": 2,
+    "Book": 12,
+    "BookReturn": 2,
+    "BookReturnLine": 2,
+    "BookStock": 12,
+    "CountAdjustment": 1,
+    "Customer": 3,
+    "CustomerContact": 3,
+    "Employee": 6,
+    "EmployeePermission": 39,
+    "ExternalServiceLog": 3,
+    "GoodsReceipt": 3,
+    "GoodsReceiptLine": 7,
+    "InventoryAdjustment": 1,
+    "InventoryAudit": 1,
+    "InventoryAuditLine": 1,
+    "InventoryCount": 3,
+    "InventoryCountObservation": 9,
+    "InventoryCountSelection": 4,
+    "InventoryMovement": 29,
+    "OrderPayment": 3,
+    "Payment": 3,
+    "Permission": 21,
+    "Provider": 2,
+    "ProviderContact": 2,
+    "ProviderShipment": 2,
+    "PurchaseOrder": 4,
+    "PurchaseOrderApproval": 4,
+    "PurchaseOrderLine": 8,
+    "PurchaseOrderProvider": 4,
+    "PurchaseOrderShipment": 3,
+    "SalesOrder": 3,
+    "SalesOrderLine": 7,
+    "Shipment": 2,
+    "UserAccessLog": 6
+  },
+  "expected_stock": {
+    "DEMO-20261027-B01": 43,
+    "DEMO-20261027-B02": 27,
+    "DEMO-20261027-B03": 18,
+    "DEMO-20261027-B04": 13,
+    "DEMO-20261027-B05": 8,
+    "DEMO-20261027-B06": 12,
+    "DEMO-20261027-B07": 24,
+    "DEMO-20261027-B08": 5,
+    "DEMO-20261027-B09": 18,
+    "DEMO-20261027-B10": 14,
+    "DEMO-20261027-B11": 0,
+    "DEMO-20261027-B12": 1
+  },
+  "expected_total_units": 183,
+  "expected_book_count": 12,
+  "expected_catalog_value": 27555000,
+  "expected_sale_total": 1445000,
+  "expected_refund_total": 260000,
+  "fixture_limits": "Fictional snapshots, not approved business rules. No real payment/email/shipping, passwords or application authorization.",
+  "rows": [
+    {
+      "table": "Employee",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "name": "Quản trị viên mẫu [DEMO]",
+        "role_code": "SYSTEM_ADMIN"
+      },
+      "identity": null
+    },
+    {
+      "table": "Account",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-ADMIN",
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "username": "swd392_demo_admin",
+        "status": "ACTIVE"
+      },
+      "identity": null
+    },
+    {
+      "table": "Employee",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "name": "Quản lý mẫu [DEMO]",
+        "role_code": "STORE_MANAGER"
+      },
+      "identity": null
+    },
+    {
+      "table": "Account",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-MANAGER",
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "username": "swd392_demo_manager",
+        "status": "ACTIVE"
+      },
+      "identity": null
+    },
+    {
+      "table": "Employee",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "name": "Nhân viên kho mẫu [DEMO]",
+        "role_code": "INVENTORY_STAFF"
+      },
+      "identity": null
+    },
+    {
+      "table": "Account",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-INVENTORY",
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "username": "swd392_demo_inventory",
+        "status": "ACTIVE"
+      },
+      "identity": null
+    },
+    {
+      "table": "Employee",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-SALES-A",
+        "name": "Nhân viên bán hàng mẫu A [DEMO]",
+        "role_code": "SALES_STAFF"
+      },
+      "identity": null
+    },
+    {
+      "table": "Account",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-SALES-A",
+        "employee_id": "DEMO-20261027-EMP-SALES-A",
+        "username": "swd392_demo_sales_a",
+        "status": "ACTIVE"
+      },
+      "identity": null
+    },
+    {
+      "table": "Employee",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-SALES-B",
+        "name": "Nhân viên bán hàng mẫu B [DEMO]",
+        "role_code": "SALES_STAFF"
+      },
+      "identity": null
+    },
+    {
+      "table": "Account",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-SALES-B",
+        "employee_id": "DEMO-20261027-EMP-SALES-B",
+        "username": "swd392_demo_sales_b",
+        "status": "ACTIVE"
+      },
+      "identity": null
+    },
+    {
+      "table": "Employee",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-DISABLED",
+        "name": "Tài khoản mẫu đã khóa [DEMO]",
+        "role_code": "SALES_STAFF"
+      },
+      "identity": null
+    },
+    {
+      "table": "Account",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-DISABLED",
+        "employee_id": "DEMO-20261027-EMP-DISABLED",
+        "username": "swd392_demo_disabled",
+        "status": "DISABLED"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC01",
+        "permission_name": "Process Sale [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC02",
+        "permission_name": "Process QR Payment [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC03",
+        "permission_name": "Maintain Book Information [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC04",
+        "permission_name": "Maintain Provider Information [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC05",
+        "permission_name": "Prepare Purchase Order [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC06",
+        "permission_name": "Record Goods Receipt [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC07",
+        "permission_name": "Record Inventory Count [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC08",
+        "permission_name": "Record Inventory Adjustment [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC09",
+        "permission_name": "Perform Inventory Audit [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC10",
+        "permission_name": "Update Price [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC11",
+        "permission_name": "Update Discount/Promotion [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC12",
+        "permission_name": "Update Staff Permissions [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC13",
+        "permission_name": "Approve Purchase Order [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC14",
+        "permission_name": "Approve Inventory Audit [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC15",
+        "permission_name": "View Management Reports [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC16",
+        "permission_name": "Manage Accounts [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC17",
+        "permission_name": "Configure System [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC18",
+        "permission_name": "Review System Activity Logs [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC19",
+        "permission_name": "Review Security Audit Logs [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC20",
+        "permission_name": "Monitor System Alerts [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "Permission",
+      "data": {
+        "permission_id": "DEMO-20261027-UC21",
+        "permission_name": "Process Book Return [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC01"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC02"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC03"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC04"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC05"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC06"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC07"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC08"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC09"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC10"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC11"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC12"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC13"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC14"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC15"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC16"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC17"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC18"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC19"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC20"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-ADMIN",
+        "permission_id": "DEMO-20261027-UC21"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "permission_id": "DEMO-20261027-UC10"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "permission_id": "DEMO-20261027-UC11"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "permission_id": "DEMO-20261027-UC12"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "permission_id": "DEMO-20261027-UC13"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "permission_id": "DEMO-20261027-UC14"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "permission_id": "DEMO-20261027-UC15"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "permission_id": "DEMO-20261027-UC03"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "permission_id": "DEMO-20261027-UC04"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "permission_id": "DEMO-20261027-UC05"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "permission_id": "DEMO-20261027-UC06"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "permission_id": "DEMO-20261027-UC07"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "permission_id": "DEMO-20261027-UC08"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-INVENTORY",
+        "permission_id": "DEMO-20261027-UC09"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-SALES-A",
+        "permission_id": "DEMO-20261027-UC01"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-SALES-A",
+        "permission_id": "DEMO-20261027-UC02"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-SALES-A",
+        "permission_id": "DEMO-20261027-UC21"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-SALES-B",
+        "permission_id": "DEMO-20261027-UC01"
+      },
+      "identity": null
+    },
+    {
+      "table": "EmployeePermission",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-DISABLED",
+        "permission_id": "DEMO-20261027-UC01"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B01",
+        "title": "Thiết kế hướng đối tượng [DEMO]",
+        "current_price": 130000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B01",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": 30,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B02",
+        "title": "Lập trình C# căn bản [DEMO]",
+        "current_price": 150000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B02",
+        "book_id": "DEMO-20261027-B02",
+        "quantity_delta": 20,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B03",
+        "title": "Cơ sở dữ liệu thực hành [DEMO]",
+        "current_price": 180000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B03",
+        "book_id": "DEMO-20261027-B03",
+        "quantity_delta": 15,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B04",
+        "title": "Ứng dụng web ASP.NET Core [DEMO]",
+        "current_price": 200000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B04",
+        "book_id": "DEMO-20261027-B04",
+        "quantity_delta": 10,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B05",
+        "title": "Mẫu thiết kế phần mềm [DEMO]",
+        "current_price": 220000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B05",
+        "book_id": "DEMO-20261027-B05",
+        "quantity_delta": 8,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B06",
+        "title": "Kiểm thử phần mềm [DEMO]",
+        "current_price": 120000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B06",
+        "book_id": "DEMO-20261027-B06",
+        "quantity_delta": 12,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B07",
+        "title": "Git cho nhóm phát triển [DEMO]",
+        "current_price": 95000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B07",
+        "book_id": "DEMO-20261027-B07",
+        "quantity_delta": 25,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B08",
+        "title": "Kiến trúc phần mềm [DEMO]",
+        "current_price": 250000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B08",
+        "book_id": "DEMO-20261027-B08",
+        "quantity_delta": 6,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B09",
+        "title": "Cấu trúc dữ liệu [DEMO]",
+        "current_price": 175000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B09",
+        "book_id": "DEMO-20261027-B09",
+        "quantity_delta": 18,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B10",
+        "title": "Mạng máy tính [DEMO]",
+        "current_price": 145000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B10",
+        "book_id": "DEMO-20261027-B10",
+        "quantity_delta": 14,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B11",
+        "title": "Sách mẫu hết hàng [DEMO]",
+        "current_price": 110000
+      },
+      "identity": null
+    },
+    {
+      "table": "Book",
+      "data": {
+        "book_id": "DEMO-20261027-B12",
+        "title": "Sách mẫu sắp hết [DEMO]",
+        "current_price": 165000
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-OPEN-B12",
+        "book_id": "DEMO-20261027-B12",
+        "quantity_delta": 1,
+        "occurred_at_utc": "2026-10-19T00:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Provider",
+      "data": {
+        "provider_id": "DEMO-20261027-PROVIDER-A",
+        "name": "Nhà cung cấp mẫu A [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "ProviderContact",
+      "data": {
+        "provider_id": "DEMO-20261027-PROVIDER-A",
+        "contact_kind": "EMAIL",
+        "contact_value": "provider-a@example.test"
+      },
+      "identity": [
+        "provider_contact",
+        "A"
+      ]
+    },
+    {
+      "table": "Provider",
+      "data": {
+        "provider_id": "DEMO-20261027-PROVIDER-B",
+        "name": "Nhà cung cấp mẫu B [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "ProviderContact",
+      "data": {
+        "provider_id": "DEMO-20261027-PROVIDER-B",
+        "contact_kind": "EMAIL",
+        "contact_value": "provider-b@example.test"
+      },
+      "identity": [
+        "provider_contact",
+        "B"
+      ]
+    },
+    {
+      "table": "Customer",
+      "data": {
+        "customer_id": "DEMO-20261027-CUSTOMER-1",
+        "name": "Khách hàng mẫu 1 [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "CustomerContact",
+      "data": {
+        "customer_id": "DEMO-20261027-CUSTOMER-1",
+        "contact_kind": "EMAIL",
+        "contact_value": "customer-1@example.test"
+      },
+      "identity": [
+        "customer_contact",
+        "1"
+      ]
+    },
+    {
+      "table": "Customer",
+      "data": {
+        "customer_id": "DEMO-20261027-CUSTOMER-2",
+        "name": "Khách hàng mẫu 2 [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "CustomerContact",
+      "data": {
+        "customer_id": "DEMO-20261027-CUSTOMER-2",
+        "contact_kind": "EMAIL",
+        "contact_value": "customer-2@example.test"
+      },
+      "identity": [
+        "customer_contact",
+        "2"
+      ]
+    },
+    {
+      "table": "Customer",
+      "data": {
+        "customer_id": "DEMO-20261027-CUSTOMER-3",
+        "name": "Khách hàng mẫu 3 [DEMO]"
+      },
+      "identity": null
+    },
+    {
+      "table": "CustomerContact",
+      "data": {
+        "customer_id": "DEMO-20261027-CUSTOMER-3",
+        "contact_kind": "EMAIL",
+        "contact_value": "customer-3@example.test"
+      },
+      "identity": [
+        "customer_contact",
+        "3"
+      ]
+    },
+    {
+      "table": "PurchaseOrder",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-1",
+        "order_date": "2026-10-19",
+        "status": "RECEIVED"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderProvider",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-1",
+        "provider_id": "DEMO-20261027-PROVIDER-A"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderApproval",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "purchase_order_id": "DEMO-20261027-PO-1"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrder",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-2",
+        "order_date": "2026-10-19",
+        "status": "RECEIVED"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderProvider",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-2",
+        "provider_id": "DEMO-20261027-PROVIDER-A"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderApproval",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "purchase_order_id": "DEMO-20261027-PO-2"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrder",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-3",
+        "order_date": "2026-10-19",
+        "status": "APPROVED"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderProvider",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-3",
+        "provider_id": "DEMO-20261027-PROVIDER-B"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderApproval",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "purchase_order_id": "DEMO-20261027-PO-3"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrder",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-4",
+        "order_date": "2026-10-19",
+        "status": "APPROVED"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderProvider",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-4",
+        "provider_id": "DEMO-20261027-PROVIDER-A"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderApproval",
+      "data": {
+        "employee_id": "DEMO-20261027-EMP-MANAGER",
+        "purchase_order_id": "DEMO-20261027-PO-4"
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderLine",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-1",
+        "book_id": "DEMO-20261027-B01",
+        "ordered_quantity": 10
+      },
+      "identity": [
+        "po_line",
+        "PO1-L1"
+      ]
+    },
+    {
+      "table": "PurchaseOrderLine",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-1",
+        "book_id": "DEMO-20261027-B01",
+        "ordered_quantity": 5
+      },
+      "identity": [
+        "po_line",
+        "PO1-L2"
+      ]
+    },
+    {
+      "table": "PurchaseOrderLine",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-1",
+        "book_id": "DEMO-20261027-B02",
+        "ordered_quantity": 8
+      },
+      "identity": [
+        "po_line",
+        "PO1-L3"
+      ]
+    },
+    {
+      "table": "PurchaseOrderLine",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-2",
+        "book_id": "DEMO-20261027-B03",
+        "ordered_quantity": 6
+      },
+      "identity": [
+        "po_line",
+        "PO2-L1"
+      ]
+    },
+    {
+      "table": "PurchaseOrderLine",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-2",
+        "book_id": "DEMO-20261027-B04",
+        "ordered_quantity": 4
+      },
+      "identity": [
+        "po_line",
+        "PO2-L2"
+      ]
+    },
+    {
+      "table": "PurchaseOrderLine",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-3",
+        "book_id": "DEMO-20261027-B05",
+        "ordered_quantity": 5
+      },
+      "identity": [
+        "po_line",
+        "PO3-L1"
+      ]
+    },
+    {
+      "table": "PurchaseOrderLine",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-3",
+        "book_id": "DEMO-20261027-B11",
+        "ordered_quantity": 10
+      },
+      "identity": [
+        "po_line",
+        "PO3-L2"
+      ]
+    },
+    {
+      "table": "PurchaseOrderLine",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-4",
+        "book_id": "DEMO-20261027-B12",
+        "ordered_quantity": 5
+      },
+      "identity": [
+        "po_line",
+        "PO4-L1"
+      ]
+    },
+    {
+      "table": "GoodsReceipt",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-1",
+        "receipt_date": "2026-10-20"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceipt",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-2",
+        "receipt_date": "2026-10-21"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceipt",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-3",
+        "receipt_date": "2026-10-22"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceiptLine",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-1",
+        "purchase_order_line_id": {
+          "identity_ref": [
+            "po_line",
+            "PO1-L1"
+          ]
+        },
+        "received_quantity": 6
+      },
+      "identity": [
+        "receipt_line",
+        "GR1-L1"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RECEIPT-GR1-L1",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": 6,
+        "occurred_at_utc": "2026-10-20T00:30:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceiptLine",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-1",
+        "purchase_order_line_id": {
+          "identity_ref": [
+            "po_line",
+            "PO2-L1"
+          ]
+        },
+        "received_quantity": 4
+      },
+      "identity": [
+        "receipt_line",
+        "GR1-L2"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RECEIPT-GR1-L2",
+        "book_id": "DEMO-20261027-B03",
+        "quantity_delta": 4,
+        "occurred_at_utc": "2026-10-20T00:30:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceiptLine",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-2",
+        "purchase_order_line_id": {
+          "identity_ref": [
+            "po_line",
+            "PO1-L1"
+          ]
+        },
+        "received_quantity": 4
+      },
+      "identity": [
+        "receipt_line",
+        "GR2-L1"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RECEIPT-GR2-L1",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": 4,
+        "occurred_at_utc": "2026-10-21T00:30:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceiptLine",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-2",
+        "purchase_order_line_id": {
+          "identity_ref": [
+            "po_line",
+            "PO1-L2"
+          ]
+        },
+        "received_quantity": 5
+      },
+      "identity": [
+        "receipt_line",
+        "GR2-L2"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RECEIPT-GR2-L2",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": 5,
+        "occurred_at_utc": "2026-10-21T00:30:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceiptLine",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-2",
+        "purchase_order_line_id": {
+          "identity_ref": [
+            "po_line",
+            "PO1-L3"
+          ]
+        },
+        "received_quantity": 8
+      },
+      "identity": [
+        "receipt_line",
+        "GR2-L3"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RECEIPT-GR2-L3",
+        "book_id": "DEMO-20261027-B02",
+        "quantity_delta": 8,
+        "occurred_at_utc": "2026-10-21T00:30:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceiptLine",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-2",
+        "purchase_order_line_id": {
+          "identity_ref": [
+            "po_line",
+            "PO2-L1"
+          ]
+        },
+        "received_quantity": 2
+      },
+      "identity": [
+        "receipt_line",
+        "GR2-L4"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RECEIPT-GR2-L4",
+        "book_id": "DEMO-20261027-B03",
+        "quantity_delta": 2,
+        "occurred_at_utc": "2026-10-21T00:30:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "GoodsReceiptLine",
+      "data": {
+        "receipt_id": "DEMO-20261027-GR-3",
+        "purchase_order_line_id": {
+          "identity_ref": [
+            "po_line",
+            "PO2-L2"
+          ]
+        },
+        "received_quantity": 4
+      },
+      "identity": [
+        "receipt_line",
+        "GR3-L1"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RECEIPT-GR3-L1",
+        "book_id": "DEMO-20261027-B04",
+        "quantity_delta": 4,
+        "occurred_at_utc": "2026-10-22T00:30:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "Shipment",
+      "data": {
+        "tracking_number": "DEMO-20261027-TRACK-1",
+        "shipment_status": "DELIVERED"
+      },
+      "identity": [
+        "shipment",
+        "1"
+      ]
+    },
+    {
+      "table": "ProviderShipment",
+      "data": {
+        "provider_id": "DEMO-20261027-PROVIDER-A",
+        "shipment_id": {
+          "identity_ref": [
+            "shipment",
+            "1"
+          ]
+        }
+      },
+      "identity": null
+    },
+    {
+      "table": "Shipment",
+      "data": {
+        "tracking_number": "DEMO-20261027-TRACK-2",
+        "shipment_status": "PENDING"
+      },
+      "identity": [
+        "shipment",
+        "2"
+      ]
+    },
+    {
+      "table": "ProviderShipment",
+      "data": {
+        "provider_id": "DEMO-20261027-PROVIDER-B",
+        "shipment_id": {
+          "identity_ref": [
+            "shipment",
+            "2"
+          ]
+        }
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderShipment",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-1",
+        "shipment_id": {
+          "identity_ref": [
+            "shipment",
+            "1"
+          ]
+        }
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderShipment",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-2",
+        "shipment_id": {
+          "identity_ref": [
+            "shipment",
+            "1"
+          ]
+        }
+      },
+      "identity": null
+    },
+    {
+      "table": "PurchaseOrderShipment",
+      "data": {
+        "purchase_order_id": "DEMO-20261027-PO-3",
+        "shipment_id": {
+          "identity_ref": [
+            "shipment",
+            "2"
+          ]
+        }
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrder",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-1",
+        "order_date": "2026-10-22",
+        "total_order_amount": 540000,
+        "customer_id": "DEMO-20261027-CUSTOMER-1"
+      },
+      "identity": null
+    },
+    {
+      "table": "Payment",
+      "data": {
+        "payment_id": "DEMO-20261027-PAYMENT-1",
+        "payment_method": "CASH",
+        "payment_status": "COMPLETED"
+      },
+      "identity": null
+    },
+    {
+      "table": "OrderPayment",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-1",
+        "payment_id": "DEMO-20261027-PAYMENT-1"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrder",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-2",
+        "order_date": "2026-10-23",
+        "total_order_amount": 560000,
+        "customer_id": "DEMO-20261027-CUSTOMER-2"
+      },
+      "identity": null
+    },
+    {
+      "table": "Payment",
+      "data": {
+        "payment_id": "DEMO-20261027-PAYMENT-2",
+        "payment_method": "CASH",
+        "payment_status": "COMPLETED"
+      },
+      "identity": null
+    },
+    {
+      "table": "OrderPayment",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-2",
+        "payment_id": "DEMO-20261027-PAYMENT-2"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrder",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-3",
+        "order_date": "2026-10-24",
+        "total_order_amount": 345000,
+        "customer_id": null
+      },
+      "identity": null
+    },
+    {
+      "table": "Payment",
+      "data": {
+        "payment_id": "DEMO-20261027-PAYMENT-3",
+        "payment_method": "CASH",
+        "payment_status": "COMPLETED"
+      },
+      "identity": null
+    },
+    {
+      "table": "OrderPayment",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-3",
+        "payment_id": "DEMO-20261027-PAYMENT-3"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrderLine",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-1",
+        "book_id": "DEMO-20261027-B01",
+        "quantity": 2,
+        "unit_price": 130000
+      },
+      "identity": [
+        "sale_line",
+        "SALE1-L1"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-SALE-SALE1-L1",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": -2,
+        "occurred_at_utc": "2026-10-22T02:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrderLine",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-1",
+        "book_id": "DEMO-20261027-B01",
+        "quantity": 1,
+        "unit_price": 130000
+      },
+      "identity": [
+        "sale_line",
+        "SALE1-L2"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-SALE-SALE1-L2",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": -1,
+        "occurred_at_utc": "2026-10-22T02:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrderLine",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-1",
+        "book_id": "DEMO-20261027-B02",
+        "quantity": 1,
+        "unit_price": 150000
+      },
+      "identity": [
+        "sale_line",
+        "SALE1-L3"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-SALE-SALE1-L3",
+        "book_id": "DEMO-20261027-B02",
+        "quantity_delta": -1,
+        "occurred_at_utc": "2026-10-22T02:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrderLine",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-2",
+        "book_id": "DEMO-20261027-B03",
+        "quantity": 2,
+        "unit_price": 180000
+      },
+      "identity": [
+        "sale_line",
+        "SALE2-L1"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-SALE-SALE2-L1",
+        "book_id": "DEMO-20261027-B03",
+        "quantity_delta": -2,
+        "occurred_at_utc": "2026-10-23T02:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrderLine",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-2",
+        "book_id": "DEMO-20261027-B04",
+        "quantity": 1,
+        "unit_price": 200000
+      },
+      "identity": [
+        "sale_line",
+        "SALE2-L2"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-SALE-SALE2-L2",
+        "book_id": "DEMO-20261027-B04",
+        "quantity_delta": -1,
+        "occurred_at_utc": "2026-10-23T02:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrderLine",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-3",
+        "book_id": "DEMO-20261027-B07",
+        "quantity": 1,
+        "unit_price": 95000
+      },
+      "identity": [
+        "sale_line",
+        "SALE3-L1"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-SALE-SALE3-L1",
+        "book_id": "DEMO-20261027-B07",
+        "quantity_delta": -1,
+        "occurred_at_utc": "2026-10-24T02:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "SalesOrderLine",
+      "data": {
+        "order_id": "DEMO-20261027-SALE-3",
+        "book_id": "DEMO-20261027-B08",
+        "quantity": 1,
+        "unit_price": 250000
+      },
+      "identity": [
+        "sale_line",
+        "SALE3-L2"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-SALE-SALE3-L2",
+        "book_id": "DEMO-20261027-B08",
+        "quantity_delta": -1,
+        "occurred_at_utc": "2026-10-24T02:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "BookReturn",
+      "data": {
+        "return_id": "DEMO-20261027-RETURN-1",
+        "original_order_id": "DEMO-20261027-SALE-1",
+        "returned_at_utc": "2026-10-25T03:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "BookReturn",
+      "data": {
+        "return_id": "DEMO-20261027-RETURN-2",
+        "original_order_id": "DEMO-20261027-SALE-1",
+        "returned_at_utc": "2026-10-26T03:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "BookReturnLine",
+      "data": {
+        "return_id": "DEMO-20261027-RETURN-1",
+        "original_order_line_id": {
+          "identity_ref": [
+            "sale_line",
+            "SALE1-L1"
+          ]
+        },
+        "returned_quantity": 1,
+        "refund_amount": 130000
+      },
+      "identity": [
+        "return_line",
+        "RETURN1-L1"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RETURN-RETURN1-L1",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": 1,
+        "occurred_at_utc": "2026-10-25T03:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "BookReturnLine",
+      "data": {
+        "return_id": "DEMO-20261027-RETURN-2",
+        "original_order_line_id": {
+          "identity_ref": [
+            "sale_line",
+            "SALE1-L1"
+          ]
+        },
+        "returned_quantity": 1,
+        "refund_amount": 130000
+      },
+      "identity": [
+        "return_line",
+        "RETURN2-L1"
+      ]
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-RETURN-RETURN2-L1",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": 1,
+        "occurred_at_utc": "2026-10-26T03:00:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryCount",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "counted_at_utc": "2026-10-27T04:00:00",
+        "recorded_by_employee_id": "DEMO-20261027-EMP-INVENTORY"
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryCount",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-READY",
+        "counted_at_utc": "2026-10-27T04:00:00",
+        "recorded_by_employee_id": "DEMO-20261027-EMP-INVENTORY"
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryCount",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-NOCHANGE",
+        "counted_at_utc": "2026-10-27T04:00:00",
+        "recorded_by_employee_id": "DEMO-20261027-EMP-INVENTORY"
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B01",
+        "counted_quantity": 42,
+        "observed_at_utc": "2026-10-27T04:00:00"
+      },
+      "identity": [
+        "observation",
+        "H-B01-1"
+      ]
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B01",
+        "counted_quantity": 43,
+        "observed_at_utc": "2026-10-27T04:01:00"
+      },
+      "identity": [
+        "observation",
+        "H-B01-2"
+      ]
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B02",
+        "counted_quantity": 28,
+        "observed_at_utc": "2026-10-27T04:02:00"
+      },
+      "identity": [
+        "observation",
+        "H-B02-1"
+      ]
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B02",
+        "counted_quantity": 27,
+        "observed_at_utc": "2026-10-27T04:03:00"
+      },
+      "identity": [
+        "observation",
+        "H-B02-2"
+      ]
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B03",
+        "counted_quantity": 20,
+        "observed_at_utc": "2026-10-27T04:04:00"
+      },
+      "identity": [
+        "observation",
+        "H-B03-1"
+      ]
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B03",
+        "counted_quantity": 18,
+        "observed_at_utc": "2026-10-27T04:05:00"
+      },
+      "identity": [
+        "observation",
+        "H-B03-2"
+      ]
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-READY",
+        "book_id": "DEMO-20261027-B04",
+        "counted_quantity": 11,
+        "observed_at_utc": "2026-10-27T04:06:00"
+      },
+      "identity": [
+        "observation",
+        "R-B04-1"
+      ]
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-READY",
+        "book_id": "DEMO-20261027-B04",
+        "counted_quantity": 12,
+        "observed_at_utc": "2026-10-27T04:07:00"
+      },
+      "identity": [
+        "observation",
+        "R-B04-2"
+      ]
+    },
+    {
+      "table": "InventoryCountObservation",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-NOCHANGE",
+        "book_id": "DEMO-20261027-B07",
+        "counted_quantity": 24,
+        "observed_at_utc": "2026-10-27T04:08:00"
+      },
+      "identity": [
+        "observation",
+        "N-B07-1"
+      ]
+    },
+    {
+      "table": "InventoryCountSelection",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B01",
+        "selected_observation_id": {
+          "identity_ref": [
+            "observation",
+            "H-B01-2"
+          ]
+        },
+        "recorded_quantity": 44
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryCountSelection",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B02",
+        "selected_observation_id": {
+          "identity_ref": [
+            "observation",
+            "H-B02-2"
+          ]
+        },
+        "recorded_quantity": 27
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryCountSelection",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B03",
+        "selected_observation_id": {
+          "identity_ref": [
+            "observation",
+            "H-B03-2"
+          ]
+        },
+        "recorded_quantity": 19
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryCountSelection",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-NOCHANGE",
+        "book_id": "DEMO-20261027-B07",
+        "selected_observation_id": {
+          "identity_ref": [
+            "observation",
+            "N-B07-1"
+          ]
+        },
+        "recorded_quantity": 24
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryAdjustment",
+      "data": {
+        "adjustment_id": "DEMO-20261027-ADJUSTMENT-COUNT-HISTORY",
+        "adjustment_date": "2026-10-27",
+        "reason": "[DEMO] Selected recount results; only Adjustment posts the difference."
+      },
+      "identity": null
+    },
+    {
+      "table": "CountAdjustment",
+      "data": {
+        "count_id": "DEMO-20261027-COUNT-HISTORY",
+        "adjustment_id": "DEMO-20261027-ADJUSTMENT-COUNT-HISTORY"
+      },
+      "identity": null
+    },
+    {
+      "table": "AdjustmentBook",
+      "data": {
+        "adjustment_id": "DEMO-20261027-ADJUSTMENT-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_change": -1
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-ADJUSTMENT-COUNT-HISTORY-B01",
+        "book_id": "DEMO-20261027-B01",
+        "quantity_delta": -1,
+        "occurred_at_utc": "2026-10-27T04:10:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "AdjustmentBook",
+      "data": {
+        "adjustment_id": "DEMO-20261027-ADJUSTMENT-COUNT-HISTORY",
+        "book_id": "DEMO-20261027-B03",
+        "quantity_change": -1
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryMovement",
+      "data": {
+        "posting_key": "DEMO-20261027-ADJUSTMENT-COUNT-HISTORY-B03",
+        "book_id": "DEMO-20261027-B03",
+        "quantity_delta": -1,
+        "occurred_at_utc": "2026-10-27T04:10:00"
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryAudit",
+      "data": {
+        "audit_id": "DEMO-20261027-AUDIT-1",
+        "audit_date": "2026-10-27",
+        "status": "APPROVED"
+      },
+      "identity": null
+    },
+    {
+      "table": "InventoryAuditLine",
+      "data": {
+        "audit_id": "DEMO-20261027-AUDIT-1",
+        "book_id": "DEMO-20261027-B01",
+        "counted_quantity": 40
+      },
+      "identity": [
+        "audit_line",
+        "1"
+      ]
+    },
+    {
+      "table": "UserAccessLog",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-ADMIN",
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "request_path": "/__demo/swd392/20261027/admin/accounts",
+        "was_authorized": true,
+        "client_ip": "127.0.0.1"
+      },
+      "identity": [
+        "access_log",
+        "ADMIN"
+      ]
+    },
+    {
+      "table": "UserAccessLog",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-MANAGER",
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "request_path": "/__demo/swd392/20261027/catalog/prices",
+        "was_authorized": true,
+        "client_ip": "127.0.0.1"
+      },
+      "identity": [
+        "access_log",
+        "MANAGER"
+      ]
+    },
+    {
+      "table": "UserAccessLog",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-INVENTORY",
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "request_path": "/__demo/swd392/20261027/inventory/counts",
+        "was_authorized": true,
+        "client_ip": "127.0.0.1"
+      },
+      "identity": [
+        "access_log",
+        "INVENTORY"
+      ]
+    },
+    {
+      "table": "UserAccessLog",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-SALES-A",
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "request_path": "/__demo/swd392/20261027/sales/new",
+        "was_authorized": true,
+        "client_ip": "127.0.0.1"
+      },
+      "identity": [
+        "access_log",
+        "SALES-A"
+      ]
+    },
+    {
+      "table": "UserAccessLog",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-SALES-B",
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "request_path": "/__demo/swd392/20261027/returns/new",
+        "was_authorized": false,
+        "client_ip": "127.0.0.1"
+      },
+      "identity": [
+        "access_log",
+        "SALES-B"
+      ]
+    },
+    {
+      "table": "UserAccessLog",
+      "data": {
+        "account_id": "DEMO-20261027-ACC-DISABLED",
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "request_path": "/__demo/swd392/20261027/sales/new",
+        "was_authorized": false,
+        "client_ip": "127.0.0.1"
+      },
+      "identity": [
+        "access_log",
+        "DISABLED"
+      ]
+    },
+    {
+      "table": "ExternalServiceLog",
+      "data": {
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "service_name": "DEMO/SWD392/VnPay",
+        "operation_name": "fixture-only:no-network:qr-status",
+        "succeeded": true
+      },
+      "identity": [
+        "service_log",
+        "VnPay"
+      ]
+    },
+    {
+      "table": "ExternalServiceLog",
+      "data": {
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "service_name": "DEMO/SWD392/GoogleEmail",
+        "operation_name": "fixture-only:no-network:prepare-po-email",
+        "succeeded": true
+      },
+      "identity": [
+        "service_log",
+        "GoogleEmail"
+      ]
+    },
+    {
+      "table": "ExternalServiceLog",
+      "data": {
+        "occurred_at_utc": "2026-10-27T05:00:00",
+        "service_name": "DEMO/SWD392/ViettelPost",
+        "operation_name": "fixture-only:no-network:shipment-status",
+        "succeeded": true
+      },
+      "identity": [
+        "service_log",
+        "ViettelPost"
+      ]
+    }
+  ]
+}

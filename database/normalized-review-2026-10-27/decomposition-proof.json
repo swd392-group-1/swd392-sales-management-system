@@ -1,0 +1,284 @@
+{
+  "examples": [
+    {
+      "example": "Employee and permission details",
+      "attributes": [
+        "e",
+        "name",
+        "p",
+        "permission_name",
+        "role"
+      ],
+      "fds": [
+        {
+          "lhs": [
+            "e",
+            "p"
+          ],
+          "rhs": [
+            "name",
+            "permission_name",
+            "role"
+          ]
+        },
+        {
+          "lhs": [
+            "e"
+          ],
+          "rhs": [
+            "name",
+            "role"
+          ]
+        },
+        {
+          "lhs": [
+            "p"
+          ],
+          "rhs": [
+            "permission_name"
+          ]
+        }
+      ],
+      "relations": [
+        [
+          "e",
+          "name",
+          "role"
+        ],
+        [
+          "p",
+          "permission_name"
+        ],
+        [
+          "e",
+          "p"
+        ]
+      ],
+      "lossless_under_declared_fds": true,
+      "dependency_preserving_under_declared_fds": true
+    },
+    {
+      "example": "Receipt line and original PO line",
+      "attributes": [
+        "book",
+        "line",
+        "po",
+        "po_line",
+        "quantity",
+        "receipt"
+      ],
+      "fds": [
+        {
+          "lhs": [
+            "line"
+          ],
+          "rhs": [
+            "book",
+            "po",
+            "po_line",
+            "quantity",
+            "receipt"
+          ]
+        },
+        {
+          "lhs": [
+            "po_line"
+          ],
+          "rhs": [
+            "book",
+            "po"
+          ]
+        }
+      ],
+      "relations": [
+        [
+          "line",
+          "po_line",
+          "quantity",
+          "receipt"
+        ],
+        [
+          "book",
+          "po",
+          "po_line"
+        ]
+      ],
+      "lossless_under_declared_fds": true,
+      "dependency_preserving_under_declared_fds": true
+    },
+    {
+      "example": "Return header, return line and original sales line",
+      "attributes": [
+        "book",
+        "date",
+        "o",
+        "quantity",
+        "r",
+        "refund",
+        "rl",
+        "sl"
+      ],
+      "fds": [
+        {
+          "lhs": [
+            "rl"
+          ],
+          "rhs": [
+            "book",
+            "date",
+            "o",
+            "quantity",
+            "r",
+            "refund",
+            "sl"
+          ]
+        },
+        {
+          "lhs": [
+            "r"
+          ],
+          "rhs": [
+            "date",
+            "o"
+          ]
+        },
+        {
+          "lhs": [
+            "sl"
+          ],
+          "rhs": [
+            "book",
+            "o"
+          ]
+        }
+      ],
+      "relations": [
+        [
+          "quantity",
+          "r",
+          "refund",
+          "rl",
+          "sl"
+        ],
+        [
+          "date",
+          "o",
+          "r"
+        ],
+        [
+          "book",
+          "o",
+          "sl"
+        ]
+      ],
+      "lossless_under_declared_fds": true,
+      "dependency_preserving_under_declared_fds": true
+    },
+    {
+      "example": "Count header and recount observations",
+      "attributes": [
+        "book",
+        "count",
+        "count_date",
+        "employee",
+        "observation",
+        "quantity",
+        "time"
+      ],
+      "fds": [
+        {
+          "lhs": [
+            "observation"
+          ],
+          "rhs": [
+            "book",
+            "count",
+            "count_date",
+            "employee",
+            "quantity",
+            "time"
+          ]
+        },
+        {
+          "lhs": [
+            "count"
+          ],
+          "rhs": [
+            "count_date",
+            "employee"
+          ]
+        }
+      ],
+      "relations": [
+        [
+          "book",
+          "count",
+          "observation",
+          "quantity",
+          "time"
+        ],
+        [
+          "count",
+          "count_date",
+          "employee"
+        ]
+      ],
+      "lossless_under_declared_fds": true,
+      "dependency_preserving_under_declared_fds": true
+    },
+    {
+      "example": "Per-Book Adjustment grain",
+      "attributes": [
+        "adjustment",
+        "book",
+        "date",
+        "delta",
+        "reason"
+      ],
+      "fds": [
+        {
+          "lhs": [
+            "adjustment",
+            "book"
+          ],
+          "rhs": [
+            "date",
+            "delta",
+            "reason"
+          ]
+        },
+        {
+          "lhs": [
+            "adjustment"
+          ],
+          "rhs": [
+            "date",
+            "reason"
+          ]
+        }
+      ],
+      "relations": [
+        [
+          "adjustment",
+          "date",
+          "reason"
+        ],
+        [
+          "adjustment",
+          "book",
+          "delta"
+        ]
+      ],
+      "lossless_under_declared_fds": true,
+      "dependency_preserving_under_declared_fds": true
+    }
+  ],
+  "checker_counterexamples": [
+    "Partial Role dependency rejected",
+    "Transitive PO-line dependency rejected",
+    "1:1 FK candidate key correctly accepted",
+    "Lossy decomposition rejected",
+    "Lost dependency detected"
+  ],
+  "qualification": "Logical examples only. Not a proof that old aggregated or opaque values can be migrated automatically."
+}

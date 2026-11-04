@@ -1,0 +1,27 @@
+@startuml
+!pragma layout smetana
+skinparam monochrome true
+top to bottom direction
+component "Browser\nMVC pages + SignalR JS" as UI
+package "ASP.NET Core MVC .NET 8" {
+ component "Web\nReportsController\nPricingController\nSales / Returns" as W
+ component "Application\nReportService / PricingService\nSale / Return services" as A
+ component "Infrastructure\nEF repositories / report query" as I
+ queue "PriceChangeQueue\nbounded in-memory Channel" as Q
+ component "PriceDispatchWorker" as Worker
+ component "PriceHub\nSignalR" as H
+}
+database "SQL Server\nexisting review schema" as DB
+UI --> W : HTTP request
+W --> A : await business operation
+A --> I : interface contract
+I --> DB : await query / commit
+A --> Q : enqueue after price commit
+Q --> Worker : async consumption
+Worker --> H : BookPriceChanged
+H --> UI : realtime notification
+note bottom of Q
+Demo only: not durable; no replay / delivery guarantee.
+Stock posting remains inside the sale/return DB transaction.
+end note
+@enduml
