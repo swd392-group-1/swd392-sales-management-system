@@ -1,146 +1,441 @@
-<?xml version="1.0" encoding="utf-8"?>
-<mxfile host="app.diagrams.net" modified="2026-11-03T01:00:00.000Z" agent="ChatGPT" version="24.7.17" type="device">
-  <diagram name="Class Diagram" id="class-diagram">
-    <mxGraphModel dx="1500" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="850" math="0" shadow="0">
+<?xml version='1.0' encoding='UTF-8'?>
+<mxfile host="app.diagrams.net" modified="2026-11-08T00:00:00.000Z" agent="ChatGPT" version="24.7.17" type="device">
+  <diagram name="Class – Access &amp; Audit" id="class-access">
+    <mxGraphModel dx="1500" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1540" pageHeight="1040" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
-        <mxCell id="ctrl" value="AccessController&lt;br&gt;+ Permissions GET/POST&lt;br&gt;+ Demo GET&lt;br&gt;+ Logs GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="20" y="30" width="250" height="110" as="geometry"/>
+        <mxCell id="a-title" value="&lt;b&gt;Class Diagram — Access Control &amp;amp; Audit&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=28;fontColor=#23324A;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="20" width="1450" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="guard" value="AccessGuard : IAccessGuard&lt;br&gt;+ AuthorizeAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="350" y="30" width="270" height="95" as="geometry"/>
+        <mxCell id="a-sub" value="Mối quan hệ giữa lớp Web / Application / Infrastructure. Phương thức đúng tên source; ranh giới dữ liệu ở EF Core." style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#5E6E83;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="83" width="1450" height="35" as="geometry"/>
         </mxCell>
-        <mxCell id="check" value="SqlPermissionChecker&lt;br&gt;: IPermissionChecker&lt;br&gt;+ HasPermissionAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="700" y="30" width="290" height="100" as="geometry"/>
+        <mxCell id="a-ctrl" value="&lt;b&gt;AccessController&lt;/b&gt;&lt;hr&gt;+ Demo(ct): Task&amp;lt;IActionResult&amp;gt;&lt;br&gt;+ Permissions(ct): Task&amp;lt;IActionResult&amp;gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=17;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="55" y="207" width="350" height="146" as="geometry"/>
         </mxCell>
-        <mxCell id="db" value="BookSalesDbContext&lt;br&gt;Employee / Account / Permission&lt;br&gt;EmployeePermission / UserAccessLog" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#37814E;fontColor=#225B32;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="1070" y="260" width="330" height="110" as="geometry"/>
+        <mxCell id="a-guardi" value="&lt;b&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt; IAccessGuard&lt;/b&gt;&lt;hr&gt;+ AuthorizeAsync(accountId, permissionId,&lt;br&gt; path, ip, ct): Task&amp;lt;bool&amp;gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F7F3;strokeColor=#5C9E97;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="520" y="165" width="345" height="142" as="geometry"/>
         </mxCell>
-        <mxCell id="writer" value="SqlAccessLogWriter&lt;br&gt;: IAccessLogWriter&lt;br&gt;+ WriteAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="700" y="165" width="290" height="100" as="geometry"/>
+        <mxCell id="a-guard" value="&lt;b&gt;AccessGuard&lt;/b&gt;&lt;hr&gt;+ AuthorizeAsync(accountId, permissionId,&lt;br&gt; path, ip, ct): Task&amp;lt;bool&amp;gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="520" y="376" width="345" height="134" as="geometry"/>
         </mxCell>
-        <mxCell id="service" value="StaffPermissionService&lt;br&gt;+ ChangeAsync(change)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="350" y="340" width="270" height="95" as="geometry"/>
+        <mxCell id="a-checki" value="&lt;b&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt; IPermissionChecker&lt;/b&gt;&lt;hr&gt;+ HasPermissionAsync(accountId,&lt;br&gt; permissionId, ct): Task&amp;lt;bool&amp;gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F7F3;strokeColor=#5C9E97;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="140" width="425" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="policy" value="SqlStaffPermissionChangePolicy&lt;br&gt;: IStaffPermissionChangePolicy&lt;br&gt;+ IsAllowedAsync(change)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="700" y="340" width="290" height="115" as="geometry"/>
+        <mxCell id="a-check" value="&lt;b&gt;SqlPermissionChecker&lt;/b&gt;&lt;hr&gt;+ HasPermissionAsync(accountId,&lt;br&gt; permissionId, ct): Task&amp;lt;bool&amp;gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="320" width="425" height="128" as="geometry"/>
         </mxCell>
-        <mxCell id="store" value="SqlStaffPermissionStore&lt;br&gt;: IStaffPermissionStore&lt;br&gt;+ ApplyAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="700" y="490" width="290" height="110" as="geometry"/>
+        <mxCell id="a-logi" value="&lt;b&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt; IAccessLogWriter&lt;/b&gt;&lt;hr&gt;+ WriteAsync(accountId, path,&lt;br&gt; authorized, ip, ct): Task" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F7F3;strokeColor=#5C9E97;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="533" width="425" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="auth" value="AuthController&lt;br&gt;+ Login / Logout" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="20" y="530" width="250" height="105" as="geometry"/>
+        <mxCell id="a-log" value="&lt;b&gt;SqlAccessLogWriter&lt;/b&gt;&lt;hr&gt;+ WriteAsync(accountId, path,&lt;br&gt; authorized, ip, ct): Task" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="720" width="425" height="120" as="geometry"/>
         </mxCell>
-        <mxCell id="login" value="SqlAccountLoginService&lt;br&gt;: IAccountLoginService&lt;br&gt;+ VerifyAsync(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="350" y="540" width="270" height="100" as="geometry"/>
+        <mxCell id="a-middleware" value="&lt;b&gt;AccessAuditMiddleware&lt;/b&gt;&lt;hr&gt;+ InvokeAsync(context, writer): Task&lt;br&gt;&lt;i&gt;Anonymous tại /access/* đã liệt kê&lt;/i&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="55" y="565" width="355" height="145" as="geometry"/>
         </mxCell>
-        <mxCell id="hash" value="UnconfiguredPasswordHashVerifier&lt;br&gt;: IPasswordHashVerifier&lt;br&gt;+ Verify(...) =&gt; false" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0E8FF;strokeColor=#6C54AB;fontColor=#38256A;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="350" y="690" width="320" height="90" as="geometry"/>
+        <mxCell id="a-db" value="&lt;b&gt;BookSalesDbContext&lt;/b&gt;&lt;hr&gt;Accounts / Employees / Permissions&lt;br&gt;EmployeePermissions / UserAccessLogs" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="515" y="790" width="360" height="140" as="geometry"/>
         </mxCell>
-        <mxCell id="mw" value="AccessAuditMiddleware&lt;br&gt;+ InvokeAsync(context,writer)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="20" y="180" width="250" height="100" as="geometry"/>
-        </mxCell>
-        <mxCell id="e0" value="check GET" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="ctrl" target="guard">
+        <mxCell id="a-e1" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-ctrl" target="a-guardi">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e1" value="UC12 POST" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="ctrl" target="service">
+        <mxCell id="a-e2" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;dashed=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-guard" target="a-guardi">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e2" value="permission" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="guard" target="check">
+        <mxCell id="a-e3" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-guard" target="a-checki">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e3" value="audit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="guard" target="writer">
+        <mxCell id="a-e4" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-guard" target="a-logi">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e4" value="anonymous" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="mw" target="writer">
+        <mxCell id="a-e5" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;dashed=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-check" target="a-checki">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e5" value="query" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="check" target="db">
+        <mxCell id="a-e6" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;dashed=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-log" target="a-logi">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e6" value="insert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="writer" target="db">
+        <mxCell id="a-e7" value="LINQ/EF Core" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-check" target="a-db">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e7" value="authorize" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="service" target="policy">
+        <mxCell id="a-e8" value="SaveChangesAsync" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-log" target="a-db">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e8" value="apply" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="service" target="store">
+        <mxCell id="a-e9" value="WriteAsync" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="a-middleware" target="a-logi">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e9" value="query" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="policy" target="db">
+        <mxCell id="a-note" value="&lt;b&gt;Chú ý:&lt;/b&gt; UC12 POST dùng checker và service trực tiếp (xem tab UC12).&lt;br&gt;Không có method FindAccountByAccountId; truy vấn dùng SingleOrDefaultAsync của EF Core." style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#FFF6E7;strokeColor=#DBA65B;strokeWidth=1.5;fontColor=#23324A;fontSize=14;fontFamily=Arial;spacing=8;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="65" y="805" width="345" height="130" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Class – UC12" id="class-uc12">
+    <mxGraphModel dx="1500" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1060" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="u-title" value="&lt;b&gt;Class Diagram — UC12 Update Staff Permissions&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=28;fontColor=#23324A;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="25" width="1450" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-sub" value="Policy ra quyết định; Store chỉ thêm/xóa EmployeePermission. Controller ghi UserAccessLog cùng transaction." style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontColor=#5E6E83;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="87" width="1460" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-ctrl" value="&lt;b&gt;AccessController&lt;/b&gt;&lt;hr&gt;+ Permissions(input, ct): Task&amp;lt;IActionResult&amp;gt;&lt;br&gt;&lt;i&gt;HTTP POST /access/permissions&lt;/i&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="55" y="230" width="335" height="165" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-service" value="&lt;b&gt;StaffPermissionService&lt;/b&gt;&lt;hr&gt;+ ChangeAsync(change, ct): Task&amp;lt;bool&amp;gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="515" y="255" width="360" height="145" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-poli" value="&lt;b&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt; IStaffPermissionChangePolicy&lt;/b&gt;&lt;hr&gt;+ IsAllowedAsync(change, ct): Task&amp;lt;bool&amp;gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F7F3;strokeColor=#5C9E97;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="140" width="465" height="145" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-pol" value="&lt;b&gt;SqlStaffPermissionChangePolicy&lt;/b&gt;&lt;hr&gt;+ IsAllowedAsync(change, ct): Task&amp;lt;bool&amp;gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="335" width="465" height="145" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-storei" value="&lt;b&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt; IStaffPermissionStore&lt;/b&gt;&lt;hr&gt;+ ApplyAsync(employeeId,&lt;br&gt; permissionId, grant, ct): Task" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F7F3;strokeColor=#5C9E97;strokeWidth=1.5;fontColor=#23324A;fontSize=15;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="540" width="465" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-store" value="&lt;b&gt;SqlStaffPermissionStore&lt;/b&gt;&lt;hr&gt;+ ApplyAsync(employeeId,&lt;br&gt; permissionId, grant, ct): Task" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="740" width="465" height="145" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-db" value="&lt;b&gt;BookSalesDbContext&lt;/b&gt;&lt;hr&gt;EmployeePermissions / UserAccessLogs&lt;br&gt;BeginTransactionAsync + SaveChangesAsync" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="490" y="755" width="400" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-note" value="&lt;b&gt;POST UC12:&lt;/b&gt; Controller gọi IPermissionChecker.HasPermissionAsync(UC12) trước; nếu denied thì WriteAsync(false). Nếu hợp lệ, bắt đầu transaction, chạy ChangeAsync, Add(UserAccessLog), SaveChangesAsync, CommitAsync." style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#FFF6E7;strokeColor=#DBA65B;strokeWidth=1.5;fontColor=#23324A;fontSize=14;fontFamily=Arial;spacing=8;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="45" y="565" width="390" height="155" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-e1" value="ChangeAsync" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="u-ctrl" target="u-service">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e10" value="save" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="store" target="db">
+        <mxCell id="u-e2" value="policy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="u-service" target="u-poli">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e11" value="verify" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="auth" target="login">
+        <mxCell id="u-e3" value="store" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="u-service" target="u-storei">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e12" value="read account" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="login" target="db">
+        <mxCell id="u-e4" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;dashed=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="u-pol" target="u-poli">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e13" value="verify hash" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="login" target="hash">
+        <mxCell id="u-e5" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;dashed=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="u-store" target="u-storei">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-e6" value="query" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="u-pol" target="u-db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-e7" value="SaveChangesAsync" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="u-store" target="u-db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="u-e8" value="audit transaction" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;fontColor=#5E6E83;fontSize=13;fontFamily=Arial;" edge="1" parent="1" source="u-ctrl" target="u-db">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram name="UC12 Sequence" id="uc12-sequence">
-    <mxGraphModel dx="1500" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="780" math="0" shadow="0">
+  <diagram name="Sequence — GET /access/demo (AccessGuard + SqlPermissionChecker)" id="seq-permission">
+    <mxGraphModel dx="1500" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1190" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
-        <mxCell id="actor" value="Admin / Manager&lt;br&gt;POST /access/permissions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5E3;strokeColor=#C58F36;fontColor=#6B4C11;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="20" y="60" width="230" height="80" as="geometry"/>
+        <mxCell id="seq-permission-title" value="&lt;b&gt;Sequence — GET /access/demo (AccessGuard + SqlPermissionChecker)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=28;fontColor=#23324A;spacing=0;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="55" y="25" width="1600" height="52" as="geometry"/>
         </mxCell>
-        <mxCell id="ctrl" value="AccessController&lt;br&gt;Cookie/anti-forgery&lt;br&gt;Check UC12 permission" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="285" y="60" width="230" height="90" as="geometry"/>
+        <mxCell id="seq-permission-subtitle" value="Mũi tên gọi method ghi đúng tên code; LINQ/EF Core ghi rõ là query, không coi là method tự tạo." style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=15;fontColor=#5E6E83;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="80" width="1600" height="35" as="geometry"/>
         </mxCell>
-        <mxCell id="policy" value="StaffPermissionService&lt;br&gt;SqlPolicy check&lt;br&gt;actor, target, scope" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="550" y="60" width="230" height="90" as="geometry"/>
+        <mxCell id="seq-permission-head-0" value="Browser /&lt;br&gt;Staff" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="25" y="146" width="220" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="store" value="SqlStaffPermissionStore&lt;br&gt;Insert/Remove&lt;br&gt;EmployeePermission" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="815" y="60" width="230" height="95" as="geometry"/>
+        <mxCell id="seq-permission-line-0" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="135" y="226" width="0" height="910" as="geometry"/>
         </mxCell>
-        <mxCell id="db" value="SQL Server&lt;br&gt;Transaction: permission&lt;br&gt;+ UserAccessLog" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#37814E;fontColor=#225B32;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="1080" y="60" width="300" height="95" as="geometry"/>
+        <mxCell id="seq-permission-head-1" value="AccessController&lt;br&gt;Demo()" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="290" y="146" width="220" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="deny" value="DENY&lt;br&gt;Write AccessLog(false)&lt;br&gt;Forbid / show rejected" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5E3;strokeColor=#C58F36;fontColor=#6B4C11;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="295" y="315" width="235" height="115" as="geometry"/>
+        <mxCell id="seq-permission-line-1" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="400" y="226" width="0" height="910" as="geometry"/>
         </mxCell>
-        <mxCell id="allow" value="ALLOW&lt;br&gt;Commit transaction&lt;br&gt;Redirect with result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F4EA;strokeColor=#37814E;fontColor=#225B32;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="1090" y="530" width="250" height="110" as="geometry"/>
+        <mxCell id="seq-permission-head-2" value="AccessGuard&lt;br&gt;AuthorizeAsync()" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="570" y="146" width="220" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="next" value="Next request&lt;br&gt;Permission Checker reads&lt;br&gt;fresh DB state" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F1FF;strokeColor=#326BB2;fontColor=#16375F;fontSize=13;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="560" y="540" width="280" height="100" as="geometry"/>
+        <mxCell id="seq-permission-line-2" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="680" y="226" width="0" height="910" as="geometry"/>
         </mxCell>
-        <mxCell id="e0" value="submit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="actor" target="ctrl">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-head-3" value="SqlPermissionChecker&lt;br&gt;HasPermissionAsync()" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="860" y="146" width="220" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="e1" value="UC12 denied" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="ctrl" target="deny">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-line-3" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="970" y="226" width="0" height="910" as="geometry"/>
         </mxCell>
-        <mxCell id="e2" value="UC12 valid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="ctrl" target="policy">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-head-4" value="SqlAccessLogWriter&lt;br&gt;WriteAsync()" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="146" width="220" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="e3" value="scope denied" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="policy" target="deny">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-line-4" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="1255" y="226" width="0" height="910" as="geometry"/>
         </mxCell>
-        <mxCell id="e4" value="scope approved" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="policy" target="store">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-head-5" value="DbContext /&lt;br&gt;SQL Server" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="146" width="220" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="e5" value="save" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="store" target="db">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-line-5" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="1530" y="226" width="0" height="910" as="geometry"/>
         </mxCell>
-        <mxCell id="e6" value="commit audit+change" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="db" target="allow">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-msg-0" value="GET /access/demo" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="135" y="258" as="sourcePoint"/>
+            <mxPoint x="400" y="258" as="targetPoint"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e7" value="next HTTP request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="allow" target="next">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-msg-1" value="AuthorizeAsync(accountId, UC21, path, ip, ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="327" as="sourcePoint"/>
+            <mxPoint x="680" y="327" as="targetPoint"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e8" value="re-query permission" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#63718A;fontSize=11;" edge="1" parent="1" source="next" target="db">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="seq-permission-msg-2" value="HasPermissionAsync(accountId, UC21, ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="401" as="sourcePoint"/>
+            <mxPoint x="970" y="401" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-3" value="SingleOrDefaultAsync (Account JOIN Employee LINQ)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="970" y="472" as="sourcePoint"/>
+            <mxPoint x="1530" y="472" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-4" value="status / employeeId / roleCode (hoặc null)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1530" y="524" as="sourcePoint"/>
+            <mxPoint x="970" y="524" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-5" value="AnyAsync (Permission hoặc EmployeePermission)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="970" y="599" as="sourcePoint"/>
+            <mxPoint x="1530" y="599" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-6" value="bool exists" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1530" y="650" as="sourcePoint"/>
+            <mxPoint x="970" y="650" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-7" value="bool allowed" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="970" y="711" as="sourcePoint"/>
+            <mxPoint x="680" y="711" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-8" value="WriteAsync(accountId, path, allowed, ip, ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="778" as="sourcePoint"/>
+            <mxPoint x="1255" y="778" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-9" value="UserAccessLogs.Add + SaveChangesAsync()" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1255" y="827" as="sourcePoint"/>
+            <mxPoint x="1530" y="827" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-10" value="saved" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1530" y="872" as="sourcePoint"/>
+            <mxPoint x="1255" y="872" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-11" value="Task completed" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1255" y="912" as="sourcePoint"/>
+            <mxPoint x="680" y="912" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-12" value="bool" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="948" as="sourcePoint"/>
+            <mxPoint x="400" y="948" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-msg-13" value="Content (allow) / Forbid() (deny; cookie có thể redirect)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="996" as="sourcePoint"/>
+            <mxPoint x="135" y="996" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-permission-note-0" value="&lt;b&gt;Trong HasPermissionAsync:&lt;/b&gt; account null/không ACTIVE → false. SYSTEM_ADMIN → Permissions.AnyAsync; role khác → EmployeePermissions.AnyAsync. Không có method FindAccountByAccountId. " style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#FFF6E7;strokeColor=#DBA65B;strokeWidth=1.5;fontColor=#23324A;fontSize=14;fontFamily=Arial;spacing=8;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1060" width="1530" height="76" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Sequence — POST /access/permissions (UC12)" id="seq-uc12">
+    <mxGraphModel dx="1500" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1930" pageHeight="1380" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="seq-uc12-title" value="&lt;b&gt;Sequence — POST /access/permissions (UC12)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=28;fontColor=#23324A;spacing=0;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="55" y="25" width="1830" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-subtitle" value="Mũi tên gọi method ghi đúng tên code; LINQ/EF Core ghi rõ là query, không coi là method tự tạo." style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=15;fontColor=#5E6E83;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="80" width="1830" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-head-0" value="Admin /&lt;br&gt;Manager" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="0" y="146" width="220" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-line-0" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="110" y="226" width="0" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-head-1" value="AccessController&lt;br&gt;Permissions(POST)" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="270" y="146" width="220" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-line-1" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="380" y="226" width="0" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-head-2" value="SqlPermissionChecker&lt;br&gt;HasPermissionAsync()" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="550" y="146" width="220" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-line-2" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="660" y="226" width="0" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-head-3" value="StaffPermissionService&lt;br&gt;ChangeAsync()" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="830" y="146" width="220" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-line-3" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="940" y="226" width="0" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-head-4" value="SqlStaffPermissionChangePolicy&lt;br&gt;IsAllowedAsync()" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1105" y="146" width="220" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-line-4" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="1215" y="226" width="0" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-head-5" value="SqlStaffPermissionStore&lt;br&gt;ApplyAsync()" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1375" y="146" width="220" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-line-5" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="1485" y="226" width="0" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-head-6" value="BookSalesDbContext /&lt;br&gt;SQL Server" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#E8F0FD;strokeColor=#6B91CC;strokeWidth=1.5;fontColor=#23324A;fontSize=16;fontFamily=Arial;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1660" y="146" width="220" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-line-6" style="shape=line;strokeColor=#64748B;dashed=1;dashPattern=6 6;endArrow=none;startArrow=none;" vertex="1" parent="1">
+          <mxGeometry x="1770" y="226" width="0" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-0" value="POST /access/permissions + AntiForgery" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="249" as="sourcePoint"/>
+            <mxPoint x="380" y="249" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-1" value="HasPermissionAsync(accountId, UC12, ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="305" as="sourcePoint"/>
+            <mxPoint x="660" y="305" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-2" value="LINQ/AnyAsync: kiểm tra quyền UC12" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="352" as="sourcePoint"/>
+            <mxPoint x="1770" y="352" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-3" value="bool canAccess" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1770" y="391" as="sourcePoint"/>
+            <mxPoint x="660" y="391" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-4" value="bool canAccess" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="428" as="sourcePoint"/>
+            <mxPoint x="380" y="428" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-5" value="BeginTransactionAsync(ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="537" as="sourcePoint"/>
+            <mxPoint x="1770" y="537" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-6" value="ChangeAsync(change, ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="612" as="sourcePoint"/>
+            <mxPoint x="940" y="612" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-7" value="IsAllowedAsync(change, ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="940" y="680" as="sourcePoint"/>
+            <mxPoint x="1215" y="680" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-8" value="LINQ: actor, target, permission, scope" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1215" y="741" as="sourcePoint"/>
+            <mxPoint x="1770" y="741" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-9" value="bool policyAllowed" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1770" y="792" as="sourcePoint"/>
+            <mxPoint x="1215" y="792" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-10" value="bool policyAllowed" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1215" y="835" as="sourcePoint"/>
+            <mxPoint x="940" y="835" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-11" value="ApplyAsync(employeeId, permissionId, grant, ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="940" y="898" as="sourcePoint"/>
+            <mxPoint x="1485" y="898" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-12" value="FindAsync + Add/Remove + SaveChangesAsync" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1485" y="960" as="sourcePoint"/>
+            <mxPoint x="1770" y="960" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-13" value="saved" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1770" y="1005" as="sourcePoint"/>
+            <mxPoint x="1485" y="1005" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-14" value="bool changed" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="940" y="1048" as="sourcePoint"/>
+            <mxPoint x="380" y="1048" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-15" value="UserAccessLogs.Add + SaveChangesAsync(ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="1108" as="sourcePoint"/>
+            <mxPoint x="1770" y="1108" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-16" value="CommitAsync(ct)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=block;endFill=1;dashed=0;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="1180" as="sourcePoint"/>
+            <mxPoint x="1770" y="1180" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-msg-17" value="RedirectToAction(Permissions)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#64748B;strokeWidth=1.35;endArrow=open;endFill=0;dashed=1;fontSize=13;fontFamily=Arial;fontColor=#23324A;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="1258" as="sourcePoint"/>
+            <mxPoint x="110" y="1258" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seq-uc12-note-0" value="&lt;b&gt;Nhánh UC12 bị từ chối / request invalid:&lt;/b&gt; Controller gọi WriteAsync(false) rồi Forbid() / BadRequest(); KHÔNG bắt đầu transaction." style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#FFF6E7;strokeColor=#DBA65B;strokeWidth=1.5;fontColor=#23324A;fontSize=14;fontFamily=Arial;spacing=8;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="65" y="463" width="850" height="61" as="geometry"/>
+        </mxCell>
+        <mxCell id="seq-uc12-note-1" value="&lt;b&gt;Nhánh policy từ chối:&lt;/b&gt; Không gọi ApplyAsync (mũi tên ApplyAsync chỉ thuộc nhánh allowed). Controller vẫn thêm UserAccessLog(false) và commit. Nếu lỗi, transaction rollback." style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#FFF6E7;strokeColor=#DBA65B;strokeWidth=1.5;fontColor=#23324A;fontSize=14;fontFamily=Arial;spacing=8;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="962" y="1068" width="820" height="75" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>

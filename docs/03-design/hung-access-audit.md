@@ -1,219 +1,88 @@
-# Hùng — Access & Audit (SWD392)
+# SWD392 — Hùng: Access & Audit / UC12
 
-## Phạm vi và bằng chứng
+**Bản bàn giao cập nhật: 08/11/2026.** Tài liệu này thay cho bản cũ vẫn mô tả `UnconfiguredPasswordHashVerifier`. Chỉ mô tả code phần Hùng; UC16–UC20 là phạm vi modeling/review trong tài liệu phân công, **không được đánh dấu là đã code tất cả**.
 
-- UC12: Store Manager cập nhật quyền nhân viên theo chính sách được duyệt; System Admin có mọi quyền.
-- Role và permission là dữ liệu **từ SQL Server**, không tự phát minh bảng RBAC mới.
-- Login dùng cookie ASP.NET Core, cột `Account.password_hash`; thuật toán hash / cấp mật khẩu mẫu **chưa chốt** nên ứng dụng vẫn **không cho đăng nhập**.
-- Phân quyền đọc database trên **mỗi lần kiểm tra**, không cache danh sách quyền vào cookie.
-- `UserAccessLog`: `account_id`, `occurred_at_utc`, `request_path`, `was_authorized`, `client_ip`.
-- Quản lý nhật ký: Admin xem mọi bản ghi; Manager xem nhật ký tài khoản nhân viên, loại nhật ký của System Admin và lượt truy cập chưa định danh khỏi màn Manager.
-- Bằng chứng đã chạy trên máy người phụ trách trước khi thêm gói cuối: 14/14 test nền tảng và unit, 5/5 HTTP endpoints, UC12 database 6/6 với transaction rollback. **Các thay đổi trong gói cuối phải build và test lại** trên máy có .NET 8.
+## 1. Trạng thái và phạm vi
 
-## Cấu hình Local (không commit)
+| Thành phần | Bằng chứng/trạng thái |
+|---|---|
+| Login ASP.NET Core Cookie, password hash | Đã đăng nhập bằng account demo thực tế sau khi thay `IdentityPasswordHashVerifier`; chưa có output test tự động mới nhất riêng cho Login. |
+| `SqlPermissionChecker` / `AccessGuard` | Đã test truy vấn SQL 8/8; guard có unit test allow, deny, missing account, audit failure. |
+| Access Log (`UserAccessLog`) | Đã kiểm chứng ghi SQL và rollback; các trang log được mở và thử trên trình duyệt. |
+| UC12 Admin cấp/thu hồi | 6/6 kiểm thử tích hợp SQL có rollback; người thực hiện xác nhận demo trên trình duyệt. |
+| UC12 Store Manager | Người thực hiện xác nhận đã thử sau khi cấu hình danh sách demo; cấu hình là **phương án nội bộ**, không phải chính sách chính thức đã được trưởng nhóm duyệt. |
+| Unit tests | Kết quả terminal gần nhất có bằng chứng cụ thể: **23/23 Passed**; 3 bài test PasswordHasher được hướng dẫn sau đó và người thực hiện nói đã ổn, nhưng chưa có log kiểm chứng 26/26 gửi lại. |
+| Tích hợp bảo vệ route của Nam/Kiệt/Hưng/Nghĩa | **Chưa có bằng chứng** các thành viên khác đã gắn `IAccessGuard` vào controller của họ. Đây là việc tích hợp chung còn mở. |
+| Commit/push | Tại lần kiểm tra gần nhất branch `feature/hung-access-audit` đã đồng bộ remote trước batch cấu hình Manager. **Cần chạy lại `git status -sb` để xác nhận bản mới đã push.** |
 
-File `src/BookSales.Web/appsettings.Local.json` chứa kết nối DB và cấu hình sau:
+### Quy tắc đã thực hiện
 
-```json
-"Access": {
-  "Uc12PermissionId": "DEMO-20261027-UC12",
-  "DemoPermissionId": "DEMO-20261027-UC21",
-  "ManagerEditablePermissionIds": [],
-  "ManagerEditableTargetRoleCodes": []
-}
-```
+- `SYSTEM_ADMIN` có thể quản lý permission hợp lệ; website kiểm tra yêu cầu UC12 trước khi xử lý POST.
+- `STORE_MANAGER` không được tự sửa quyền hoặc sửa quyền của `SYSTEM_ADMIN`, và phải có UC12. Mọi thay đổi Manager còn phải vượt qua **hai allowlist cấu hình**.
+- Checker từ chối account vắng mặt, không `ACTIVE`, permission không tồn tại; quyền được đọc lại từ database mỗi lần `HasPermissionAsync`, không nhúng quyền cố định trong cookie.
+- Login dùng `PasswordHasher<object>` qua interface `IPasswordHashVerifier`, cookie chỉ mang identity (`NameIdentifier`/`Name`); `OnValidatePrincipal` kiểm tra tài khoản còn `ACTIVE`.
 
-`ManagerEditablePermissionIds` và `ManagerEditableTargetRoleCodes` **đều rỗng** tới khi nhóm phê duyệt. Không điền đoán mã từ tên UC. Dù UI lỗi, `SqlStaffPermissionChangePolicy` vẫn từ chối thay đổi ngoài hai danh sách.
+### Phạm vi Manager đang dùng để demo (đề xuất, chưa chốt chính thức)
 
-## Lớp và trách nhiệm
+- Quyền: `DEMO-20261027-UC01`, `UC02`, `UC06`, `UC07`, `UC08`, `UC21` (mã đầy đủ có prefix `DEMO-20261027-`).
+- Nhóm đích: `SALES_STAFF`, `INVENTORY_STAFF`.
+- Hai danh sách là **allowlist độc lập**, nên theo code hiện tại Manager có thể gán bất kỳ quyền nào trong danh sách cho **cả hai** role đích; chưa có quy tắc ghép từng permission với role riêng.
+- Cấu hình trong `appsettings.json` (dùng chung) và `appsettings.Local.json` (máy cá nhân); file Local có secret DB và không được commit.
 
-| Lớp | Trách nhiệm |
-| --- | --- |
-| `Account`, `Employee`, `Permission`, `EmployeePermission`, `UserAccessLog` | Mô hình dữ liệu đúng các bảng SQL |
-| `BookSalesDbContext` | EF Core mapping các bảng |
-| `SqlPermissionChecker` / `IPermissionChecker` | Tra quyền trực tiếp từ DB; chặn DISABLED và quyền không tồn tại |
-| `SqlAccessLogWriter` / `IAccessLogWriter` | Lưu bản ghi vào UserAccessLog bằng scope DbContext riêng |
-| `AccessGuard` / `IAccessGuard` | Kiểm tra và ghi log allow/deny phía server |
-| `AccessAuditMiddleware` | Ghi log yêu cầu ẩn danh vào endpoint bảo vệ trước khi `[Authorize]` redirect |
-| `StaffPermissionService` | Điều phối policy → store; không tự định nghĩa business rules |
-| `SqlStaffPermissionChangePolicy` | Kiểm tra actor, target, quyền, manager self-edit, các danh sách được duyệt |
-| `SqlStaffPermissionStore` | Cấp/thu hồi quyền bằng EF, idempotent |
-| `AccessController` | GET quản lý quyền, POST đổi quyền, demo chức năng bảo vệ, GET access logs |
-| `AuthController` | Login form, logout, cookie sign-in (khi verifier hợp lệ được chốt) |
-| `IPasswordHashVerifier` | Điểm mở để triển khai thuật toán hash được nhóm xác nhận |
-| `UnconfiguredPasswordHashVerifier` | Luôn từ chối mật khẩu, không mở lối tắt khi thiếu quyết định |
+## 2. Các lớp và code để chỉ khi thuyết trình
 
-## Class Diagram (code thực tế)
+| Chức năng | Source file | Method/đoạn code thực tế |
+|---|---|---|
+| Kiểm tra quyền | `src/BookSales.Infrastructure/Access/SqlPermissionChecker.cs` | `HasPermissionAsync(accountId, permissionId, ct)`; LINQ `SingleOrDefaultAsync` JOIN Account–Employee; `AnyAsync` Permission/EmployeePermission. |
+| Guard dùng chung | `src/BookSales.Infrastructure/Access/AccessGuard.cs` | `AuthorizeAsync(accountId, permissionId, requestPath, clientIp, ct)` gọi checker, writer rồi trả `bool`. |
+| Ghi audit | `src/BookSales.Infrastructure/Access/SqlAccessLogWriter.cs` | `WriteAsync(...)` tạo `UserAccessLog`, `SaveChangesAsync()`. |
+| UC12 điều phối | `src/BookSales.Application/Access/StaffPermissionService.cs` | `ChangeAsync(change, ct)` gọi policy trước, store sau. |
+| UC12 chính sách | `src/BookSales.Infrastructure/Access/SqlStaffPermissionChangePolicy.cs` | `IsAllowedAsync(change, ct)` kiểm tra role, target, scope và UC12. |
+| UC12 lưu quyền | `src/BookSales.Infrastructure/Access/SqlStaffPermissionStore.cs` | `ApplyAsync(employeeId, permissionId, grant, ct)` dùng `FindAsync`, `Add/Remove`, `SaveChangesAsync`. |
+| UC12 HTTP | `src/BookSales.Web/Controllers/AccessController.cs` | `Permissions(GET/POST)`, `Demo(GET)`, `Logs(GET)`. POST UC12 gọi **checker trực tiếp** để kiểm UC12, không gọi AccessGuard, và ghi audit cùng DB transaction. |
+| Login | `src/BookSales.Infrastructure/Access/SqlAccountLoginService.cs` | `VerifyAsync(username, password, ct)` lọc Account `ACTIVE` rồi gọi `IPasswordHashVerifier.Verify()`. |
+| Xác minh hash | `src/BookSales.Web/Access/IdentityPasswordHashVerifier.cs` | `Verify(storedHash, providedPassword)` dùng ASP.NET Core Identity PasswordHasher. |
+| Cookie | `src/BookSales.Web/Controllers/AuthController.cs`, `src/BookSales.Web/Program.cs` | `Login(GET/POST)`, `Logout(POST)`, `SignInAsync`, `OnValidatePrincipal`. |
+| Audit request ẩn danh | `src/BookSales.Web/Middleware/AccessAuditMiddleware.cs` | `InvokeAsync(context, writer)` chỉ áp dụng `/access/permissions`, `/access/demo`, `/access/logs`, `/access/logout`. |
 
-```mermaid
-classDiagram
-    class IPermissionChecker {
-      <<interface>>
-      +HasPermissionAsync(accountId, permissionId, ct) Task~bool~
-    }
-    class IAccessLogWriter {
-      <<interface>>
-      +WriteAsync(accountId, path, authorized, ip, ct) Task
-    }
-    class IAccessGuard {
-      <<interface>>
-      +AuthorizeAsync(accountId, permissionId, path, ip, ct) Task~bool~
-    }
-    class AccessGuard {
-      +AuthorizeAsync(accountId, permissionId, path, ip, ct) Task~bool~
-    }
-    class SqlPermissionChecker
-    class SqlAccessLogWriter
-    class StaffPermissionService {
-      +ChangeAsync(change, ct) Task~bool~
-    }
-    class IStaffPermissionChangePolicy {
-      <<interface>>
-      +IsAllowedAsync(change, ct) Task~bool~
-    }
-    class IStaffPermissionStore {
-      <<interface>>
-      +ApplyAsync(employeeId, permissionId, grant, ct) Task
-    }
-    class SqlStaffPermissionChangePolicy
-    class SqlStaffPermissionStore
-    class BookSalesDbContext
-    class AccessController
-    class AuthController
-    class IAccountLoginService {
-      <<interface>>
-      +VerifyAsync(username, password, ct) Task~VerifiedAccount~
-    }
-    class IPasswordHashVerifier {
-      <<interface>>
-      +Verify(hash, password) bool
-    }
-    class SqlAccountLoginService
-    class UnconfiguredPasswordHashVerifier
+**Không có** method riêng `FindAccountByAccountId()`. `Account JOIN Employee` là truy vấn LINQ trong `SqlPermissionChecker.HasPermissionAsync()`, kết thúc bằng `SingleOrDefaultAsync()`. Sequence Diagram không được ghi đó là lời gọi method tự tạo.
 
-    IPermissionChecker <|.. SqlPermissionChecker
-    IAccessLogWriter <|.. SqlAccessLogWriter
-    IAccessGuard <|.. AccessGuard
-    IStaffPermissionChangePolicy <|.. SqlStaffPermissionChangePolicy
-    IStaffPermissionStore <|.. SqlStaffPermissionStore
-    IAccountLoginService <|.. SqlAccountLoginService
-    IPasswordHashVerifier <|.. UnconfiguredPasswordHashVerifier
-    AccessGuard --> IPermissionChecker
-    AccessGuard --> IAccessLogWriter
-    StaffPermissionService --> IStaffPermissionChangePolicy
-    StaffPermissionService --> IStaffPermissionStore
-    SqlPermissionChecker --> BookSalesDbContext
-    SqlAccessLogWriter --> BookSalesDbContext
-    SqlStaffPermissionChangePolicy --> BookSalesDbContext
-    SqlStaffPermissionStore --> BookSalesDbContext
-    SqlAccountLoginService --> BookSalesDbContext
-    SqlAccountLoginService --> IPasswordHashVerifier
-    AccessController --> IAccessGuard
-    AccessController --> IPermissionChecker
-    AccessController --> IAccessLogWriter
-    AccessController --> StaffPermissionService
-    AuthController --> IAccountLoginService
-    AuthController --> IAccessLogWriter
-```
+## 3. Luồng mẫu đã thực hiện
 
-## UC12 Sequence Diagram (POST /access/permissions)
+### A. Protected demo (`GET /access/demo`)
 
-```mermaid
-sequenceDiagram
-    actor Actor as Admin/Store Manager
-    participant Web as AccessController
-    participant Auth as IPermissionChecker
-    participant UC12 as StaffPermissionService
-    participant Policy as SqlStaffPermissionChangePolicy
-    participant Store as SqlStaffPermissionStore
-    participant DB as SQL Server / BookSalesDbContext
+1. Cookie auth xác minh identity; `[Authorize]` yêu cầu đăng nhập.
+2. `AccessController.Demo()` gọi `CheckAsync(...)` → `IAccessGuard.AuthorizeAsync(...)` với `accountId` lấy từ **claim server**, permission `UC21` lấy từ cấu hình.
+3. `AccessGuard` gọi `IPermissionChecker.HasPermissionAsync()` → truy vấn Account + Employee, sau đó `Permissions.AnyAsync()` hoặc `EmployeePermissions.AnyAsync()` theo role.
+4. Guard gọi `IAccessLogWriter.WriteAsync()` với kết quả allow/deny, rồi trả bool.
+5. Controller trả `Content(...)` nếu allow hoặc `Forbid()` nếu deny.
 
-    Actor->>Web: POST quyền, AntiForgery Token
-    Web->>Auth: HasPermissionAsync(accountId, UC12)
-    Auth->>DB: Kiểm tra Account ACTIVE + Role/EmployeePermission
-    DB-->>Auth: true/false
-    Auth-->>Web: canAccess
-    alt Không có quyền UC12
-      Web->>DB: Ghi UserAccessLog(denied)
-      Web-->>Actor: Forbid
-    else Có quyền UC12, dữ liệu hợp lệ
-      Web->>DB: BEGIN TRANSACTION
-      Web->>UC12: ChangeAsync(actor, target, permission, grant)
-      UC12->>Policy: IsAllowedAsync(change)
-      Policy->>DB: Kiểm tra role, self-edit, scope đã duyệt
-      DB-->>Policy: allow/deny
-      alt Chính sách cho phép
-        UC12->>Store: ApplyAsync(target, permission, grant)
-        Store->>DB: INSERT/DELETE EmployeePermission
-      end
-      UC12-->>Web: true/false
-      Web->>DB: INSERT UserAccessLog(true/false) CÙNG TRANSACTION
-      Web->>DB: COMMIT (rollback nếu lỗi)
-      Web-->>Actor: Redirect + thông báo kết quả
-    end
-```
+### B. UC12 (`POST /access/permissions`)
 
-## Sequence Diagram — HTTP access và audit
+1. `[Authorize]` + anti-forgery. Controller gọi checker kiểm UC12 trước; thiếu quyền thì ghi denied log và `Forbid()`.
+2. Nếu model hợp lệ: `db.Database.BeginTransactionAsync()`.
+3. `StaffPermissionService.ChangeAsync()` → `SqlStaffPermissionChangePolicy.IsAllowedAsync()` → nếu allow thì `SqlStaffPermissionStore.ApplyAsync()`.
+4. Controller thêm `UserAccessLog` với `WasAuthorized = changed`, `SaveChangesAsync()` và `CommitAsync()` trong **cùng transaction**. Nếu policy từ chối, không đổi quyền nhưng vẫn lưu denial audit.
+5. `RedirectToAction(nameof(Permissions))`; request truy cập tiếp theo đọc lại quyền hiện tại trong SQL.
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant Cookie as Cookie Authentication
-    participant Middleware as AccessAuditMiddleware
-    participant MVC as [Authorize] / AccessController
-    participant Guard as AccessGuard
-    participant Permission as SqlPermissionChecker
-    participant Audit as SqlAccessLogWriter
-    participant DB as SQL Server
-    User->>Cookie: GET /access/demo
-    Cookie->>DB: Xác minh Account ACTIVE (khi có cookie)
-    alt Không có principal hợp lệ
-      Cookie->>Middleware: Anonymous
-      Middleware->>Audit: WriteAsync(null, path, false, ip)
-      Audit->>DB: INSERT UserAccessLog
-      Middleware->>MVC: Next()
-      MVC-->>User: Redirect Login (302)
-    else Có principal hợp lệ
-      Cookie->>Middleware: Authenticated
-      Middleware->>MVC: Next()
-      MVC->>Guard: AuthorizeAsync(accountId, UC21, path, ip)
-      Guard->>Permission: HasPermissionAsync(accountId, UC21)
-      Permission->>DB: Kiểm tra quyền MỖI REQUEST
-      Permission-->>Guard: true/false
-      Guard->>Audit: WriteAsync(accountId, path, result, ip)
-      Audit->>DB: INSERT UserAccessLog
-      Guard-->>MVC: true/false
-      MVC-->>User: 200 hoặc Forbid
-    end
-```
+### C. Access Log
 
-## Dữ liệu kiểm thử đã xác minh
+- `account_id` (nullable), `occurred_at_utc`, `request_path`, `was_authorized`, `client_ip`.
+- `was_authorized` trong guard nghĩa là **quyết định quyền truy cập**, không khẳng định mọi thao tác nghiệp vụ sau đó thành công. Với UC12 POST, audit ghi kết quả chính sách cập nhật (`changed`).
+- `GET /access/logs`: Admin thấy tất cả, Manager lọc không thấy log của SYSTEM_ADMIN hoặc anonymous theo code đang có, tối đa 100 dòng gần nhất.
+- Middleware hiện chỉ ghi lượt **anonymous tại các route `/access/*` cụ thể**. Module khác phải tự dùng `IAccessGuard` nếu muốn ghi kết quả authenticated allow/deny; không nên tuyên bố middleware tự audit toàn bộ website.
 
-- Database mẫu `SWD392_BookSales_3NF_REVIEW_20261027`, server `SQLEXPRESS` tại môi trường của nhóm.
-- Các tài khoản mẫu gồm admin, manager, sales A/B, inventory, disabled. Các `password_hash` lúc kiểm tra đều `NULL` nên không thể dùng giao diện để login thực.
-- Permission Checker: 8/8 trường hợp từ DB thật; AccessLogWriter ghi/rollback OK, 6 bản ghi trước và sau.
-- UC12: Admin cấp UC21 cho Sales B, lần kiểm tra kế tiếp cho phép; thu hồi, lần kiểm tra kế tiếp từ chối; mọi thay đổi trong transaction đã rollback, 6/6 PASS.
-- Route HTTP trước batch cuối: `/health` 200, `/access/login` 200, `/access/permissions` 302, `/access/demo` 302, `/access/logs` 302.
+## 4. Kiểm thử/bảo vệ
 
-## Việc còn CHỜ XÁC NHẬN (không triển khai giả)
+- Demo: Admin Login → cấp UC21 cho Sales B → đăng nhập Sales B và thử `/access/demo` (allow) → Admin thu hồi → Sales B thử lại (deny) → Admin/Manager xem `/access/logs`.
+- Tình huống sai: Manager tự sửa quyền → deny; tài khoản `DISABLED` không được đăng nhập/checker; unconfigured/missing permission → deny.
+- Giải thích OOP: Controller → interface/service → policy/store → EF Core; `async/await` cho I/O; transaction đảm bảo UC12 không đổi quyền khi phần lưu audit thất bại.
+- Khi trình bày “realtime”, không tuyên bố Access module tự dùng SignalR. Phần Hùng chỉ bảo đảm **hiệu lực quyền ở request tiếp theo**. Realtime notification thuộc phần tích hợp chung.
 
-1. Thuật toán hash mật khẩu, cách sinh hash và cấp mật khẩu demo cho 6 account. Chỉ sau khi chốt mới thay DI `IPasswordHashVerifier` và cập nhật database bằng quy trình được nhóm duyệt. Không commit mật khẩu hoặc secret.
-2. Danh sách chính xác `ManagerEditablePermissionIds` và nhóm vai trò nhân viên được chỉnh `ManagerEditableTargetRoleCodes` (nếu cần nhóm bổ sung quy tắc về Manager khác, phải được chốt rõ). Không cấp quyền theo phỏng đoán.
+## 5. File bàn giao và việc còn mở
 
-## Cách demo sau khi nhóm chốt
-
-1. Đăng nhập bằng account Admin đã có hash hợp lệ.
-2. Vào `/access/permissions`; chọn Sales B và UC21, cấp quyền.
-3. Với cùng phiên Sales B đang đăng nhập, gọi `/access/demo` trên request mới → thành công.
-4. Admin thu hồi UC21; Sales B gọi lại `/access/demo` → từ chối ngay, không cần đăng nhập lại.
-5. Vào `/access/logs`: kiểm tra account, path, UTC, outcome, IP; so sánh Manager/Admin; thử DISABLED và Manager sửa chính mình.
-6. Khi trình bày bảo vệ, mở Class/Sequence Diagram trong tài liệu để giải thích ranh giới Application / Infrastructure / Web.
-
-## Lưu ý kỹ thuật
-
-- `AccessAuditMiddleware` chỉ ghi lại lượt anonymous đối với các route bảo vệ đã có (`permissions`, `demo`, `logs`, `logout`), không ghi mọi request công khai để tránh tăng log vô hạn.
-- POST UC12 dùng chung scoped `BookSalesDbContext` cho thay đổi quyền và log; chúng nằm trong **một transaction SQL**. Các trường hợp bị từ chối tại bước kiểm tra UC12 được ghi qua writer độc lập.
-- Các tình huống ghi log không thành công sẽ ném exception thay vì cho phép tiếp tục xử lý. Không biến lỗi lưu log thành thành công giả.
-- Với hệ thống lớn, cần thiết kế rõ retry, rate-limit Login, log retention, phân trang/phân quyền đọc log, và xử lý cạnh tranh thay đổi quyền. Những thứ này chưa được khẳng định là phạm vi bài nhóm.
-- File `appsettings.Local.json` là secret và đã được `.gitignore` bỏ qua; tuyệt đối không commit.
-- Chỉ làm việc trên branch `feature/hung-access-audit`; không push hoặc merge `main` từ script.
+1. `docs/03-design/hung-access-diagrams.drawio`: 4 tab UML, method names đối chiếu source, có nhánh UC12 denied và SQL queries phân biệt với method thực.
+2. `docs/03-design/hung-access-integration.md`: cách các module khác gắn guard, log và những lưu ý về authentication.
+3. `docs/ai-usage/hung-access-audit-assistance.md`: đã cập nhật thông tin hỗ trợ AI cho bản tài liệu và diagram mới.
+4. Trước merge: xem Git diff, test lại, check secret, tạo **Draft Pull Request** tới main để nhóm review. Không tự merge.
+5. **Cần phối hợp** Nam, Kiệt, Hưng, Nghĩa gắn checker/guard vào endpoint thực tế và xác nhận quyền tương ứng; phần này ngoài scope thực thi cá nhân đã kiểm chứng.
