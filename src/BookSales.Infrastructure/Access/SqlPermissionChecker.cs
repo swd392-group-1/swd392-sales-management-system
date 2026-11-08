@@ -5,16 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookSales.Infrastructure.Access;
 
-public sealed class SqlPermissionChecker(
-    BookSalesDbContext db) : IPermissionChecker
+public sealed class SqlPermissionChecker(BookSalesDbContext db) : IPermissionChecker
 {
-    public async Task<bool> HasPermissionAsync(
-        string accountId,
-        string permissionId,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> HasPermissionAsync(string accountId, string permissionId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(accountId) ||
-            string.IsNullOrWhiteSpace(permissionId))
+        if (string.IsNullOrWhiteSpace(accountId) || string.IsNullOrWhiteSpace(permissionId))
         {
             return false;
         }

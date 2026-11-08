@@ -1,3 +1,4 @@
+using BookSales.Web.Access;
 using BookSales.Web.Middleware;
 using BookSales.Application.Access;
 using BookSales.Application.Notifications;
@@ -45,7 +46,7 @@ builder.Services.AddScoped<IStaffPermissionChangePolicy,SqlStaffPermissionChange
 builder.Services.AddScoped<IStaffPermissionStore,SqlStaffPermissionStore>();
 builder.Services.AddScoped<StaffPermissionService>();
 builder.Services.AddScoped<IAccountLoginService,SqlAccountLoginService>();
-builder.Services.AddSingleton<IPasswordHashVerifier,UnconfiguredPasswordHashVerifier>();
+builder.Services.AddSingleton<IPasswordHashVerifier, IdentityPasswordHashVerifier>();
 builder.Services.AddSignalR();
 builder.Services.AddAntiforgery(options => options.HeaderName = "RequestVerificationToken");
 builder.Services.AddSingleton(TimeProvider.System);
