@@ -18,6 +18,20 @@
                 {
                     <a href="/development">Kiểm tra kết nối</a>
                 }
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a href="/access/permissions">Quản lý quyền</a>
+                    <a href="/access/logs">Nhật ký</a>
+                    <a href="/access/demo">Demo quyền</a>
+                    <form asp-controller="Auth" asp-action="Logout" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit">Đăng xuất</button>
+                    </form>
+                }
+                else
+                {
+                    <a href="/access/login">Đăng nhập</a>
+                }
             </div>
         <a href="/reports/inventory">Báo cáo tồn</a> <a href="/Pricing">Đổi giá</a></nav>
     </header>

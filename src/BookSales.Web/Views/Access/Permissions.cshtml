@@ -1,0 +1,71 @@
+@model BookSales.Web.Models.StaffPermissionInput
+@using BookSales.Domain.Access
+@{
+    ViewData["Title"] = "Quản lý quyền";
+    var employees = ViewBag.Employees as List<Employee> ?? new();
+    var permissions = ViewBag.Permissions as List<Permission> ?? new();
+    var allPermissions = ViewBag.AllPermissions as List<Permission> ?? new();
+    var assigned = ViewBag.Assignments as List<EmployeePermission> ?? new();
+    var manager = (string?)ViewBag.ActorRole == "STORE_MANAGER";
+}
+<h1>UC12 — Quản lý quyền nhân viên</h1>
+@if (TempData["AccessMessage"] is string message)
+{
+    <p role="status">@message</p>
+}
+<p>Admin có thể quản lý tất cả quyền. Manager chỉ được thao tác trên quyền nghiệp vụ đã được nhóm duyệt.</p>
+@if (manager && permissions.Count == 0)
+{
+    <p role="status"><strong>Danh sách quyền Manager được phép chỉnh chưa được xác nhận.</strong> Hệ thống đang khóa thao tác thay đổi của Manager để tránh cấp quyền sai.</p>
+}
+@if (employees.Count == 0 || permissions.Count == 0)
+{
+    <p>Chưa có đối tượng hoặc quyền phù hợp để cập nhật.</p>
+}
+else
+{
+    <form asp-controller="Access" asp-action="Permissions" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All"></div>
+        <p>
+            <label asp-for="TargetEmployeeId">Nhân viên</label><br />
+            <select asp-for="TargetEmployeeId" required>
+                <option value="">Chọn nhân viên</option>
+                @foreach (var e in employees)
+                {
+                    <option value="@e.EmployeeId">@e.Name (@e.RoleCode)</option>
+                }
+            </select>
+        </p>
+        <p>
+            <label asp-for="PermissionId">Quyền</label><br />
+            <select asp-for="PermissionId" required>
+                <option value="">Chọn quyền</option>
+                @foreach (var p in permissions)
+                {
+                    <option value="@p.PermissionId">@p.PermissionName (@p.PermissionId)</option>
+                }
+            </select>
+        </p>
+        <p><label><input asp-for="Grant" /> Cấp quyền (bỏ tick để thu hồi)</label></p>
+        <button type="submit">Lưu thay đổi</button>
+    </form>
+}
+<h2>Quyền hiện tại của nhân viên</h2>
+<table>
+    <thead><tr><th>Nhân viên</th><th>Vai trò</th><th>Các quyền đã gán</th></tr></thead>
+    <tbody>
+    @foreach (var employee in employees)
+    {
+        var employeeIds = assigned.Where(a => a.EmployeeId == employee.EmployeeId)
+            .Select(a => a.PermissionId).ToHashSet();
+        var names = allPermissions.Where(p => employeeIds.Contains(p.PermissionId))
+            .Select(p => p.PermissionName ?? p.PermissionId);
+        <tr>
+            <td>@employee.Name</td>
+            <td>@employee.RoleCode</td>
+            <td>@string.Join(", ", names)</td>
+        </tr>
+    }
+    </tbody>
+</table>

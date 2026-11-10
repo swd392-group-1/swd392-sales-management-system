@@ -1,0 +1,14 @@
+@model BookSales.Web.Models.AccessLoginInput
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+<h1>Đăng nhập BookSales</h1>
+<p>Chỉ tài khoản có password hash hợp lệ mới có thể đăng nhập.</p>
+<form asp-controller="Auth" asp-action="Login" method="post">
+    @Html.AntiForgeryToken()
+    <input asp-for="ReturnUrl" type="hidden" />
+    <div asp-validation-summary="All"></div>
+    <p><label asp-for="Username">Tài khoản</label><br /><input asp-for="Username" autocomplete="username" /></p>
+    <p><label asp-for="Password">Mật khẩu</label><br /><input asp-for="Password" autocomplete="current-password" /></p>
+    <button type="submit">Đăng nhập</button>
+</form>
