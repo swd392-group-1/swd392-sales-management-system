@@ -196,7 +196,7 @@ classDiagram
     InventoryCount ..> CountFinalization : Finalize()
     CountFinalization *-- FinalizedCountLine
     InventoryAdjustment *-- AdjustmentBook
-    InventoryAdjustment ..> InventoryMovement : mỗi dòng lệch
+    InventoryAdjustment ..> InventoryMovement : one entry per difference line
     InventoryAudit *-- InventoryAuditLine
 
     class InventoryCountService {
@@ -256,35 +256,33 @@ sequenceDiagram
     Staff->>C: POST /Counts/Finalize (CountId, Selections)
     C->>S: FinalizeAsync(countId, selections)
     S->>U: ExecuteAsync(() => FinalizeCoreAsync(...))
-    Note over U: Execution strategy của EF<br/>(retry vẫn dùng được transaction)
     U->>S: FinalizeCoreAsync()
     S->>U: BeginTransactionAsync(Serializable)
     S->>CS: FindAsync(countId)
-    CS-->>S: InventoryCount (kèm Observations)
+    CS-->>S: InventoryCount (with Observations)
 
-    alt Phiếu đã chốt
-        S-->>C: DomainException "đã được chốt"
-        C-->>Staff: Thông báo, không ghi lần hai
-    else Phiếu đang đếm
+    alt Count already finalized
+        S-->>C: DomainException "already finalized"
+        C-->>Staff: Rejected, no second posting
+    else Count is open
         S->>ST: EnsureStockRowsAsync(bookIds)
         S->>ST: GetQuantitiesAsync(bookIds)
-        ST-->>S: tồn tham chiếu
+        ST-->>S: reference quantities
         S->>D: Finalize(selections, referenceQuantities)
         D-->>S: CountFinalization (lines + Difference)
         S->>S: InventoryAdjustment.CreateForCount(...)
-        Note right of S: Chỉ các dòng Difference != 0<br/>mới vào adjustment
 
-        loop Mỗi dòng chốt
+        loop each finalized line
             S->>ST: TrySetQuantityAsync(bookId, expected, counted)
             ST-->>S: true / false
-            alt Stock đã đổi trong lúc chốt
+            alt Stock changed during finalize
                 S-->>C: ConflictException
-                C-->>Staff: Yêu cầu tải lại và kiểm kê lại
+                C-->>Staff: Reload and count again
             end
         end
 
         S->>U: SaveChangesAsync() (selections + stock)
-        opt Có chênh lệch
+        opt Has difference
             S->>A: AddAsync(adjustment)
             S->>U: SaveChangesAsync()
             S->>A: LinkCountAsync(countId, adjustmentId)
@@ -293,7 +291,7 @@ sequenceDiagram
         end
         S->>U: CommitAsync()
         S-->>C: FinalizeCountResult
-        C-->>Staff: Redirect + "Đã chốt phiếu ... adjustment ..."
+        C-->>Staff: Redirect + "Count finalized, adjustment posted"
     end
 ```
 
@@ -325,12 +323,10 @@ sequenceDiagram
     S->>AS: FindAsync(auditId)
     AS-->>S: InventoryAudit
     S->>D: Approve()
-    Note right of D: Chỉ kiểm tra còn dòng đếm<br/>và đổi Status = APPROVED
-    D-->>S: (không trả dữ liệu tồn)
+    D-->>S: completed
     S->>U: SaveChangesAsync()
-    S-->>C: hoàn tất
-    C-->>Manager: "Đã duyệt audit"
-    Note over S: Không gọi IStockStore,<br/>không tạo Adjustment/Movement
+    S-->>C: completed
+    C-->>Manager: "Audit approved"
 ```
 
 Đây là bằng chứng trực tiếp cho quy tắc: **phê duyệt Audit chỉ xác nhận kết quả, không cập nhật tồn và không tạo Adjustment**. `InventoryAuditService` thậm chí không có dependency `IInventoryAdjustmentStore`/`IInventoryMovementStore`.

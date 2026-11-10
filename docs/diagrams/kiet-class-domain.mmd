@@ -26,7 +26,7 @@ classDiagram
     }
 
     class InventoryCountObservation {
-        <<entity - lịch sử đếm>>
+        <<entity - count history>>
         +long Id
         +string BookId
         +decimal CountedQuantity
@@ -34,7 +34,7 @@ classDiagram
     }
 
     class InventoryCountSelection {
-        <<entity - kết quả chốt>>
+        <<entity - finalized result>>
         +string BookId
         +long SelectedObservationId
         +decimal RecordedQuantity
@@ -64,7 +64,7 @@ classDiagram
     }
 
     class AdjustmentBook {
-        <<entity - chỉ dòng lệch>>
+        <<entity - difference lines only>>
         +string BookId
         +decimal QuantityChange
     }
@@ -85,7 +85,7 @@ classDiagram
     }
 
     class InventoryAudit {
-        <<aggregate root - ĐỘC LẬP>>
+        <<aggregate root - INDEPENDENT>>
         +string Id
         +string Status
         +bool IsApproved
@@ -100,8 +100,8 @@ classDiagram
         +decimal CountedQuantity
     }
 
-    InventoryCount "1" *-- "0..*" InventoryCountObservation : lưu lịch sử đếm lại
-    InventoryCount "1" *-- "0..*" InventoryCountSelection : chốt phiếu
+    InventoryCount "1" *-- "0..*" InventoryCountObservation : stores count history
+    InventoryCount "1" *-- "0..*" InventoryCountSelection : finalized selection
     InventoryCountSelection "0..*" ..> "1" InventoryCountObservation : selected_observation_id
     InventoryCount ..> CountFinalization
     CountFinalization "1" *-- "1..*" FinalizedCountLine
@@ -111,7 +111,7 @@ classDiagram
     InventoryAudit "1" *-- "1..*" InventoryAuditLine
     InventoryCount "0..*" --> "1" Book : BookId
     InventoryAuditLine "0..*" --> "1" Book : BookId
-    InventoryMovement "0..*" --> "1" BookStock : cùng BookId
+    InventoryMovement "0..*" --> "1" BookStock : same BookId
 
-    note for InventoryAudit "Approve() chỉ đổi Status = APPROVED.\nKhông có quan hệ tới InventoryAdjustment,\nInventoryMovement hay BookStock."
-    note for InventoryCountSelection "recorded_quantity = tồn ghi sổ\ntại thời điểm chốt (snapshot)."
+    note for InventoryAudit "Approve() only sets Status = APPROVED.\nNo relation to InventoryAdjustment,\nInventoryMovement, or BookStock."
+    note for InventoryCountSelection "recorded_quantity = ledger quantity\nsnapshot taken at finalize time."

@@ -12,10 +12,7 @@ sequenceDiagram
     S->>AS: FindAsync(auditId)
     AS-->>S: InventoryAudit
     S->>A: Approve()
-    Note right of A: Chỉ kiểm tra Lines.Count > 0<br/>và đổi Status = APPROVED
-    A-->>S: hoàn tất
+    A-->>S: completed
     S->>U: SaveChangesAsync()
-    S-->>C: hoàn tất
-    C-->>Manager: "Đã duyệt audit"
-
-    Note over S,U: KHÔNG gọi IStockStore<br/>KHÔNG tạo InventoryAdjustment<br/>KHÔNG tạo InventoryMovement
+    S-->>C: completed
+    C-->>Manager: "Audit approved"

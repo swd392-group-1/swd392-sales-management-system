@@ -11,54 +11,52 @@ sequenceDiagram
     participant Count as InventoryCount
     participant Adj as InventoryAdjustment
 
-    Note over Staff,Count: Giai đoạn 1 - Tạo phiếu và ghi nhận kết quả đếm
-    Staff->>C: POST /Counts/Create (các Book được chọn + số đếm)
+    Staff->>C: POST /Counts/Create (selected books + counted quantities)
     C->>S: CreateAsync(lines)
-    S->>S: ValidateLines + kiểm tra Book tồn tại
+    S->>S: ValidateLines + verify books exist
     S->>Count: new InventoryCount(...) + AddObservation(...)
     S->>CS: AddAsync(count)
     S->>U: SaveChangesAsync()
     S-->>C: countId
     C-->>Staff: Redirect /Counts/Details/{id}
 
-    Staff->>C: POST /Counts/AddObservation (đếm lại một sách)
+    Staff->>C: POST /Counts/AddObservation (recount one book)
     C->>S: AddObservationAsync(countId, bookId, countedQuantity)
     S->>CS: FindAsync(countId)
-    CS-->>S: count (chưa chốt)
+    CS-->>S: count (not finalized)
     S->>Count: AddObservation(...)
     S->>U: SaveChangesAsync()
 
-    Note over Staff,Count: Giai đoạn 2 - Chốt phiếu trong một transaction
     Staff->>C: POST /Counts/Finalize (Selections)
     C->>S: FinalizeAsync(countId, selections)
     S->>U: ExecuteAsync(FinalizeCoreAsync)
     U->>S: FinalizeCoreAsync()
     S->>U: BeginTransactionAsync(Serializable)
     S->>CS: FindAsync(countId)
-    CS-->>S: count kèm Observations
+    CS-->>S: count with Observations
 
     alt count.IsFinalized == true
         S-->>C: DomainException
-        C-->>Staff: "Phiếu đã chốt, không ghi chênh lệch lần hai"
-    else Phiếu đang mở
+        C-->>Staff: "Count already finalized - differences cannot be posted twice"
+    else Count is open
         S->>ST: EnsureStockRowsAsync(bookIds)
         S->>ST: GetQuantitiesAsync(bookIds)
         ST-->>S: referenceQuantities
         S->>Count: Finalize(selections, referenceQuantities)
         Count-->>S: CountFinalization(lines, Difference)
-        S->>Adj: CreateForCount(...) - chỉ dòng Difference != 0
+        S->>Adj: CreateForCount(...) - only lines with Difference != 0
 
-        loop mỗi FinalizedCountLine
+        loop each FinalizedCountLine
             S->>ST: TrySetQuantityAsync(bookId, expected, counted)
             ST-->>S: true / false (compare-and-swap)
             alt CAS false
                 S-->>C: ConflictException
-                C-->>Staff: "Tồn đã đổi, tải lại và kiểm kê lại"
+                C-->>Staff: "Stock changed - reload and count again"
             end
         end
 
         S->>U: SaveChangesAsync() - selections + BookStock
-        opt Có chênh lệch
+        opt Has difference
             S->>AS: AddAsync(adjustment)
             S->>U: SaveChangesAsync()
             S->>AS: LinkCountAsync(countId, adjustmentId)
@@ -67,5 +65,5 @@ sequenceDiagram
         end
         S->>U: CommitAsync()
         S-->>C: FinalizeCountResult
-        C-->>Staff: "Đã chốt phiếu + adjustment"
+        C-->>Staff: "Count finalized + adjustment posted"
     end

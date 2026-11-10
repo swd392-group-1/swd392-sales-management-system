@@ -75,21 +75,21 @@ classDiagram
         <<domain>>
     }
 
-    InventoryCountService ..> InventoryCount : điều phối
-    InventoryCountService ..> InventoryAdjustment : tạo khi có lệch
-    InventoryCountService ..> InventoryMovement : ghi bút toán
+    InventoryCountService ..> InventoryCount : orchestrates
+    InventoryCountService ..> InventoryAdjustment : creates on difference
+    InventoryCountService ..> InventoryMovement : posts ledger entries
     InventoryCountService ..> IInventoryCountStore
     InventoryCountService ..> IStockStore
     InventoryCountService ..> IInventoryAdjustmentStore
     InventoryCountService ..> IInventoryMovementStore
     InventoryCountService ..> IUnitOfWork
 
-    InventoryAuditService ..> InventoryAudit : duyệt
+    InventoryAuditService ..> InventoryAudit : approves
     InventoryAuditService ..> IInventoryAuditStore
-    InventoryAuditService ..> IStockStore : chỉ đọc khi xem chi tiết
+    InventoryAuditService ..> IStockStore : read-only for detail view
     InventoryAuditService ..> IUnitOfWork
 
     note for IStockStore "Data: EfStockStore\nCAS = UPDATE BookStock\nSET current_quantity = @new\nWHERE book_id = @id AND current_quantity = @expected"
-    note for IUnitOfWork "Data: EfUnitOfWork\nSerializable transaction +\nCreateExecutionStrategy() cho retry"
-    note for InventoryCountService "FinalizeAsync:\n1. count.Finalize(...)\n2. InventoryAdjustment.CreateForCount(lines lệch)\n3. CAS từng dòng vào BookStock\n4. Movement từ adjustment.Books"
-    note for InventoryAuditService "ApproveAsync KHÔNG gọi\nIStockStore / Adjustment / Movement."
+    note for IUnitOfWork "Data: EfUnitOfWork\nSerializable transaction +\nCreateExecutionStrategy() for retry"
+    note for InventoryCountService "FinalizeAsync:\n1. count.Finalize(...)\n2. InventoryAdjustment.CreateForCount(difference lines)\n3. CAS each line into BookStock\n4. Movements from adjustment.Books"
+    note for InventoryAuditService "ApproveAsync does NOT call\nIStockStore / Adjustment / Movement."
