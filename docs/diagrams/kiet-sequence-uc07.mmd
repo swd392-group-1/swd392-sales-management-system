@@ -1,0 +1,69 @@
+sequenceDiagram
+    autonumber
+    actor Staff as Inventory Staff
+    participant C as CountsController
+    participant S as InventoryCountService
+    participant U as IUnitOfWork
+    participant CS as IInventoryCountStore
+    participant ST as IStockStore
+    participant AS as IInventoryAdjustmentStore
+    participant MS as IInventoryMovementStore
+    participant Count as InventoryCount
+    participant Adj as InventoryAdjustment
+
+    Staff->>C: POST /Counts/Create (selected books + counted quantities)
+    C->>S: CreateAsync(lines)
+    S->>S: ValidateLines + verify books exist
+    S->>Count: new InventoryCount(...) + AddObservation(...)
+    S->>CS: AddAsync(count)
+    S->>U: SaveChangesAsync()
+    S-->>C: countId
+    C-->>Staff: Redirect /Counts/Details/{id}
+
+    Staff->>C: POST /Counts/AddObservation (recount one book)
+    C->>S: AddObservationAsync(countId, bookId, countedQuantity)
+    S->>CS: FindAsync(countId)
+    CS-->>S: count (not finalized)
+    S->>Count: AddObservation(...)
+    S->>U: SaveChangesAsync()
+
+    Staff->>C: POST /Counts/Finalize (Selections)
+    C->>S: FinalizeAsync(countId, selections)
+    S->>U: ExecuteAsync(FinalizeCoreAsync)
+    U->>S: FinalizeCoreAsync()
+    S->>U: BeginTransactionAsync(Serializable)
+    S->>CS: FindAsync(countId)
+    CS-->>S: count with Observations
+
+    alt count.IsFinalized == true
+        S-->>C: DomainException
+        C-->>Staff: "Count already finalized - differences cannot be posted twice"
+    else Count is open
+        S->>ST: EnsureStockRowsAsync(bookIds)
+        S->>ST: GetQuantitiesAsync(bookIds)
+        ST-->>S: referenceQuantities
+        S->>Count: Finalize(selections, referenceQuantities)
+        Count-->>S: CountFinalization(lines, Difference)
+        S->>Adj: CreateForCount(...) - only lines with Difference != 0
+
+        loop each FinalizedCountLine
+            S->>ST: TrySetQuantityAsync(bookId, expected, counted)
+            ST-->>S: true / false (compare-and-swap)
+            alt CAS false
+                S-->>C: ConflictException
+                C-->>Staff: "Stock changed - reload and count again"
+            end
+        end
+
+        S->>U: SaveChangesAsync() - selections + BookStock
+        opt Has difference
+            S->>AS: AddAsync(adjustment)
+            S->>U: SaveChangesAsync()
+            S->>AS: LinkCountAsync(countId, adjustmentId)
+            S->>MS: AddRangeAsync(movements)
+            S->>U: SaveChangesAsync() - posting_key unique
+        end
+        S->>U: CommitAsync()
+        S-->>C: FinalizeCountResult
+        C-->>Staff: "Count finalized + adjustment posted"
+    end

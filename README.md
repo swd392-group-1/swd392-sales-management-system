@@ -1,3 +1,38 @@
+# Book Sales Management System · SWD392 Group 1
+
+## Branch integration — 10 November 2026
+
+`main` now contains sales/returns, pricing, reporting, access/audit and the inventory module. This merge is code integration, not requirements approval or production readiness.
+
+- `src/BookSales.Web`: existing MVC app plus cookie Login, permission management and access logs. Sales/pricing/reports retain their local Development restriction; wiring the shared guard into every business endpoint is still pending.
+- `src/BookSalesManagement.Web`: inventory MVC app from Kiệt's independently initialized repository. It remains a **separate startup app** with its own EF model and demo account selector; shared Login is not wired into it. It is restricted to Development and loopback.
+- `BookSales.sln`: builds both apps and runs both test projects. `BookSalesManagement.sln` remains the inventory-only solution.
+
+Install .NET SDK 8, then:
+
+```powershell
+.\scripts\dev.ps1 build
+.\scripts\dev.ps1 test
+.\scripts\dev.ps1 run  # existing app, http://127.0.0.1:5180
+```
+
+For the inventory app, set a local connection string and run separately:
+
+```powershell
+$env:ConnectionStrings__BookSales = 'YOUR_LOCAL_CONNECTION_STRING'
+$env:ASPNETCORE_ENVIRONMENT = 'Development'
+dotnet run --project src/BookSalesManagement.Web --launch-profile http
+```
+
+Its default port is 5080. Both apps accept the ignored `appsettings.Local.json` in their respective project folders. Committed settings select no database. This merge does not create, migrate, reset or seed any database, or provision passwords. Existing NULL password hashes cannot log in.
+
+See the [integration audit](docs/03-design/branch-integration-2026-11-10.md), [access integration guide](docs/03-design/hung-access-integration.md) and [inventory handoff](docs/03-design/kiet-inventory-module.md). Branch documents and diagrams remain review material.
+
+---
+
+## Historical foundation instructions — 27 October 2026
+
+The original scaffold README follows for provenance. Its claims that business modules and EF mappings are absent describe the scaffold at that date, not the integrated code above.
 # BookSales · SWD392 Group 1
 
 Khung phát triển cho hệ thống quản lý bán sách nội bộ, dùng **.NET 8**, ASP.NET Core MVC, EF Core/SQL Server và SignalR. Người dùng xác nhận hướng công nghệ này ngày 27/10/2026; phiên bản .NET được chọn rõ là 8.

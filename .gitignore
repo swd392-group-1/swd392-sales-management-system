@@ -55,3 +55,8 @@ coverage.opencover.xml
 .DS_Store
 Thumbs.db
 [Dd]esktop.ini
+
+# Inventory module local working files
+doc_extracted.txt
+schema_utf8.sql
+docs/diagrams/tmp-*

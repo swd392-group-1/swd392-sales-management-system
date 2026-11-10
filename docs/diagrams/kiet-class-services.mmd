@@ -1,0 +1,95 @@
+classDiagram
+    direction TB
+
+    class InventoryCountService {
+        <<application service>>
+        -IInventoryCountStore counts
+        -IStockStore stock
+        -IInventoryAdjustmentStore adjustments
+        -IInventoryMovementStore movements
+        -IUnitOfWork unitOfWork
+        +CreateAsync(lines) string
+        +AddObservationAsync(countId, bookId, countedQuantity)
+        +FinalizeAsync(countId, selections) FinalizeCountResult
+    }
+
+    class InventoryAuditService {
+        <<application service>>
+        -IInventoryAuditStore audits
+        -IStockStore stock
+        -IUnitOfWork unitOfWork
+        +CreateAsync(lines) string
+        +ApproveAsync(auditId)
+    }
+
+    class IInventoryCountStore {
+        <<interface>>
+        +FindAsync(countId)
+        +AddAsync(count)
+    }
+
+    class IStockStore {
+        <<interface>>
+        +EnsureStockRowsAsync(bookIds)
+        +GetQuantitiesAsync(bookIds)
+        +TrySetQuantityAsync(bookId, expected, newQty)
+    }
+
+    class IInventoryAdjustmentStore {
+        <<interface>>
+        +AddAsync(adjustment)
+        +LinkCountAsync(countId, adjustmentId)
+    }
+
+    class IInventoryMovementStore {
+        <<interface>>
+        +AddRangeAsync(movements)
+    }
+
+    class IInventoryAuditStore {
+        <<interface>>
+        +FindAsync(auditId)
+        +AddAsync(audit)
+    }
+
+    class IUnitOfWork {
+        <<interface>>
+        +ExecuteAsync(operation)
+        +BeginTransactionAsync(isolation)
+        +SaveChangesAsync()
+    }
+
+    class InventoryCount {
+        <<domain>>
+    }
+
+    class InventoryAdjustment {
+        <<domain>>
+    }
+
+    class InventoryMovement {
+        <<domain>>
+    }
+
+    class InventoryAudit {
+        <<domain>>
+    }
+
+    InventoryCountService ..> InventoryCount : orchestrates
+    InventoryCountService ..> InventoryAdjustment : creates on difference
+    InventoryCountService ..> InventoryMovement : posts ledger entries
+    InventoryCountService ..> IInventoryCountStore
+    InventoryCountService ..> IStockStore
+    InventoryCountService ..> IInventoryAdjustmentStore
+    InventoryCountService ..> IInventoryMovementStore
+    InventoryCountService ..> IUnitOfWork
+
+    InventoryAuditService ..> InventoryAudit : approves
+    InventoryAuditService ..> IInventoryAuditStore
+    InventoryAuditService ..> IStockStore : read-only for detail view
+    InventoryAuditService ..> IUnitOfWork
+
+    note for IStockStore "Data: EfStockStore\nCAS = UPDATE BookStock\nSET current_quantity = @new\nWHERE book_id = @id AND current_quantity = @expected"
+    note for IUnitOfWork "Data: EfUnitOfWork\nSerializable transaction +\nCreateExecutionStrategy() for retry"
+    note for InventoryCountService "FinalizeAsync:\n1. count.Finalize(...)\n2. InventoryAdjustment.CreateForCount(difference lines)\n3. CAS each line into BookStock\n4. Movements from adjustment.Books"
+    note for InventoryAuditService "ApproveAsync does NOT call\nIStockStore / Adjustment / Movement."
