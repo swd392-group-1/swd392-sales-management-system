@@ -42,3 +42,7 @@ GitHub branch/PR/issue state and issue labels/milestones were inspected. No open
 Inventory is a separate startup app with a demo account selector, not a single authenticated application with the other modules. Access guard wiring into existing business endpoints and inventory remains pending. Existing database accounts with NULL password hashes are unprovisioned. Permission-policy settings and branch diagrams remain review material, not newly approved requirements. No database reset is needed to merge the code.
 
 OpenAI Codex assisted with inspection, conflict resolution, solution/configuration changes, regression tests and this audit under the user's merge request. Human review remains necessary before claiming coursework or business acceptance.
+
+## Follow-up: one solution entry point
+
+At the user's subsequent request to merge the two solution files, verified that `BookSales.sln` already includes every project from `BookSalesManagement.sln`. Removed that redundant inventory-only solution, retained all seven projects in `BookSales.sln`, and updated the README and inventory build command. The inventory app and main app remain separate startup projects inside the single solution. No source modules, database mappings or local connection settings were removed by this cleanup.

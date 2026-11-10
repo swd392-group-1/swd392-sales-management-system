@@ -1,0 +1,23 @@
+@model BookSalesManagement.Web.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Lỗi";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body p-4 p-lg-5 text-center">
+                <div class="badge-soft badge-warn mb-3">Lỗi hệ thống</div>
+                <h1 class="page-title mb-2">Đã xảy ra lỗi</h1>
+                <p class="page-lead mb-4">Yêu cầu không thể xử lý. Vui lòng thử lại.</p>
+
+                @if (Model.ShowRequestId)
+                {
+                    <p class="small-muted mb-4">Mã yêu cầu: <span class="mono">@Model.RequestId</span></p>
+                }
+
+                <a class="btn btn-primary px-3" asp-controller="Home" asp-action="Index">Về tổng quan</a>
+            </div>
+        </div>
+    </div>
+</div>

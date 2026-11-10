@@ -2,13 +2,22 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 
 namespace BookSales.Tests;
 
 public sealed class WebFoundationTests
 {
     private static WebApplicationFactory<Program> ProductionApplication() =>
-        new WebApplicationFactory<Program>().WithWebHostBuilder(builder => builder.UseEnvironment("Production"));
+        new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.UseEnvironment("Production");
+            builder.ConfigureAppConfiguration((_, configuration) =>
+                configuration.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["ConnectionStrings:BookSales"] = string.Empty
+                }));
+        });
 
     [Fact]
     public async Task FoundationRunsWithoutAConfiguredDatabase()

@@ -1,3 +1,5 @@
+> Current integration — 10 November 2026: inventory now runs inside `BookSales.Web` at `/inventory`, with views under `Areas/Inventory/Views`, code under `Inventory`, and the single `src/BookSales.Web/appsettings.Local.json`. Open `BookSales.sln`, set `BookSales.Web` as startup and use the http profile. The original namespaces are retained; older paths, architecture descriptions and verification claims below describe the source branch. The old standalone app/project no longer exists. Local demo account selection remains Development/loopback only. See [current integration record](single-application-2026-11-10.md).
+
 > Integration note — 10 November 2026: this is the inventory branch's handoff documentation, retained as a dated source. The app remains separate from `BookSales.Web` and its cookie Login. It runs only in Development from loopback while the demo account selector remains in use. Configure `ConnectionStrings__BookSales` or the ignored `src/BookSalesManagement.Web/appsettings.Local.json`; no database is selected in committed configuration. Do not reset/recreate a populated database to run the examples. Reported older UI/SQL test results below were not rerun by the branch merge.
 # SWD392 BookSales — Module Mua hàng & Tồn kho (Kiệt)
 
@@ -21,8 +23,8 @@ Tài liệu này là phần thuyết minh và kịch bản demo: kiến trúc, r
 ### 1.2. Chạy ứng dụng
 
 ```bash
-dotnet build BookSalesManagement.sln
-dotnet run --project src/BookSalesManagement.Web --urls http://localhost:5080
+dotnet build BookSales.sln
+dotnet run --project src/BookSales.Web --launch-profile http
 ```
 
 Mở `http://localhost:5080`. Chọn **tài khoản demo** ở `/Session`:

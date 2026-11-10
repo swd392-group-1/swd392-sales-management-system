@@ -17,11 +17,14 @@ using BookSales.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using BookSalesManagement.Web;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
+if (builder.Environment.IsDevelopment())
+    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
 builder.Configuration.AddEnvironmentVariables().AddCommandLine(args);
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 .AddCookie(options =>
 {
@@ -80,6 +83,9 @@ if (builder.Environment.IsDevelopment())
 }
 
 var connectionString = builder.Configuration.GetConnectionString("BookSales");
+builder.Services.AddBookSalesServices(connectionString ?? string.Empty);
+builder.Services.AddScoped<BookSalesManagement.Web.Services.Abstractions.ICurrentUser,
+    BookSalesManagement.Web.Infrastructure.DemoCurrentUser>();
 builder.Services.AddDbContext<BookSalesDbContext>(options =>
 {
     if (!string.IsNullOrWhiteSpace(connectionString))
@@ -113,7 +119,7 @@ app.Use(async (context, next) =>
 // Business modules remain local Development demos until the access module is integrated.
 app.Use(async (context, next) =>
 {
-    var paths = new[] { "/reports", "/pricing", "/api/book", "/sales", "/returns", "/hubs/prices" };
+    var paths = new[] { "/reports", "/pricing", "/api/book", "/sales", "/returns", "/hubs/prices", "/inventory" };
     if (paths.Any(p => context.Request.Path.StartsWithSegments(p)) &&
         (!app.Environment.IsDevelopment() || context.Connection.RemoteIpAddress is not { } ip || !System.Net.IPAddress.IsLoopback(ip)))
     { context.Response.StatusCode = 404; return; }
@@ -121,6 +127,9 @@ app.Use(async (context, next) =>
 });
 app.UseRouting();
 app.UseAuthentication();
+// Inventory's existing local demo selector applies only to its MVC area.
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/inventory"),
+    inventory => inventory.UseMiddleware<BookSalesManagement.Web.Infrastructure.DemoSessionMiddleware>());
 app.UseMiddleware<AccessAuditMiddleware>();
 app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new
@@ -145,6 +154,8 @@ if (app.Environment.IsDevelopment())
     app.MapHub<PriceHub>("/hubs/prices");
 }
 app.MapControllers();
+app.MapAreaControllerRoute("inventory", "Inventory",
+    "inventory/{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 app.Run();
 
